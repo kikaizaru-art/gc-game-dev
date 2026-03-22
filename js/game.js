@@ -81,13 +81,30 @@ class GameEngine {
     this.showCurrentQuiz();
   }
 
+  /* 選択肢の並びをシャッフルする */
+  shuffleChoices(quiz) {
+    const indices = quiz.choices.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return {
+      shuffledChoices: indices.map(i => quiz.choices[i]),
+      correctIndex: indices.indexOf(quiz.correct)
+    };
+  }
+
   /* 現在のクイズを画面に表示する */
   showCurrentQuiz() {
     const quiz = this.heroineManager.getCurrentQuiz();
     const heroine = this.heroineManager.selectedHeroine;
 
+    /* 選択肢をランダムに並び替え */
+    const { shuffledChoices, correctIndex } = this.shuffleChoices(quiz);
+    this.currentShuffledCorrectIndex = correctIndex;
+
     this.ui.renderQuiz({
-      quiz,
+      quiz: { ...quiz, choices: shuffledChoices },
       heroine,
       questionNumber: this.heroineManager.currentQuizIndex + 1,
       totalQuestions: QUIZ_COUNT,
@@ -112,7 +129,11 @@ class GameEngine {
     this.isAnswering = false;
     this.stopTimer();
 
-    const result = this.heroineManager.answerQuiz(choiceIndex);
+    /* シャッフル後のインデックスで正解判定 */
+    const isCorrect = choiceIndex === this.currentShuffledCorrectIndex;
+    const result = this.heroineManager.recordAnswer(isCorrect);
+    result.correctIndex = this.currentShuffledCorrectIndex;
+
     this.audio[result.isCorrect ? 'playCorrect' : 'playWrong']();
     this.ui.showAnswerResult(result, choiceIndex);
 
@@ -132,8 +153,9 @@ class GameEngine {
     if (!this.isAnswering) return;
     this.isAnswering = false;
 
-    /* 時間切れは不正解扱い（-1は無効な選択肢） */
-    const result = this.heroineManager.answerQuiz(-1);
+    /* 時間切れは不正解扱い */
+    const result = this.heroineManager.recordAnswer(false);
+    result.correctIndex = this.currentShuffledCorrectIndex;
     this.audio.playTimeout();
     this.ui.showTimeoutResult(result);
 

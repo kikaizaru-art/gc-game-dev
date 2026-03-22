@@ -74,10 +74,9 @@ class HeroineManager {
     return this.currentQuizSet[this.currentQuizIndex];
   }
 
-  /* 回答を処理して結果を返す */
-  answerQuiz(choiceIndex) {
+  /* 正誤結果を受け取りスコアを更新する */
+  recordAnswer(isCorrect) {
     const quiz = this.getCurrentQuiz();
-    const isCorrect = choiceIndex === quiz.correct;
 
     if (isCorrect) {
       this.affinity = Math.min(MAX_AFFINITY, this.affinity + AFFINITY_CORRECT);
@@ -88,7 +87,6 @@ class HeroineManager {
 
     return {
       isCorrect,
-      correctIndex: quiz.correct,
       comment: quiz.comment,
       affinity: this.affinity
     };
