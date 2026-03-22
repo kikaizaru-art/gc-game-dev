@@ -9,7 +9,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const heroineManager = new HeroineManager();
   const uiManager = new UiManager();
-  const gameEngine = new GameEngine(heroineManager, uiManager);
+  const audioManager = new AudioManager();
+  const gameEngine = new GameEngine(heroineManager, uiManager, audioManager);
 
   await gameEngine.init();
 });

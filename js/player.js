@@ -16,6 +16,11 @@ const THRESHOLD_BAD = 40;
 const QUIZ_COUNT = 10;
 const QUIZ_TIME_LIMIT = 15;
 
+/* UI制御 */
+const FEEDBACK_DISPLAY_MS = 2000;
+const TIMER_INTERVAL_MS = 100;
+const TIMER_STEP = 0.1;
+
 /**
  * ヒロインデータとクイズデータを管理するクラス
  */

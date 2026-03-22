@@ -113,13 +113,16 @@ class UiManager {
   /* タイマーバーを更新する */
   updateTimer(remaining, total) {
     const bar = document.getElementById('timer-bar');
+    const container = bar.parentElement;
     const percent = Math.max(0, (remaining / total) * 100);
     bar.style.width = `${percent}%`;
 
     /* 残り時間に応じて色を変える */
     bar.classList.remove('warning', 'danger');
+    container.classList.remove('pulse');
     if (remaining <= 5) {
       bar.classList.add('danger');
+      container.classList.add('pulse');
     } else if (remaining <= 10) {
       bar.classList.add('warning');
     }
@@ -142,6 +145,15 @@ class UiManager {
 
     /* キャラクターのリアクション */
     charaContainer.classList.add(result.isCorrect ? 'react-correct' : 'react-wrong');
+
+    /* エフェクト演出 */
+    if (result.isCorrect) {
+      this.spawnHeartParticles();
+      this.pulseAffinity('up');
+    } else {
+      this.shakeScreen();
+      this.pulseAffinity('down');
+    }
 
     this.showFeedback(result.isCorrect, result.comment);
     this.updateAffinity(result.affinity);
@@ -185,6 +197,54 @@ class UiManager {
     feedback.classList.add('hidden');
   }
 
+  /* ハートパーティクルを生成する */
+  spawnHeartParticles() {
+    const PARTICLE_COUNT = 6;
+    const container = document.getElementById('screen-quiz');
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const heart = document.createElement('span');
+      heart.className = 'heart-particle';
+      heart.textContent = '♥';
+      heart.style.left = `${30 + Math.random() * 40}%`;
+      heart.style.bottom = `${20 + Math.random() * 20}%`;
+      heart.style.animationDelay = `${i * 0.1}s`;
+      heart.style.color = `hsl(${340 + Math.random() * 30}, 80%, 65%)`;
+      container.appendChild(heart);
+      setTimeout(() => heart.remove(), 1600);
+    }
+  }
+
+  /* 画面シェイクを実行する */
+  shakeScreen() {
+    const container = document.getElementById('screen-quiz');
+    container.classList.add('screen-shake');
+    setTimeout(() => container.classList.remove('screen-shake'), 400);
+  }
+
+  /* 親密度の脈動エフェクト */
+  pulseAffinity(direction) {
+    const valueEl = document.getElementById('affinity-value');
+    const cls = direction === 'up' ? 'affinity-pulse-up' : 'affinity-pulse-down';
+    valueEl.classList.remove('affinity-pulse-up', 'affinity-pulse-down');
+    void valueEl.offsetWidth;
+    valueEl.classList.add(cls);
+    setTimeout(() => valueEl.classList.remove(cls), 600);
+  }
+
+  /* エンディング画面にキラキラを追加する */
+  spawnSparkles(container, count) {
+    for (let i = 0; i < count; i++) {
+      const sparkle = document.createElement('span');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = `${Math.random() * 100}%`;
+      sparkle.style.top = `${Math.random() * 100}%`;
+      sparkle.style.animationDelay = `${Math.random() * 2}s`;
+      sparkle.style.width = `${3 + Math.random() * 5}px`;
+      sparkle.style.height = sparkle.style.width;
+      container.appendChild(sparkle);
+    }
+  }
+
   /* 結果画面を描画する（VN風エンディング） */
   renderResult(endingData) {
     /* 背景をエンディング種類別に変更 */
@@ -213,5 +273,12 @@ class UiManager {
     document.getElementById('result-affinity').textContent = endingData.affinity;
     document.getElementById('result-correct').textContent = endingData.correctCount;
     document.getElementById('result-total-q').textContent = endingData.totalQuestions;
+
+    /* ハッピーエンド時にキラキラ演出 */
+    const resultScreen = document.getElementById('screen-result');
+    resultScreen.querySelectorAll('.sparkle').forEach(s => s.remove());
+    if (endingData.type === 'happy') {
+      this.spawnSparkles(resultScreen, 15);
+    }
   }
 }

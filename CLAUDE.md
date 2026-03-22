@@ -34,7 +34,7 @@ gc-game-dev/
 │   ├── main.js            # 初期化・ゲームループ
 │   ├── game.js            # ゲームエンジン・シーン管理
 │   ├── player.js          # プレイヤー
-│   ├── enemy.js           # 敵キャラ
+│   ├── audio.js           # 音声管理（Web Audio API）
 │   └── ui.js              # UI・画面遷移
 ├── assets/
 │   ├── images/            # 画像素材（Gemini API生成）

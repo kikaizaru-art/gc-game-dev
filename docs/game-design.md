@@ -120,12 +120,15 @@
 | ひなた立ち絵 | hinata.png | 400×600 | anime style dating sim character, gentle warm-hearted high school girl, medium wavy light brown hair, gentle eyes, warm smile, green theme (#7BC67E), soft pastel colors | ✅ 生成・組込済 |
 | 背景 | bg-default.png | 800×600 | anime background art, Japanese high school classroom, warm afternoon sunlight, cherry blossom trees, soft pastel colors, visual novel background | ✅ 生成・組込済 |
 
-### 音声素材
-| 素材名 | ファイル名 | 用途 | ステータス |
+### 音声素材（Web Audio API生成）
+| 素材名 | 実装方式 | 用途 | ステータス |
 |---|---|---|---|
-| メインBGM | bgm-main.mp3 | ゲーム中BGM | ⬜未着手 |
-| 正解SE | se-correct.mp3 | 正解時 | ⬜未着手 |
-| 不正解SE | se-wrong.mp3 | 不正解時 | ⬜未着手 |
+| メインBGM | Web Audio API合成 | ゲーム中BGM | ✅ 実装済 |
+| 正解SE | Web Audio API合成 | 正解時（上昇音） | ✅ 実装済 |
+| 不正解SE | Web Audio API合成 | 不正解時（下降音） | ✅ 実装済 |
+| 時間切れSE | Web Audio API合成 | タイムアウト時 | ✅ 実装済 |
+| クリックSE | Web Audio API合成 | ボタン押下時 | ✅ 実装済 |
+| エンディングSE | Web Audio API合成 | 結果画面（種類別） | ✅ 実装済 |
 
 ---
 
@@ -163,7 +166,7 @@
 | 制限時間 | ✅ | ✅ | ⬜ | |
 | エンディング分岐 | ✅ | ✅ | ⬜ | |
 | UI表示 | ✅ | ✅ | ⬜ | |
-| BGM・SE | ✅ | ⬜ | ⬜ | 素材未作成 |
+| BGM・SE | ✅ | ✅ | ⬜ | Web Audio API合成 |
 | セーブ/ロード | ❌ | ❌ | ❌ | 1プレイ完結型のため不要 |
 
 ---
@@ -174,7 +177,7 @@
 | Phase 1 | 企画・仕様確定 | 2026-03-22 | ✅ |
 | Phase 2 | プロトタイプ（コア機能） | 2026-03-22 | ✅ |
 | Phase 3 | 素材完成・組み込み | 2026-03-22 | ✅ |
-| Phase 4 | 全機能実装 | | ⬜ |
+| Phase 4 | 全機能実装 | 2026-03-22 | ✅ |
 | Phase 5 | テスト・バグ修正 | | ⬜ |
 | Phase 6 | 公開・リリース | | ⬜ |
 
@@ -187,6 +190,7 @@
 | 2026-03-22 | ゲーム企画確定（クイズ×恋愛シミュレーション） | Claude |
 | 2026-03-22 | Phase 2 プロトタイプ実装完了 | Claude |
 | 2026-03-22 | Phase 3 画像素材生成・ゲーム組み込み完了 | Claude |
+| 2026-03-22 | Phase 4 音声システム・演出強化・コード品質改善 | Claude |
 
 ---
 
