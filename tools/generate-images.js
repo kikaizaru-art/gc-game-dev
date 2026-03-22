@@ -102,7 +102,7 @@ function generateImage(apiKey, config) {
       }
     });
 
-    const url = new URL(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`);
+    const url = new URL(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${apiKey}`);
 
     const options = {
       hostname: url.hostname,
