@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <radialGradient id="skinR" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#FFF0E6"/>
+      <stop offset="100%" stop-color="#F5DDCC"/>
+    </radialGradient>
+    <radialGradient id="hairGradR" cx="40%" cy="25%" r="65%">
+      <stop offset="0%" stop-color="#4A6FA5"/>
+      <stop offset="40%" stop-color="#2D4A7A"/>
+      <stop offset="100%" stop-color="#1A2F55"/>
+    </radialGradient>
+    <radialGradient id="eyeGradR" cx="45%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#7AB0E0"/>
+      <stop offset="50%" stop-color="#4A90D9"/>
+      <stop offset="100%" stop-color="#2A60A0"/>
+    </radialGradient>
+    <linearGradient id="uniformGradR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F0EEF0"/>
+    </linearGradient>
+    <linearGradient id="ribbonGradR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6090C0"/>
+      <stop offset="100%" stop-color="#3060A0"/>
+    </linearGradient>
+    <filter id="softShadowR">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000020"/>
+    </filter>
+  </defs>
+
+  <!-- 後ろ髪（ロングストレート） -->
+  <path d="M128,200 Q115,260 110,340 Q105,420 108,500 Q110,530 115,550 Q125,570 130,560 Q120,500 118,420 Q118,340 125,260 Q130,220 140,200 Z" fill="url(#hairGradR)" opacity="0.9"/>
+  <path d="M272,200 Q285,260 290,340 Q295,420 292,500 Q290,530 285,550 Q275,570 270,560 Q280,500 282,420 Q282,340 275,260 Q270,220 260,200 Z" fill="url(#hairGradR)" opacity="0.9"/>
+  <!-- 中央後ろ髪 -->
+  <path d="M160,310 Q170,400 165,500 Q163,530 168,540 Q175,545 178,530 Q180,480 175,400 Q172,340 175,310 Z" fill="url(#hairGradR)" opacity="0.7"/>
+  <path d="M240,310 Q230,400 235,500 Q237,530 232,540 Q225,545 222,530 Q220,480 225,400 Q228,340 225,310 Z" fill="url(#hairGradR)" opacity="0.7"/>
+
+  <!-- 首 -->
+  <rect x="180" y="310" width="40" height="48" rx="8" fill="url(#skinR)"/>
+  <ellipse cx="200" cy="315" rx="20" ry="5" fill="#E8C8B0" opacity="0.35"/>
+
+  <!-- 体（制服ブラウス） -->
+  <path d="M135,358 Q140,340 172,332 L180,332 L180,360 Q182,420 177,520 L135,520 Q118,518 112,498 Q102,458 107,418 Q112,388 135,358 Z" fill="url(#uniformGradR)" filter="url(#softShadowR)"/>
+  <path d="M265,358 Q260,340 228,332 L220,332 L220,360 Q218,420 223,520 L265,520 Q282,518 288,498 Q298,458 293,418 Q288,388 265,358 Z" fill="url(#uniformGradR)" filter="url(#softShadowR)"/>
+  <!-- 胸元 -->
+  <path d="M180,358 Q196,398 200,415 Q204,398 220,358 L220,332 L180,332 Z" fill="#E8E4E8" opacity="0.25"/>
+  <!-- 制服の衿 -->
+  <path d="M172,332 L200,390 L228,332" fill="none" stroke="#E0D8E0" stroke-width="1.5"/>
+  <!-- セーラー衿 -->
+  <path d="M158,342 Q148,338 143,352 Q138,368 143,378 L172,353 Z" fill="#5B7DB8" opacity="0.85"/>
+  <path d="M242,342 Q252,338 257,352 Q262,368 257,378 L228,353 Z" fill="#5B7DB8" opacity="0.85"/>
+  <path d="M145,373 L170,350" stroke="#FFFFFF" stroke-width="1.5" opacity="0.7"/>
+  <path d="M255,373 L230,350" stroke="#FFFFFF" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- リボン -->
+  <path d="M187,338 L200,360 L213,338 L207,350 L200,338 L193,350 Z" fill="url(#ribbonGradR)"/>
+  <circle cx="200" cy="348" r="5" fill="#2050A0"/>
+  <circle cx="200" cy="348" r="2" fill="#5090D0" opacity="0.6"/>
+
+  <!-- 顔 -->
+  <path d="M148,208 Q148,168 158,148 Q173,118 200,112 Q227,118 242,148 Q252,168 252,208 Q252,258 238,282 Q224,308 200,315 Q176,308 162,282 Q148,258 148,208 Z" fill="url(#skinR)" filter="url(#softShadowR)"/>
+
+  <!-- 耳 -->
+  <ellipse cx="150" cy="222" rx="9" ry="14" fill="#F5DDCC"/>
+  <ellipse cx="152" cy="222" rx="4" ry="8" fill="#FFBBA8" opacity="0.35"/>
+  <ellipse cx="250" cy="222" rx="9" ry="14" fill="#F5DDCC"/>
+  <ellipse cx="248" cy="222" rx="4" ry="8" fill="#FFBBA8" opacity="0.35"/>
+
+  <!-- 前髪（ぱっつん気味、知的） -->
+  <path d="M142,195 Q144,140 162,116 Q178,96 200,92 Q222,96 238,116 Q256,140 258,195 Q254,185 248,182 Q244,188 238,183 Q232,190 225,184 Q218,190 210,185 Q202,190 195,185 Q188,190 180,184 Q172,190 165,183 Q158,188 152,182 Q148,186 142,195 Z" fill="url(#hairGradR)"/>
+  <!-- 前髪のハイライト -->
+  <path d="M175,132 Q185,118 198,125 Q205,118 215,122" fill="none" stroke="#6090C0" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
+  <path d="M155,155 Q162,142 172,148" fill="none" stroke="#6090C0" stroke-width="2" opacity="0.3" stroke-linecap="round"/>
+
+  <!-- サイド髪 -->
+  <path d="M142,195 Q135,220 132,260 Q130,300 135,330 Q137,340 140,335 Q138,300 140,260 Q142,230 148,205 Z" fill="url(#hairGradR)"/>
+  <path d="M258,195 Q265,220 268,260 Q270,300 265,330 Q263,340 260,335 Q262,300 260,260 Q258,230 252,205 Z" fill="url(#hairGradR)"/>
+
+  <!-- 眉毛（きりっとした） -->
+  <path d="M160,196 Q170,189 186,193" fill="none" stroke="#2A3A55" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M214,193 Q230,189 240,196" fill="none" stroke="#2A3A55" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 目（左）- クール系の大きな目 -->
+  <ellipse cx="175" cy="220" rx="21" ry="22" fill="#FFFFFF"/>
+  <ellipse cx="175" cy="222" rx="17" ry="18" fill="url(#eyeGradR)"/>
+  <ellipse cx="175" cy="226" rx="11" ry="12" fill="#2A60A0"/>
+  <ellipse cx="175" cy="230" rx="7" ry="7" fill="#1A3A70"/>
+  <!-- ハイライト -->
+  <circle cx="168" cy="214" r="5.5" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="180" cy="218" r="2.5" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="172" cy="232" r="3.5" fill="#FFFFFF" opacity="0.25"/>
+  <!-- まつ毛 -->
+  <path d="M154,208 Q158,202 162,206" stroke="#1A2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M158,204 Q163,198 168,203" stroke="#1A2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M186,202 Q191,198 195,204" stroke="#1A2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- アイライン -->
+  <path d="M154,210 Q162,198 178,196 Q192,198 196,208" fill="none" stroke="#1A2F55" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M162,238 Q167,241 172,239" fill="none" stroke="#7090A0" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- 目（右） -->
+  <ellipse cx="225" cy="220" rx="21" ry="22" fill="#FFFFFF"/>
+  <ellipse cx="225" cy="222" rx="17" ry="18" fill="url(#eyeGradR)"/>
+  <ellipse cx="225" cy="226" rx="11" ry="12" fill="#2A60A0"/>
+  <ellipse cx="225" cy="230" rx="7" ry="7" fill="#1A3A70"/>
+  <circle cx="218" cy="214" r="5.5" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="230" cy="218" r="2.5" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="222" cy="232" r="3.5" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M204,208 Q208,202 212,206" stroke="#1A2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M208,204 Q213,198 218,203" stroke="#1A2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M236,202 Q241,198 245,204" stroke="#1A2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M204,210 Q212,198 228,196 Q242,198 246,208" fill="none" stroke="#1A2F55" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M228,238 Q233,241 238,239" fill="none" stroke="#7090A0" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- メガネ -->
+  <ellipse cx="175" cy="220" rx="28" ry="26" fill="none" stroke="#3A5A8A" stroke-width="2" opacity="0.6"/>
+  <ellipse cx="225" cy="220" rx="28" ry="26" fill="none" stroke="#3A5A8A" stroke-width="2" opacity="0.6"/>
+  <path d="M197,218 Q200,215 203,218" fill="none" stroke="#3A5A8A" stroke-width="1.5" opacity="0.6"/>
+  <path d="M147,216 L140,212" stroke="#3A5A8A" stroke-width="1.5" opacity="0.6"/>
+  <path d="M253,216 L260,212" stroke="#3A5A8A" stroke-width="1.5" opacity="0.6"/>
+  <!-- メガネの反射 -->
+  <path d="M158,208 Q165,203 170,208" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.2"/>
+  <path d="M208,208 Q215,203 220,208" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.2"/>
+
+  <!-- チーク -->
+  <ellipse cx="158" cy="248" rx="14" ry="8" fill="#FFB8C0" opacity="0.2"/>
+  <ellipse cx="242" cy="248" rx="14" ry="8" fill="#FFB8C0" opacity="0.2"/>
+
+  <!-- 鼻 -->
+  <path d="M198,245 Q200,249 202,245" fill="none" stroke="#E0BCA8" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- 口（クールな微笑み） -->
+  <path d="M188,270 Q194,276 200,277 Q206,276 212,270" fill="none" stroke="#D08080" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 髪飾り（月のモチーフ） -->
+  <g transform="translate(255, 170) rotate(20)">
+    <path d="M0,-12 Q-8,-8 -8,0 Q-8,8 0,12 Q-4,8 -4,0 Q-4,-8 0,-12 Z" fill="#FFD700" opacity="0.9"/>
+    <circle cx="4" cy="-8" r="1.5" fill="#FFE860"/>
+    <circle cx="6" cy="0" r="1" fill="#FFE860"/>
+  </g>
+</svg>

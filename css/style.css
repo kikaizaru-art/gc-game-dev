@@ -1,4 +1,22 @@
-/* GC Game - スタイルシート */
+/* ハートクイズ ～3人の想い～ 恋愛シミュレーション風スタイルシート */
+
+:root {
+  --color-bg: #fdf2f8;
+  --color-primary: #ec4899;
+  --color-primary-dark: #db2777;
+  --color-secondary: #6b7280;
+  --color-text: #1f2937;
+  --color-text-light: #6b7280;
+  --color-white: #ffffff;
+  --color-correct: #10b981;
+  --color-wrong: #ef4444;
+  --color-misaki: #FF6B9D;
+  --color-rin: #4A90D9;
+  --color-hinata: #7BC67E;
+  --font-main: 'Zen Maru Gothic', sans-serif;
+  --screen-width: 800px;
+  --screen-height: 600px;
+}
 
 * {
   margin: 0;
@@ -7,24 +25,1068 @@
 }
 
 body {
-  background-color: #1a1a2e;
+  background: linear-gradient(135deg, #1a1025 0%, #2a1535 50%, #1a1025 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  font-family: var(--font-main);
+  color: var(--color-text);
+}
+
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* ゲームコンテナ */
+#game-container {
+  position: relative;
+  width: var(--screen-width);
+  min-height: var(--screen-height);
+  background: #1a1025;
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(236, 72, 153, 0.3), 0 0 80px rgba(236, 72, 153, 0.1);
   overflow: hidden;
 }
 
-#game-container {
-  position: relative;
-  width: 800px;
-  height: 600px;
+/* 画面共通 */
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  overflow: hidden;
 }
 
-#game-canvas {
+.screen.active {
+  display: flex;
+  opacity: 1;
+}
+
+.screen-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FFD0E8;
+  margin-bottom: 20px;
+  text-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+  z-index: 2;
+  position: relative;
+}
+
+/* ボタン共通 */
+.btn {
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 36px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  position: relative;
+  z-index: 5;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: var(--color-white);
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+.btn-glow {
+  animation: btnGlow 2s ease-in-out infinite;
+}
+
+@keyframes btnGlow {
+  0%, 100% { box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3); }
+  50% { box-shadow: 0 4px 30px rgba(236, 72, 153, 0.6), 0 0 60px rgba(236, 72, 153, 0.2); }
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFD0E8;
+  border: 2px solid rgba(255, 208, 232, 0.3);
+  backdrop-filter: blur(4px);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-white);
+  background: rgba(236, 72, 153, 0.2);
+}
+
+/* ============================
+   タイトル画面
+   ============================ */
+#screen-title {
+  justify-content: flex-end;
+  background: linear-gradient(180deg, #2a1535 0%, #1a0f25 60%, #0f0a18 100%);
+}
+
+.title-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background-color: #16213e;
-  border: 2px solid #0f3460;
+  background: radial-gradient(ellipse at 50% 30%, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.title-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.title-characters {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.title-chara {
+  position: absolute;
+  bottom: 80px;
+  height: 85%;
+  max-height: 520px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
+  transition: transform 0.5s ease;
+}
+
+.title-chara-left {
+  left: -5%;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.title-chara-right {
+  right: -5%;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.title-chara-center {
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  height: 90%;
+  max-height: 550px;
+}
+
+.title-text-area {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  padding-bottom: 30px;
+  width: 100%;
+  background: linear-gradient(transparent 0%, rgba(15, 10, 24, 0.85) 30%);
+  padding-top: 60px;
+}
+
+.game-title {
+  font-size: 52px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FFB0D0 0%, #FFFFFF 40%, #FFB0D0 60%, #FF6B9D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+  letter-spacing: 6px;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.5));
+}
+
+.game-subtitle {
+  font-size: 20px;
+  color: #FFD0E8;
+  margin-bottom: 32px;
+  letter-spacing: 8px;
+  text-shadow: 0 0 15px rgba(255, 107, 157, 0.3);
+}
+
+/* ============================
+   ヒロイン選択画面
+   ============================ */
+#screen-select {
+  justify-content: flex-start;
+  padding-top: 28px;
+  background: linear-gradient(180deg, #2a1535 0%, #1a0f25 100%);
+}
+
+.select-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 60%, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.heroine-cards {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  z-index: 2;
+  position: relative;
+}
+
+.heroine-card {
+  width: 230px;
+  padding: 0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  text-align: center;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.heroine-card:hover {
+  transform: translateY(-6px);
+}
+
+.heroine-card[data-color="misaki"]:hover,
+.heroine-card[data-color="misaki"].selected {
+  border-color: var(--color-misaki);
+  box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4), 0 0 60px rgba(255, 107, 157, 0.1);
+}
+
+.heroine-card[data-color="rin"]:hover,
+.heroine-card[data-color="rin"].selected {
+  border-color: var(--color-rin);
+  box-shadow: 0 8px 30px rgba(74, 144, 217, 0.4), 0 0 60px rgba(74, 144, 217, 0.1);
+}
+
+.heroine-card[data-color="hinata"]:hover,
+.heroine-card[data-color="hinata"].selected {
+  border-color: var(--color-hinata);
+  box-shadow: 0 8px 30px rgba(123, 198, 126, 0.4), 0 0 60px rgba(123, 198, 126, 0.1);
+}
+
+.heroine-card-image {
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  position: relative;
+}
+
+.heroine-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.3s ease;
+}
+
+.heroine-card:hover .heroine-card-image img {
+  transform: scale(1.05);
+}
+
+.heroine-card-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(transparent, rgba(26, 16, 37, 0.9));
+}
+
+.heroine-card-info {
+  padding: 12px 16px 16px;
+}
+
+.heroine-card-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.heroine-card-personality {
+  font-size: 12px;
+  color: rgba(255, 208, 232, 0.7);
+  margin-bottom: 6px;
+}
+
+.heroine-card-likes {
+  font-size: 11px;
+  color: rgba(255, 208, 232, 0.5);
+  line-height: 1.5;
+}
+
+/* ============================
+   クイズ画面（ビジュアルノベル風）
+   ============================ */
+#screen-quiz {
+  padding: 0;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.quiz-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  transition: background 0.5s ease;
+}
+
+.quiz-bg {
+  background-image: url('../assets/images/bg-default.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.quiz-bg.misaki {
+  background-image: linear-gradient(180deg, rgba(255, 232, 240, 0.3) 0%, rgba(255, 160, 192, 0.3) 100%), url('../assets/images/bg-default.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.quiz-bg.rin {
+  background-image: linear-gradient(180deg, rgba(224, 238, 255, 0.3) 0%, rgba(144, 184, 240, 0.3) 100%), url('../assets/images/bg-default.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.quiz-bg.hinata {
+  background-image: linear-gradient(180deg, rgba(232, 255, 232, 0.3) 0%, rgba(160, 216, 160, 0.3) 100%), url('../assets/images/bg-default.png');
+  background-size: cover;
+  background-position: center;
+}
+
+/* キャラクターバストアップ */
+.quiz-chara-container {
+  position: absolute;
+  bottom: 180px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.quiz-chara-img {
+  height: 400px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease;
+}
+
+.quiz-chara-container.react-correct .quiz-chara-img {
+  transform: scale(1.05);
+}
+
+.quiz-chara-container.react-wrong .quiz-chara-img {
+  animation: charaShake 0.4s ease;
+}
+
+@keyframes charaShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+/* ステータスバー */
+.quiz-status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+  z-index: 10;
+}
+
+.quiz-heroine-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heroine-name-label {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.affinity-hearts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.heart-icon {
+  color: var(--color-primary);
+  font-size: 14px;
+  filter: drop-shadow(0 0 4px rgba(236, 72, 153, 0.5));
+}
+
+.affinity-bar-container {
+  width: 100px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.4);
   border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.affinity-bar {
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, var(--color-primary), #f472b6);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+}
+
+.affinity-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFD0E8;
+  min-width: 24px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.quiz-right-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quiz-progress {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.timer-container {
+  width: 60px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #60d0ff, #80e0ff);
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
+.timer-bar.warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.timer-bar.danger {
+  background: linear-gradient(90deg, var(--color-wrong), #f87171);
+}
+
+/* VNダイアログエリア */
+.vn-dialog-area {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  padding: 0 16px 12px;
+}
+
+.vn-dialog-box {
+  background: linear-gradient(180deg, rgba(10, 5, 20, 0.88) 0%, rgba(15, 8, 30, 0.92) 100%);
+  border: 1px solid rgba(255, 208, 232, 0.2);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 8px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.vn-name-plate {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  padding: 2px 14px;
+  display: inline-block;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.vn-dialog-text {
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 選択肢 */
+.quiz-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.choice-btn {
+  width: 100%;
+  padding: 10px 16px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  background: linear-gradient(135deg, rgba(10, 5, 20, 0.85), rgba(20, 10, 40, 0.9));
+  border: 2px solid rgba(255, 208, 232, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+  color: #FFFFFF;
+  backdrop-filter: blur(8px);
+}
+
+.choice-btn:hover {
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.1));
+  transform: translateX(4px);
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.2);
+}
+
+.choice-btn.correct {
+  border-color: var(--color-correct);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.15));
+  color: #A0FFD0;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.choice-btn.wrong {
+  border-color: var(--color-wrong);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.15));
+  color: #FFAAAA;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.choice-btn.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.choice-btn .choice-number {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  margin-right: 10px;
+  font-size: 12px;
+}
+
+/* フィードバック */
+.quiz-feedback {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition: opacity 0.3s;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+}
+
+.quiz-feedback.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.quiz-feedback.correct {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.9), rgba(16, 185, 129, 0.95));
+  color: #FFFFFF;
+}
+
+.quiz-feedback.wrong {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.9), rgba(239, 68, 68, 0.95));
+  color: #FFFFFF;
+}
+
+.feedback-comment {
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+/* ============================
+   結果画面
+   ============================ */
+#screen-result {
+  justify-content: flex-end;
+}
+
+.result-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.result-bg.happy {
+  background: linear-gradient(180deg, #FFF0F5 0%, #FFE0EC 40%, #FFD0E0 100%);
+}
+
+.result-bg.normal {
+  background: linear-gradient(180deg, #FFF8E0 0%, #FFF0C8 40%, #FFE8B0 100%);
+}
+
+.result-bg.bad {
+  background: linear-gradient(180deg, #E8E8F0 0%, #D8D8E0 40%, #C8C8D0 100%);
+}
+
+.result-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.result-chara-container {
+  position: absolute;
+  bottom: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.result-chara-img {
+  height: 380px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.15));
+  animation: resultCharaAppear 0.8s ease;
+}
+
+@keyframes resultCharaAppear {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.result-text-area {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  text-align: center;
+  padding: 20px 20px 16px;
+  background: linear-gradient(transparent 0%, rgba(10, 5, 20, 0.85) 20%);
+}
+
+.ending-type {
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.ending-type.happy {
+  color: #FF6B9D;
+}
+
+.ending-type.normal {
+  color: #F5A623;
+}
+
+.ending-type.bad {
+  color: #8899AA;
+}
+
+.result-name-plate {
+  margin-bottom: 8px;
+}
+
+.result-heroine-name {
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-block;
+  padding: 2px 16px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.result-dialog-box {
+  background: rgba(10, 5, 20, 0.6);
+  border: 1px solid rgba(255, 208, 232, 0.2);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 0 auto 12px;
+  max-width: 500px;
+}
+
+.result-message {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #FFFFFF;
+  white-space: pre-line;
+}
+
+.result-stats {
+  font-size: 13px;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.result-stats p {
+  margin-bottom: 2px;
+}
+
+.result-stats .heart-icon {
+  font-size: 12px;
+}
+
+.result-affinity-value {
+  font-weight: 700;
+  color: #FFB0D0;
+  font-size: 18px;
+}
+
+.result-correct-value {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.result-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+
+/* ============================
+   アニメーション
+   ============================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+.animate-pulse {
+  animation: pulse 0.4s ease;
+}
+
+.animate-shake {
+  animation: shake 0.3s ease;
+}
+
+/* ============================
+   レスポンシブ対応
+   ============================ */
+@media (max-width: 840px) {
+  body {
+    align-items: flex-start;
+    background: #1a1025;
+  }
+
+  #game-container {
+    width: 100vw;
+    min-height: 100vh;
+    min-height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+
+  .screen {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* タイトル画面 */
+  .title-chara {
+    height: 65%;
+    max-height: 400px;
+  }
+
+  .title-chara-center {
+    height: 70%;
+    max-height: 440px;
+  }
+
+  .game-title {
+    font-size: 36px;
+    letter-spacing: 4px;
+  }
+
+  .game-subtitle {
+    font-size: 16px;
+    margin-bottom: 24px;
+    letter-spacing: 6px;
+  }
+
+  .title-text-area {
+    padding-bottom: 24px;
+    padding-top: 40px;
+  }
+
+  /* 選択画面 */
+  #screen-select {
+    padding-top: 20px;
+    overflow-y: auto;
+  }
+
+  .heroine-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .heroine-card {
+    width: 90%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+  }
+
+  .heroine-card-image {
+    width: 120px;
+    height: 160px;
+    flex-shrink: 0;
+  }
+
+  .heroine-card-info {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .screen-heading {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  /* クイズ画面 */
+  #screen-quiz {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .quiz-chara-container {
+    bottom: 170px;
+  }
+
+  .quiz-chara-img {
+    height: 280px;
+  }
+
+  .quiz-status-bar {
+    padding: 6px 10px;
+  }
+
+  .heroine-name-label {
+    font-size: 12px;
+  }
+
+  .affinity-bar-container {
+    width: 70px;
+    height: 6px;
+  }
+
+  .affinity-value {
+    font-size: 11px;
+  }
+
+  .quiz-progress {
+    font-size: 11px;
+  }
+
+  .timer-container {
+    width: 40px;
+    height: 5px;
+  }
+
+  .vn-dialog-area {
+    padding: 0 10px 10px;
+  }
+
+  .vn-dialog-box {
+    padding: 10px 14px;
+    margin-bottom: 6px;
+  }
+
+  .vn-name-plate {
+    font-size: 11px;
+    margin-bottom: 4px;
+    padding: 1px 10px;
+  }
+
+  .vn-dialog-text {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .quiz-choices {
+    gap: 5px;
+  }
+
+  .choice-btn {
+    padding: 9px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .choice-btn .choice-number {
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    font-size: 11px;
+    margin-right: 8px;
+  }
+
+  .quiz-feedback {
+    position: fixed;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .feedback-comment {
+    font-size: 12px;
+  }
+
+  /* 結果画面 */
+  .result-chara-container {
+    bottom: 180px;
+  }
+
+  .result-chara-img {
+    height: 260px;
+  }
+
+  .ending-type {
+    font-size: 22px;
+  }
+
+  .result-heroine-name {
+    font-size: 14px;
+  }
+
+  .result-dialog-box {
+    padding: 8px 14px;
+    margin-bottom: 10px;
+  }
+
+  .result-message {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .result-stats {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .btn {
+    font-size: 15px;
+    padding: 10px 28px;
+  }
+
+  .result-buttons {
+    gap: 10px;
+  }
+}
+
+/* 小さいスマホ向け */
+@media (max-height: 700px) and (max-width: 840px) {
+  .quiz-chara-img {
+    height: 220px;
+  }
+
+  .quiz-chara-container {
+    bottom: 155px;
+  }
+
+  .result-chara-img {
+    height: 200px;
+  }
+
+  .result-chara-container {
+    bottom: 170px;
+  }
+
+  .title-chara {
+    height: 55%;
+  }
+
+  .title-chara-center {
+    height: 60%;
+  }
 }
