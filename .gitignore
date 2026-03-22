@@ -9,6 +9,9 @@ Thumbs.db
 # Node
 node_modules/
 
+# 環境変数
+.env
+
 # 一時ファイル
 *.tmp
 *.log

@@ -115,10 +115,10 @@
 ### 画像素材（Gemini API生成）
 | 素材名 | ファイル名 | サイズ | 生成プロンプト | ステータス |
 |---|---|---|---|---|
-| 美咲立ち絵 | misaki.png | 400×600 | （後日生成） | ⬜未着手 |
-| 凛立ち絵 | rin.png | 400×600 | （後日生成） | ⬜未着手 |
-| ひなた立ち絵 | hinata.png | 400×600 | （後日生成） | ⬜未着手 |
-| 背景 | bg-default.png | 800×600 | （後日生成） | ⬜未着手 |
+| 美咲立ち絵 | misaki.png | 400×600 | anime style dating sim character, cheerful energetic high school girl, short bouncy pink-tinted hair, bright eyes, warm smile, pink theme (#FF6B9D), soft pastel colors | 🔄 スクリプト準備済 |
+| 凛立ち絵 | rin.png | 400×600 | anime style dating sim character, cool intellectual high school girl, long straight dark blue-black hair, sharp intelligent eyes, calm expression, blue theme (#4A90D9), soft pastel colors | 🔄 スクリプト準備済 |
+| ひなた立ち絵 | hinata.png | 400×600 | anime style dating sim character, gentle warm-hearted high school girl, medium wavy light brown hair, gentle eyes, warm smile, green theme (#7BC67E), soft pastel colors | 🔄 スクリプト準備済 |
+| 背景 | bg-default.png | 800×600 | anime background art, Japanese high school classroom, warm afternoon sunlight, cherry blossom trees, soft pastel colors, visual novel background | 🔄 スクリプト準備済 |
 
 ### 音声素材
 | 素材名 | ファイル名 | 用途 | ステータス |
