@@ -115,10 +115,10 @@
 ### 画像素材（Gemini API生成）
 | 素材名 | ファイル名 | サイズ | 生成プロンプト | ステータス |
 |---|---|---|---|---|
-| 美咲立ち絵 | misaki.png | 400×600 | anime style dating sim character, cheerful energetic high school girl, short bouncy pink-tinted hair, bright eyes, warm smile, pink theme (#FF6B9D), soft pastel colors | 🔄 スクリプト準備済 |
-| 凛立ち絵 | rin.png | 400×600 | anime style dating sim character, cool intellectual high school girl, long straight dark blue-black hair, sharp intelligent eyes, calm expression, blue theme (#4A90D9), soft pastel colors | 🔄 スクリプト準備済 |
-| ひなた立ち絵 | hinata.png | 400×600 | anime style dating sim character, gentle warm-hearted high school girl, medium wavy light brown hair, gentle eyes, warm smile, green theme (#7BC67E), soft pastel colors | 🔄 スクリプト準備済 |
-| 背景 | bg-default.png | 800×600 | anime background art, Japanese high school classroom, warm afternoon sunlight, cherry blossom trees, soft pastel colors, visual novel background | 🔄 スクリプト準備済 |
+| 美咲立ち絵 | misaki.png | 400×600 | anime style dating sim character, cheerful energetic high school girl, short bouncy pink-tinted hair, bright eyes, warm smile, pink theme (#FF6B9D), soft pastel colors | ✅ 生成・組込済 |
+| 凛立ち絵 | rin.png | 400×600 | anime style dating sim character, cool intellectual high school girl, long straight dark blue-black hair, sharp intelligent eyes, calm expression, blue theme (#4A90D9), soft pastel colors | ✅ 生成・組込済 |
+| ひなた立ち絵 | hinata.png | 400×600 | anime style dating sim character, gentle warm-hearted high school girl, medium wavy light brown hair, gentle eyes, warm smile, green theme (#7BC67E), soft pastel colors | ✅ 生成・組込済 |
+| 背景 | bg-default.png | 800×600 | anime background art, Japanese high school classroom, warm afternoon sunlight, cherry blossom trees, soft pastel colors, visual novel background | ✅ 生成・組込済 |
 
 ### 音声素材
 | 素材名 | ファイル名 | 用途 | ステータス |
@@ -173,7 +173,7 @@
 |---|---|---|---|
 | Phase 1 | 企画・仕様確定 | 2026-03-22 | ✅ |
 | Phase 2 | プロトタイプ（コア機能） | 2026-03-22 | ✅ |
-| Phase 3 | 素材完成・組み込み | | ⬜ |
+| Phase 3 | 素材完成・組み込み | 2026-03-22 | ✅ |
 | Phase 4 | 全機能実装 | | ⬜ |
 | Phase 5 | テスト・バグ修正 | | ⬜ |
 | Phase 6 | 公開・リリース | | ⬜ |
@@ -186,6 +186,7 @@
 | 2026-03-20 | 初版作成（Googleドキュメントから移行） | Claude |
 | 2026-03-22 | ゲーム企画確定（クイズ×恋愛シミュレーション） | Claude |
 | 2026-03-22 | Phase 2 プロトタイプ実装完了 | Claude |
+| 2026-03-22 | Phase 3 画像素材生成・ゲーム組み込み完了 | Claude |
 
 ---
 
@@ -193,4 +194,4 @@
 - Gemini APIの画像生成は1024×1024が最大（大きな背景は分割orリサイズ）
 - BGM/SEは著作権フリー素材を使用するか、AI生成する（ライセンス明記）
 - ゲーム内テキストは日本語を基本とし、多言語対応は後回し
-- 画像素材がない間はCSSで代替表現する
+- 画像素材はGemini API（gemini-2.5-flash-image）で生成済

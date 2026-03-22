@@ -3,9 +3,9 @@
 
 /* キャラクター画像パスのマッピング */
 const CHARA_IMAGES = {
-  misaki: 'assets/images/misaki.svg',
-  rin: 'assets/images/rin.svg',
-  hinata: 'assets/images/hinata.svg'
+  misaki: 'assets/images/misaki.png',
+  rin: 'assets/images/rin.png',
+  hinata: 'assets/images/hinata.png'
 };
 
 /**
