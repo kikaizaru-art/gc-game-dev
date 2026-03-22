@@ -32,14 +32,20 @@ body {
   min-height: 100vh;
   font-family: var(--font-main);
   color: var(--color-text);
-  overflow: hidden;
+}
+
+/* スマホでのスクロールを有効化 */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
 }
 
 /* ゲームコンテナ */
 #game-container {
   position: relative;
   width: var(--screen-width);
-  height: var(--screen-height);
+  min-height: var(--screen-height);
   background: var(--color-white);
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(236, 72, 153, 0.2);
@@ -52,7 +58,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   display: none;
   flex-direction: column;
   align-items: center;
@@ -215,16 +221,17 @@ body {
 
 /* クイズ画面 */
 #screen-quiz {
-  padding: 16px 24px;
+  padding: 12px 16px;
   justify-content: flex-start;
+  position: relative;
 }
 
 .quiz-header {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .quiz-heroine-info {
@@ -305,18 +312,18 @@ body {
 .heroine-display {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .heroine-avatar {
-  width: 80px;
-  height: 80px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  font-size: 28px;
   flex-shrink: 0;
 }
 
@@ -331,7 +338,7 @@ body {
   background: #f9fafb;
   border-radius: 16px;
   border-top-left-radius: 4px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   flex: 1;
   position: relative;
 }
@@ -349,8 +356,8 @@ body {
 }
 
 .quiz-question-text {
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.6;
   font-weight: 700;
 }
 
@@ -358,16 +365,15 @@ body {
 .quiz-choices {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: auto;
+  gap: 8px;
   padding-bottom: 8px;
 }
 
 .choice-btn {
   width: 100%;
-  padding: 14px 20px;
+  padding: 12px 16px;
   font-family: var(--font-main);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   text-align: left;
   background: var(--color-white);
@@ -418,11 +424,12 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 16px 24px;
+  padding: 12px 16px;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   transition: opacity 0.3s;
+  z-index: 10;
 }
 
 .quiz-feedback.hidden {
@@ -544,22 +551,164 @@ body {
 
 /* レスポンシブ対応 */
 @media (max-width: 840px) {
+  body {
+    align-items: flex-start;
+  }
+
   #game-container {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
     border-radius: 0;
+    box-shadow: none;
+  }
+
+  .screen {
+    padding: 16px;
   }
 
   .heroine-cards {
     flex-direction: column;
     align-items: center;
+    overflow-y: auto;
   }
 
   .heroine-card {
-    width: 280px;
+    width: 100%;
+    max-width: 320px;
+    padding: 14px;
+  }
+
+  .heroine-card-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+    margin-bottom: 8px;
   }
 
   .game-title {
+    font-size: 36px;
+  }
+
+  .game-subtitle {
+    font-size: 18px;
+    margin-bottom: 32px;
+  }
+
+  #screen-quiz {
+    padding: 10px 12px;
+  }
+
+  .quiz-header {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .heroine-name-label {
+    font-size: 12px;
+  }
+
+  .affinity-bar-container {
+    height: 8px;
+  }
+
+  .affinity-value {
+    font-size: 12px;
+  }
+
+  .quiz-progress {
+    font-size: 12px;
+  }
+
+  .timer-container {
+    width: 50px;
+    height: 6px;
+  }
+
+  .heroine-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .heroine-display {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .heroine-dialog {
+    padding: 10px 12px;
+  }
+
+  .quiz-question-text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .quiz-choices {
+    gap: 6px;
+  }
+
+  .choice-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .choice-btn .choice-number {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 11px;
+    margin-right: 8px;
+  }
+
+  .quiz-feedback {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .feedback-comment {
+    font-size: 12px;
+  }
+
+  /* 結果画面 */
+  .heroine-avatar.large {
+    width: 80px;
+    height: 80px;
     font-size: 40px;
+  }
+
+  .ending-type {
+    font-size: 24px;
+  }
+
+  .result-heroine-name {
+    font-size: 16px;
+  }
+
+  .result-message {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .result-stats {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 10px 28px;
+  }
+
+  #screen-select {
+    padding-top: 24px;
+  }
+
+  .screen-heading {
+    font-size: 20px;
+    margin-bottom: 16px;
   }
 }
