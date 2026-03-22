@@ -74,10 +74,6 @@ class UiManager {
     /* 親密度バー */
     this.updateAffinity(affinity);
 
-    /* 進捗 */
-    document.getElementById('quiz-number').textContent = questionNumber;
-    document.getElementById('quiz-total').textContent = totalQuestions;
-
     /* 質問文 */
     document.getElementById('quiz-question').textContent = quiz.question;
 
