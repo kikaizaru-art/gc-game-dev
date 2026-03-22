@@ -49,6 +49,16 @@ gc-game-dev/
 - カテゴリ: `feat` / `fix` / `refactor` / `asset` / `docs`
 - リモート: `https://github.com/kikaizaru-art/gc-game-dev.git`
 
+## 🚀 Vercel プレビュー確認フロー
+- Vercel GitHub連携済み（自動デプロイ有効）
+- ブランチにプッシュすると自動でプレビューURLが生成される
+- 実装後の確認フロー:
+  1. コード実装・コミット
+  2. ブランチにプッシュ
+  3. Vercelが自動でプレビューデプロイを作成
+  4. ユーザーがプレビューURLで動作確認（mainマージ不要）
+- プレビューURL: Vercelダッシュボード → Deployments で確認
+
 ## 🎨 Gemini API 利用（画像生成のみ）
 - キャラクター・背景・UI素材の生成に使用
 - 生成した画像は `assets/images/` に保存
