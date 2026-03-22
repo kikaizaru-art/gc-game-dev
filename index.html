@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ハートクイズ ～3人の想い～</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,15 +14,24 @@
 
     <!-- タイトル画面 -->
     <div id="screen-title" class="screen active">
+      <div class="title-bg"></div>
       <div class="title-content">
-        <h1 class="game-title">ハートクイズ</h1>
-        <p class="game-subtitle">～3人の想い～</p>
-        <button id="btn-start" class="btn btn-primary">スタート</button>
+        <div class="title-characters">
+          <img src="assets/images/misaki.svg" class="title-chara title-chara-left" alt="美咲">
+          <img src="assets/images/hinata.svg" class="title-chara title-chara-right" alt="ひなた">
+          <img src="assets/images/rin.svg" class="title-chara title-chara-center" alt="凛">
+        </div>
+        <div class="title-text-area">
+          <h1 class="game-title">ハートクイズ</h1>
+          <p class="game-subtitle">～3人の想い～</p>
+          <button id="btn-start" class="btn btn-primary btn-glow">スタート</button>
+        </div>
       </div>
     </div>
 
     <!-- ヒロイン選択画面 -->
     <div id="screen-select" class="screen">
+      <div class="select-bg"></div>
       <h2 class="screen-heading">ヒロインを選んでね</h2>
       <div id="heroine-cards" class="heroine-cards">
         <!-- JSで動的生成 -->
@@ -32,27 +41,37 @@
 
     <!-- クイズ画面 -->
     <div id="screen-quiz" class="screen">
-      <div class="quiz-header">
+      <div class="quiz-bg" id="quiz-bg"></div>
+      <!-- ヒロインバストアップ -->
+      <div id="quiz-chara-container" class="quiz-chara-container">
+        <img id="quiz-chara-img" class="quiz-chara-img" src="" alt="">
+      </div>
+      <!-- ステータスバー -->
+      <div class="quiz-status-bar">
         <div class="quiz-heroine-info">
           <span id="quiz-heroine-name" class="heroine-name-label"></span>
-          <div class="affinity-bar-container">
-            <div id="affinity-bar" class="affinity-bar"></div>
+          <div class="affinity-hearts">
+            <span class="heart-icon">♥</span>
+            <div class="affinity-bar-container">
+              <div id="affinity-bar" class="affinity-bar"></div>
+            </div>
+            <span id="affinity-value" class="affinity-value">50</span>
           </div>
-          <span id="affinity-value" class="affinity-value">50</span>
         </div>
-        <div class="quiz-progress">
-          <span id="quiz-number">1</span> / <span id="quiz-total">10</span>
-        </div>
-        <div class="timer-container">
-          <div id="timer-bar" class="timer-bar"></div>
+        <div class="quiz-right-info">
+          <div class="quiz-progress">
+            <span id="quiz-number">1</span> / <span id="quiz-total">10</span>
+          </div>
+          <div class="timer-container">
+            <div id="timer-bar" class="timer-bar"></div>
+          </div>
         </div>
       </div>
-      <div class="quiz-body">
-        <div id="heroine-display" class="heroine-display">
-          <div id="heroine-avatar" class="heroine-avatar"></div>
-          <div id="heroine-dialog" class="heroine-dialog">
-            <p id="quiz-question" class="quiz-question-text"></p>
-          </div>
+      <!-- ダイアログボックス -->
+      <div class="vn-dialog-area">
+        <div class="vn-dialog-box">
+          <div id="vn-name-plate" class="vn-name-plate"></div>
+          <p id="quiz-question" class="vn-dialog-text"></p>
         </div>
         <div id="quiz-choices" class="quiz-choices">
           <!-- JSで動的生成 -->
@@ -66,18 +85,27 @@
 
     <!-- 結果画面 -->
     <div id="screen-result" class="screen">
+      <div class="result-bg" id="result-bg"></div>
       <div class="result-content">
-        <div id="result-heroine-avatar" class="heroine-avatar large"></div>
-        <h2 id="result-ending-type" class="ending-type"></h2>
-        <p id="result-heroine-name" class="result-heroine-name"></p>
-        <p id="result-message" class="result-message"></p>
-        <div class="result-stats">
-          <p>最終親密度: <span id="result-affinity" class="result-affinity-value"></span></p>
-          <p>正解数: <span id="result-correct" class="result-correct-value"></span> / <span id="result-total-q"></span></p>
+        <div class="result-chara-container">
+          <img id="result-chara-img" class="result-chara-img" src="" alt="">
         </div>
-        <div class="result-buttons">
-          <button id="btn-retry" class="btn btn-primary">もう一度</button>
-          <button id="btn-back-title-result" class="btn btn-secondary">タイトルへ</button>
+        <div class="result-text-area">
+          <h2 id="result-ending-type" class="ending-type"></h2>
+          <div class="result-name-plate">
+            <p id="result-heroine-name" class="result-heroine-name"></p>
+          </div>
+          <div class="result-dialog-box">
+            <p id="result-message" class="result-message"></p>
+          </div>
+          <div class="result-stats">
+            <p>最終親密度: <span class="heart-icon">♥</span> <span id="result-affinity" class="result-affinity-value"></span></p>
+            <p>正解数: <span id="result-correct" class="result-correct-value"></span> / <span id="result-total-q"></span></p>
+          </div>
+          <div class="result-buttons">
+            <button id="btn-retry" class="btn btn-primary">もう一度</button>
+            <button id="btn-back-title-result" class="btn btn-secondary">タイトルへ</button>
+          </div>
         </div>
       </div>
     </div>

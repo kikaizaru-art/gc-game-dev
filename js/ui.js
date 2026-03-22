@@ -1,5 +1,12 @@
-// UI管理 - 画面遷移・表示更新
+// UI管理 - 画面遷移・表示更新（恋愛シミュレーション風）
 'use strict';
+
+/* キャラクター画像パスのマッピング */
+const CHARA_IMAGES = {
+  misaki: 'assets/images/misaki.svg',
+  rin: 'assets/images/rin.svg',
+  hinata: 'assets/images/hinata.svg'
+};
 
 /**
  * 画面描画と遷移を管理するクラス
@@ -22,31 +29,47 @@ class UiManager {
     this.screens[screenName].classList.add('active');
   }
 
-  /* ヒロイン選択カードを生成する */
+  /* ヒロイン選択カードを生成する（バストアップ画像付き） */
   renderHeroineCards(heroines) {
     const container = document.getElementById('heroine-cards');
     container.innerHTML = heroines.map(h => `
       <div class="heroine-card" data-heroine-id="${h.id}" data-color="${h.colorName}">
-        <div class="heroine-card-avatar" style="background: ${h.color}20;">
-          <span>${h.emoji}</span>
+        <div class="heroine-card-image">
+          <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
         </div>
-        <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
-        <div class="heroine-card-personality">${h.personality}</div>
-        <div class="heroine-card-likes">${h.description}</div>
+        <div class="heroine-card-info">
+          <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
+          <div class="heroine-card-personality">${h.personality}</div>
+          <div class="heroine-card-likes">${h.description}</div>
+        </div>
       </div>
     `).join('');
   }
 
-  /* クイズ画面を描画する */
+  /* クイズ画面を描画する（VN風レイアウト） */
   renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity }) {
-    /* ヒロイン情報 */
-    document.getElementById('quiz-heroine-name').textContent = heroine.shortName;
-    document.getElementById('quiz-heroine-name').style.color = heroine.color;
+    /* 背景をキャラ別に変更 */
+    const quizBg = document.getElementById('quiz-bg');
+    quizBg.className = `quiz-bg ${heroine.colorName}`;
 
-    /* アバター */
-    const avatar = document.getElementById('heroine-avatar');
-    avatar.style.background = `${heroine.color}20`;
-    avatar.textContent = heroine.emoji;
+    /* ヒロイン名 */
+    const nameLabel = document.getElementById('quiz-heroine-name');
+    nameLabel.textContent = heroine.shortName;
+    nameLabel.style.color = heroine.color;
+
+    /* ネームプレート */
+    const namePlate = document.getElementById('vn-name-plate');
+    namePlate.textContent = heroine.shortName;
+    namePlate.style.color = heroine.color;
+
+    /* バストアップ画像 */
+    const charaImg = document.getElementById('quiz-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    /* キャラリアクションをリセット */
+    const charaContainer = document.getElementById('quiz-chara-container');
+    charaContainer.classList.remove('react-correct', 'react-wrong');
 
     /* 親密度バー */
     this.updateAffinity(affinity);
@@ -76,11 +99,14 @@ class UiManager {
 
     /* 色を親密度に応じて変える */
     if (value >= THRESHOLD_HAPPY) {
-      bar.style.background = 'linear-gradient(90deg, #ec4899, #f472b6)';
+      bar.style.background = 'linear-gradient(90deg, #FF6B9D, #FF8FB8)';
+      bar.style.boxShadow = '0 0 12px rgba(255, 107, 157, 0.6)';
     } else if (value < THRESHOLD_BAD) {
       bar.style.background = 'linear-gradient(90deg, #6b7280, #9ca3af)';
+      bar.style.boxShadow = '0 0 8px rgba(107, 114, 128, 0.3)';
     } else {
       bar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+      bar.style.boxShadow = '0 0 8px rgba(245, 158, 11, 0.4)';
     }
   }
 
@@ -99,9 +125,10 @@ class UiManager {
     }
   }
 
-  /* 回答結果を表示する */
+  /* 回答結果を表示する（キャラリアクション付き） */
   showAnswerResult(result, selectedIndex) {
     const buttons = document.querySelectorAll('.choice-btn');
+    const charaContainer = document.getElementById('quiz-chara-container');
 
     buttons.forEach((btn, i) => {
       btn.classList.add('disabled');
@@ -113,6 +140,9 @@ class UiManager {
       }
     });
 
+    /* キャラクターのリアクション */
+    charaContainer.classList.add(result.isCorrect ? 'react-correct' : 'react-wrong');
+
     this.showFeedback(result.isCorrect, result.comment);
     this.updateAffinity(result.affinity);
   }
@@ -120,6 +150,8 @@ class UiManager {
   /* 時間切れ結果を表示する */
   showTimeoutResult(result) {
     const buttons = document.querySelectorAll('.choice-btn');
+    const charaContainer = document.getElementById('quiz-chara-container');
+
     buttons.forEach((btn, i) => {
       btn.classList.add('disabled');
       if (i === result.correctIndex) {
@@ -127,6 +159,7 @@ class UiManager {
       }
     });
 
+    charaContainer.classList.add('react-wrong');
     this.showFeedback(false, '時間切れ！');
     this.updateAffinity(result.affinity);
   }
@@ -152,12 +185,16 @@ class UiManager {
     feedback.classList.add('hidden');
   }
 
-  /* 結果画面を描画する */
+  /* 結果画面を描画する（VN風エンディング） */
   renderResult(endingData) {
-    /* ヒロインアバター */
-    const avatar = document.getElementById('result-heroine-avatar');
-    avatar.style.background = `${endingData.heroine.color}20`;
-    avatar.textContent = endingData.heroine.emoji;
+    /* 背景をエンディング種類別に変更 */
+    const resultBg = document.getElementById('result-bg');
+    resultBg.className = `result-bg ${endingData.type}`;
+
+    /* バストアップ画像 */
+    const charaImg = document.getElementById('result-chara-img');
+    charaImg.src = CHARA_IMAGES[endingData.heroine.id];
+    charaImg.alt = endingData.heroine.shortName;
 
     /* エンディング種類 */
     const endingType = document.getElementById('result-ending-type');
@@ -165,8 +202,9 @@ class UiManager {
     endingType.className = `ending-type ${endingData.type}`;
 
     /* ヒロイン名 */
-    document.getElementById('result-heroine-name').textContent = endingData.heroine.name;
-    document.getElementById('result-heroine-name').style.color = endingData.heroine.color;
+    const heroineNameEl = document.getElementById('result-heroine-name');
+    heroineNameEl.textContent = endingData.heroine.name;
+    heroineNameEl.style.color = endingData.heroine.color;
 
     /* メッセージ */
     document.getElementById('result-message').textContent = endingData.message;
