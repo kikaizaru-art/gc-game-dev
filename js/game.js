@@ -78,6 +78,8 @@ class GameEngine {
   startQuiz(heroineId) {
     this.heroineManager.selectHeroine(heroineId);
     this.ui.showScreen('quiz');
+    this.ui.renderScoreDots(QUIZ_COUNT);
+    this.ui.highlightCurrentDot(0);
     this.showCurrentQuiz();
   }
 
@@ -136,6 +138,7 @@ class GameEngine {
 
     this.audio[result.isCorrect ? 'playCorrect' : 'playWrong']();
     this.ui.showAnswerResult(result, choiceIndex);
+    this.ui.updateScoreDot(this.heroineManager.currentQuizIndex, isCorrect);
 
     /* フィードバック表示後に次へ進む */
     setTimeout(() => {
@@ -158,6 +161,7 @@ class GameEngine {
     result.correctIndex = this.currentShuffledCorrectIndex;
     this.audio.playTimeout();
     this.ui.showTimeoutResult(result);
+    this.ui.updateScoreDot(this.heroineManager.currentQuizIndex, false);
 
     setTimeout(() => {
       const isFinished = this.heroineManager.nextQuiz();

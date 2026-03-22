@@ -110,21 +110,59 @@ class UiManager {
     }
   }
 
-  /* タイマーバーを更新する */
+  /* 円形タイマーを更新する */
   updateTimer(remaining, total) {
-    const bar = document.getElementById('timer-bar');
-    const container = bar.parentElement;
-    const percent = Math.max(0, (remaining / total) * 100);
-    bar.style.width = `${percent}%`;
+    const circleBar = document.getElementById('timer-circle-bar');
+    const timerText = document.getElementById('timer-text');
+    const container = document.getElementById('timer-circle-container');
+    const circumference = 2 * Math.PI * 18; /* r=18 */
+    const offset = circumference * (1 - remaining / total);
+
+    circleBar.style.strokeDashoffset = offset;
+    timerText.textContent = Math.ceil(remaining);
 
     /* 残り時間に応じて色を変える */
-    bar.classList.remove('warning', 'danger');
+    circleBar.classList.remove('warning', 'danger');
     container.classList.remove('pulse');
     if (remaining <= 5) {
-      bar.classList.add('danger');
+      circleBar.classList.add('danger');
       container.classList.add('pulse');
     } else if (remaining <= 10) {
-      bar.classList.add('warning');
+      circleBar.classList.add('warning');
+    }
+  }
+
+  /* 正解数ドットを初期化する */
+  renderScoreDots(totalQuestions) {
+    const container = document.getElementById('quiz-score-dots');
+    container.innerHTML = '';
+    for (let i = 0; i < totalQuestions; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'score-dot';
+      dot.dataset.index = i;
+      container.appendChild(dot);
+    }
+  }
+
+  /* 正解数ドットを更新する（現在の問題をハイライト） */
+  updateScoreDot(index, result) {
+    const dots = document.querySelectorAll('.score-dot');
+    if (dots[index]) {
+      dots[index].classList.remove('current');
+      dots[index].classList.add(result ? 'correct' : 'wrong');
+    }
+    /* 次の問題をハイライト */
+    if (dots[index + 1]) {
+      dots[index + 1].classList.add('current');
+    }
+  }
+
+  /* 現在の問題ドットをハイライトする */
+  highlightCurrentDot(index) {
+    const dots = document.querySelectorAll('.score-dot');
+    dots.forEach(d => d.classList.remove('current'));
+    if (dots[index]) {
+      dots[index].classList.add('current');
     }
   }
 
