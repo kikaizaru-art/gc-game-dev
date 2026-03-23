@@ -472,6 +472,11 @@ class UiManager {
     charaImg.src = CHARA_IMAGES[endingData.heroine.id];
     charaImg.alt = endingData.heroine.shortName;
 
+    /* パーフェクト表示（全問正解時） */
+    const perfectLabel = document.getElementById('result-perfect-label');
+    const isPerfect = endingData.correctCount === endingData.totalQuestions;
+    perfectLabel.style.display = isPerfect ? '' : 'none';
+
     /* エンディング種類 */
     const endingType = document.getElementById('result-ending-type');
     endingType.textContent = endingData.title;
