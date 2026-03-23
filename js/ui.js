@@ -719,4 +719,21 @@ class UiManager {
     const container = document.getElementById('stats-global-categories');
     container.innerHTML = '';
   }
+
+  /* 未確認クイズ優先チェックボックスを描画する */
+  renderPrioritizeToggle(statsManager) {
+    const container = document.getElementById('stats-settings');
+    if (!container) return;
+    const checked = statsManager.getPrioritizeUnconfirmed();
+    container.innerHTML = `
+      <div class="stats-setting-row">
+        <label class="stats-toggle-label" for="chk-prioritize-unconfirmed">
+          <input type="checkbox" id="chk-prioritize-unconfirmed" class="stats-toggle-checkbox"
+            ${checked ? 'checked' : ''}>
+          <span class="stats-toggle-switch"></span>
+          <span class="stats-toggle-text">未確認クイズを優先</span>
+        </label>
+      </div>
+    `;
+  }
 }

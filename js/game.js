@@ -70,6 +70,13 @@ class GameEngine {
       this.showStatsScreen();
     });
 
+    /* 未確認クイズ優先チェックボックス */
+    document.getElementById('stats-settings').addEventListener('change', (e) => {
+      if (e.target.id === 'chk-prioritize-unconfirmed') {
+        this.stats.setPrioritizeUnconfirmed(e.target.checked);
+      }
+    });
+
     /* キャラ別データリセット */
     document.getElementById('stats-content').addEventListener('click', (e) => {
       const btn = e.target.closest('[data-reset-heroine]');
@@ -185,7 +192,7 @@ class GameEngine {
   /* リトライ時のストーリー付き再開 */
   startRetry(heroineId) {
     const isSecondPlay = this.stats.hasHappyEnd(heroineId);
-    this.heroineManager.selectHeroine(heroineId, isSecondPlay);
+    this.heroineManager.selectHeroine(heroineId, isSecondPlay, 1, this.getClearedQuestionsIfEnabled(heroineId));
     const heroine = this.heroineManager.selectedHeroine;
 
     /* ステージ1未クリアならリトライストーリーを表示 */
@@ -206,7 +213,7 @@ class GameEngine {
   /* ステージ指定でストーリーを開始する */
   startStoryWithStage(heroineId, stage) {
     const isSecondPlay = stage >= 2;
-    this.heroineManager.selectHeroine(heroineId, isSecondPlay, stage);
+    this.heroineManager.selectHeroine(heroineId, isSecondPlay, stage, this.getClearedQuestionsIfEnabled(heroineId));
     const heroine = this.heroineManager.selectedHeroine;
 
     /* ストーリー分岐：ステージ3 → ステージ2 → ハッピーエンド済リプレイ → リトライ */
@@ -231,7 +238,7 @@ class GameEngine {
 
   /* ストーリーを開始する（初回プレイ用） */
   startStory(heroineId) {
-    this.heroineManager.selectHeroine(heroineId, false);
+    this.heroineManager.selectHeroine(heroineId, false, 1, this.getClearedQuestionsIfEnabled(heroineId));
     const heroine = this.heroineManager.selectedHeroine;
     this.storyLines = heroine.story || [];
     this.storyIndex = 0;
@@ -276,7 +283,7 @@ class GameEngine {
 
   /* クイズを開始する（選択画面から直接） */
   startQuiz(heroineId) {
-    this.heroineManager.selectHeroine(heroineId);
+    this.heroineManager.selectHeroine(heroineId, false, 1, this.getClearedQuestionsIfEnabled(heroineId));
     this.ui.showScreen('quiz');
     this.ui.renderScoreDots(QUIZ_COUNT);
     this.ui.highlightCurrentDot(0);
@@ -468,6 +475,14 @@ class GameEngine {
     );
   }
 
+  /* 未確認クイズ優先時のクリア済み問題を取得する */
+  getClearedQuestionsIfEnabled(heroineId) {
+    if (this.stats.getPrioritizeUnconfirmed()) {
+      return this.stats.getClearedQuestions(heroineId);
+    }
+    return null;
+  }
+
   /* ヒロインごとのカテゴリ別クイズ総数を取得する */
   getQuizCountByHeroine() {
     const hm = this.heroineManager;
@@ -505,6 +520,7 @@ class GameEngine {
       this.ui.renderStatsContent(heroine, this.stats, quizCounts);
     }
     this.ui.renderGlobalCategoryStats(this.stats, activeId);
+    this.ui.renderPrioritizeToggle(this.stats);
     this.ui.showScreen('stats');
   }
 }
