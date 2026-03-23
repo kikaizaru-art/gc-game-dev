@@ -100,6 +100,15 @@ class GameEngine {
       this.ui.showScreen('title');
     });
 
+    /* パワーアップボタン */
+    document.getElementById('btn-fifty-fifty').addEventListener('click', () => {
+      this.useFiftyFifty();
+    });
+
+    document.getElementById('btn-hint').addEventListener('click', () => {
+      this.useHint();
+    });
+
     /* キーボード操作 */
     document.addEventListener('keydown', (e) => {
       if (!this.isAnswering) return;
@@ -208,6 +217,46 @@ class GameEngine {
       const handler = () => this.handleAnswer(index);
       btn.addEventListener('click', handler);
     });
+
+    /* パワーアップボタンの状態を更新 */
+    this.ui.updatePowerupButtons(this.heroineManager.powerups);
+  }
+
+  /* 50/50パワーアップ：不正解の選択肢を1つ消す */
+  useFiftyFifty() {
+    if (!this.isAnswering) return;
+    if (!this.heroineManager.usePowerup('fiftyFifty')) return;
+
+    this.audio.playPowerup();
+    const buttons = document.querySelectorAll('.choice-btn');
+    const wrongIndices = [];
+
+    buttons.forEach((btn, i) => {
+      if (i !== this.currentShuffledCorrectIndex && !btn.classList.contains('eliminated')) {
+        wrongIndices.push(i);
+      }
+    });
+
+    /* 不正解の選択肢を1つランダムに選んで消す */
+    if (wrongIndices.length > 0) {
+      const removeIndex = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
+      buttons[removeIndex].classList.add('eliminated');
+      buttons[removeIndex].disabled = true;
+    }
+
+    this.ui.updatePowerupButtons(this.heroineManager.powerups);
+  }
+
+  /* ヒントパワーアップ：正解の選択肢を光らせる */
+  useHint() {
+    if (!this.isAnswering) return;
+    if (!this.heroineManager.usePowerup('hint')) return;
+
+    this.audio.playPowerup();
+    const buttons = document.querySelectorAll('.choice-btn');
+    buttons[this.currentShuffledCorrectIndex].classList.add('hint-glow');
+
+    this.ui.updatePowerupButtons(this.heroineManager.powerups);
   }
 
   /* 回答を処理する */

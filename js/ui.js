@@ -176,6 +176,33 @@ class UiManager {
     `).join('');
   }
 
+  /* パワーアップボタンの状態を更新する */
+  updatePowerupButtons(powerups) {
+    const fiftyBtn = document.getElementById('btn-fifty-fifty');
+    const hintBtn = document.getElementById('btn-hint');
+    const fiftyCount = document.getElementById('fifty-fifty-count');
+    const hintCount = document.getElementById('hint-count');
+
+    fiftyCount.textContent = powerups.fiftyFifty;
+    hintCount.textContent = powerups.hint;
+
+    if (powerups.fiftyFifty <= 0) {
+      fiftyBtn.classList.add('used');
+      fiftyBtn.disabled = true;
+    } else {
+      fiftyBtn.classList.remove('used');
+      fiftyBtn.disabled = false;
+    }
+
+    if (powerups.hint <= 0) {
+      hintBtn.classList.add('used');
+      hintBtn.disabled = true;
+    } else {
+      hintBtn.classList.remove('used');
+      hintBtn.disabled = false;
+    }
+  }
+
   /* 親密度バーを更新する */
   updateAffinity(value) {
     const bar = document.getElementById('affinity-bar');

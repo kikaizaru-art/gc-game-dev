@@ -16,6 +16,10 @@ const THRESHOLD_BAD = 40;
 const QUIZ_COUNT = 10;
 const QUIZ_TIME_LIMIT = 15;
 
+/* パワーアップ設定 */
+const POWERUP_FIFTY_FIFTY_COUNT = 1;
+const POWERUP_HINT_COUNT = 1;
+
 /* UI制御 */
 const FEEDBACK_DISPLAY_MS = 2000;
 const TIMER_INTERVAL_MS = 100;
@@ -58,6 +62,10 @@ class HeroineManager {
     this.correctCount = 0;
     this.currentQuizSet = this.generateQuizSet(heroineId);
     this.quizResults = [];
+    this.powerups = {
+      fiftyFifty: POWERUP_FIFTY_FIFTY_COUNT,
+      hint: POWERUP_HINT_COUNT
+    };
   }
 
   /* クイズセットをシャッフルして指定数を取得する */
@@ -111,6 +119,20 @@ class HeroineManager {
   nextQuiz() {
     this.currentQuizIndex++;
     return this.currentQuizIndex >= QUIZ_COUNT;
+  }
+
+  /* パワーアップを使用する（残り回数を減らす） */
+  usePowerup(type) {
+    if (this.powerups[type] > 0) {
+      this.powerups[type]--;
+      return true;
+    }
+    return false;
+  }
+
+  /* パワーアップの残り回数を取得する */
+  getPowerupCount(type) {
+    return this.powerups[type] || 0;
   }
 
   /* エンディングの種類を判定する */

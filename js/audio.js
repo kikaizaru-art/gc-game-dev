@@ -79,6 +79,17 @@ class AudioManager {
     this.playTone(150, now + 0.3, 0.3, 'sawtooth');
   }
 
+  /* パワーアップ使用SEを再生する */
+  playPowerup() {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    /* キラキラした上昇音 */
+    this.playTone(880, now, 0.1, 'sine');
+    this.playTone(1108.73, now + 0.08, 0.1, 'sine');
+    this.playTone(1318.51, now + 0.16, 0.15, 'sine');
+  }
+
   /* ボタンクリックSEを再生する */
   playClick() {
     if (!this.ctx) return;

@@ -773,6 +773,98 @@ body {
   font-size: 12px;
 }
 
+/* パワーアップボタン */
+.powerup-bar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 16px 6px;
+}
+
+.powerup-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFD0E8;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(236, 72, 153, 0.08));
+  border: 1.5px solid rgba(236, 72, 153, 0.4);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.powerup-btn:hover:not(.used) {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(236, 72, 153, 0.2));
+  border-color: rgba(236, 72, 153, 0.7);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.3);
+}
+
+.powerup-btn:active:not(.used) {
+  transform: scale(0.95);
+}
+
+.powerup-btn.used {
+  opacity: 0.35;
+  cursor: default;
+  border-color: rgba(107, 114, 128, 0.3);
+  color: #6b7280;
+}
+
+.powerup-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.powerup-label {
+  white-space: nowrap;
+}
+
+.powerup-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 900;
+  background: rgba(236, 72, 153, 0.3);
+  border-radius: 50%;
+  color: #fff;
+}
+
+.powerup-btn.used .powerup-count {
+  background: rgba(107, 114, 128, 0.3);
+}
+
+/* 50/50で消された選択肢 */
+.choice-btn.eliminated {
+  opacity: 0.15;
+  pointer-events: none;
+  transform: scale(0.95);
+  border-color: rgba(107, 114, 128, 0.2);
+  text-decoration: line-through;
+}
+
+/* ヒントで光る正解の選択肢 */
+.choice-btn.hint-glow {
+  border-color: #fbbf24;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.5), inset 0 0 10px rgba(251, 191, 36, 0.1);
+  animation: hint-pulse 1s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.5), inset 0 0 10px rgba(251, 191, 36, 0.1); }
+  50% { box-shadow: 0 0 25px rgba(251, 191, 36, 0.7), inset 0 0 15px rgba(251, 191, 36, 0.2); }
+}
+
 /* フィードバック（吹き出し形式） */
 .quiz-feedback {
   position: absolute;
@@ -1223,6 +1315,27 @@ body {
     line-height: 22px;
     font-size: 11px;
     margin-right: 8px;
+  }
+
+  .powerup-bar {
+    gap: 8px;
+    padding: 0 10px 4px;
+  }
+
+  .powerup-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .powerup-icon {
+    font-size: 14px;
+  }
+
+  .powerup-count {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
   }
 
   /* 結果画面 */
