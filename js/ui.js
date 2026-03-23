@@ -16,6 +16,7 @@ class UiManager {
     this.screens = {
       title: document.getElementById('screen-title'),
       select: document.getElementById('screen-select'),
+      story: document.getElementById('screen-story'),
       quiz: document.getElementById('screen-quiz'),
       result: document.getElementById('screen-result')
     };
@@ -44,6 +45,82 @@ class UiManager {
         </div>
       </div>
     `).join('');
+  }
+
+  /* ストーリー画面を初期化する */
+  renderStoryScene(heroine) {
+    const storyBg = document.getElementById('story-bg');
+    storyBg.className = `story-bg ${heroine.colorName}`;
+
+    const charaImg = document.getElementById('story-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    const charaContainer = document.getElementById('story-chara-container');
+    charaContainer.classList.remove('visible');
+  }
+
+  /* ストーリーのセリフを表示する */
+  showStoryLine(line, heroine) {
+    const namePlate = document.getElementById('story-name-plate');
+    const textEl = document.getElementById('story-text');
+    const charaContainer = document.getElementById('story-chara-container');
+
+    if (line.speaker === 'narration') {
+      namePlate.classList.add('hidden');
+      charaContainer.classList.remove('visible');
+    } else {
+      namePlate.classList.remove('hidden');
+      namePlate.textContent = heroine.shortName;
+      namePlate.style.color = heroine.color;
+      charaContainer.classList.add('visible');
+    }
+
+    /* テキストを1文字ずつ表示する */
+    textEl.textContent = '';
+    return this.typeText(textEl, line.text);
+  }
+
+  /* テキストを1文字ずつ表示するアニメーション */
+  typeText(element, text) {
+    return new Promise((resolve) => {
+      const CHAR_DELAY_MS = 40;
+      let charIndex = 0;
+      element.classList.add('typing');
+
+      const typeInterval = setInterval(() => {
+        charIndex++;
+        element.textContent = text.slice(0, charIndex);
+
+        if (charIndex >= text.length) {
+          clearInterval(typeInterval);
+          element.classList.remove('typing');
+          resolve();
+        }
+      }, CHAR_DELAY_MS);
+
+      /* スキップ用にintervalIdを保存 */
+      element.dataset.typeInterval = typeInterval;
+      element.dataset.fullText = text;
+    });
+  }
+
+  /* タイピングアニメーションをスキップして全文表示する */
+  skipTyping() {
+    const textEl = document.getElementById('story-text');
+    const intervalId = parseInt(textEl.dataset.typeInterval, 10);
+    if (intervalId) {
+      clearInterval(intervalId);
+      textEl.textContent = textEl.dataset.fullText || '';
+      textEl.classList.remove('typing');
+      textEl.dataset.typeInterval = '';
+    }
+  }
+
+  /* タイピング中かどうかを判定する */
+  isTyping() {
+    const textEl = document.getElementById('story-text');
+    return textEl.classList.contains('typing');
   }
 
   /* クイズ画面を描画する（VN風レイアウト） */
