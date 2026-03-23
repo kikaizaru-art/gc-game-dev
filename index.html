@@ -97,6 +97,28 @@
           </div>
         </div>
       </div>
+      <!-- パワーアップボタン -->
+      <div class="powerup-bar">
+        <button id="btn-fifty-fifty" class="powerup-btn" title="不正解の選択肢を1つ消す">
+          <span class="powerup-icon">✂</span>
+          <span class="powerup-label">二択</span>
+          <span id="fifty-fifty-count" class="powerup-count">1</span>
+        </button>
+        <button id="btn-hint" class="powerup-btn" title="正解の選択肢を光らせる">
+          <span class="powerup-icon">💡</span>
+          <span class="powerup-label">ヒント</span>
+          <span id="hint-count" class="powerup-count">1</span>
+        </button>
+        <button id="btn-ask" class="powerup-btn" title="ヒロインがヒントを教えてくれる">
+          <span class="powerup-icon">💬</span>
+          <span class="powerup-label">おしえて</span>
+          <span id="ask-count" class="powerup-count">1</span>
+        </button>
+      </div>
+      <!-- ヒントコメント吹き出し -->
+      <div id="hint-bubble" class="hint-bubble hidden">
+        <p id="hint-bubble-text" class="hint-bubble-text"></p>
+      </div>
       <!-- ダイアログボックス -->
       <div class="vn-dialog-area">
         <div class="vn-dialog-box">

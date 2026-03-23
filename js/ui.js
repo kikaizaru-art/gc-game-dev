@@ -164,6 +164,9 @@ class UiManager {
     /* 親密度バー */
     this.updateAffinity(affinity);
 
+    /* ヒント吹き出しをリセット */
+    this.hideHintBubble();
+
     /* 質問文 */
     document.getElementById('quiz-question').textContent = quiz.question;
 
@@ -174,6 +177,45 @@ class UiManager {
         <span class="choice-number">${i + 1}</span>${choice}
       </button>
     `).join('');
+  }
+
+  /* パワーアップボタンの状態を更新する */
+  updatePowerupButtons(powerups) {
+    const btnMap = {
+      fiftyFifty: { btn: 'btn-fifty-fifty', count: 'fifty-fifty-count' },
+      hint: { btn: 'btn-hint', count: 'hint-count' },
+      ask: { btn: 'btn-ask', count: 'ask-count' }
+    };
+
+    Object.entries(btnMap).forEach(([key, ids]) => {
+      const btn = document.getElementById(ids.btn);
+      const countEl = document.getElementById(ids.count);
+      countEl.textContent = powerups[key];
+
+      if (powerups[key] <= 0) {
+        btn.classList.add('used');
+        btn.disabled = true;
+      } else {
+        btn.classList.remove('used');
+        btn.disabled = false;
+      }
+    });
+  }
+
+  /* ヒントコメント吹き出しを表示する */
+  showHintBubble(text) {
+    const bubble = document.getElementById('hint-bubble');
+    const bubbleText = document.getElementById('hint-bubble-text');
+    bubbleText.textContent = text;
+    bubble.classList.remove('hidden');
+    bubble.classList.add('animate-fade-in');
+  }
+
+  /* ヒントコメント吹き出しを非表示にする */
+  hideHintBubble() {
+    const bubble = document.getElementById('hint-bubble');
+    bubble.classList.add('hidden');
+    bubble.classList.remove('animate-fade-in');
   }
 
   /* 親密度バーを更新する */
