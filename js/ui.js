@@ -32,20 +32,27 @@ class UiManager {
   }
 
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */
-  renderHeroineCards(heroines) {
+  renderHeroineCards(heroines, statsManager) {
     const container = document.getElementById('heroine-cards');
-    container.innerHTML = heroines.map(h => `
-      <div class="heroine-card" data-heroine-id="${h.id}" data-color="${h.colorName}">
-        <div class="heroine-card-image">
-          <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
+    container.innerHTML = heroines.map(h => {
+      const hasHappy = statsManager && statsManager.hasHappyEnd(h.id);
+      const stageBadge = hasHappy
+        ? '<span class="card-stage-badge hard">STAGE 2 - HARD</span>'
+        : '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
+      return `
+        <div class="heroine-card" data-heroine-id="${h.id}" data-color="${h.colorName}">
+          <div class="heroine-card-image">
+            <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
+          </div>
+          <div class="heroine-card-info">
+            <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
+            <div class="heroine-card-personality">${h.personality}</div>
+            <div class="heroine-card-likes">${h.description}</div>
+            ${stageBadge}
+          </div>
         </div>
-        <div class="heroine-card-info">
-          <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
-          <div class="heroine-card-personality">${h.personality}</div>
-          <div class="heroine-card-likes">${h.description}</div>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   /* ストーリー画面を初期化する */
