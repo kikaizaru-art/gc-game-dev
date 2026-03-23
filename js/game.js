@@ -387,9 +387,9 @@ class GameEngine {
     const hm = this.heroineManager;
     const staminaLeft = this.stamina.getStamina();
     const states = {
-      fiftyFifty: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('fiftyFifty'),
-      hint: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('hint'),
-      ask: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('ask')
+      fiftyFifty: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('fiftyFifty') && !hm.isPowerupUsedThisStage('fiftyFifty'),
+      hint: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('hint') && !hm.isPowerupUsedThisStage('hint'),
+      ask: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('ask') && !hm.isPowerupUsedThisStage('ask')
     };
     this.ui.updatePowerupButtons(states);
     this.ui.updateStaminaGauge(staminaLeft, this.stamina.getNextRecoveryMs());
@@ -399,6 +399,7 @@ class GameEngine {
   useFiftyFifty() {
     if (!this.isAnswering) return;
     if (this.heroineManager.isPowerupUsedThisQuestion('fiftyFifty')) return;
+    if (this.heroineManager.isPowerupUsedThisStage('fiftyFifty')) return;
     if (!this.stamina.consume()) return;
 
     this.heroineManager.markPowerupUsed('fiftyFifty');
@@ -426,6 +427,7 @@ class GameEngine {
   useHint() {
     if (!this.isAnswering) return;
     if (this.heroineManager.isPowerupUsedThisQuestion('hint')) return;
+    if (this.heroineManager.isPowerupUsedThisStage('hint')) return;
     if (!this.stamina.consume()) return;
 
     this.heroineManager.markPowerupUsed('hint');
@@ -440,6 +442,7 @@ class GameEngine {
   useAsk() {
     if (!this.isAnswering) return;
     if (this.heroineManager.isPowerupUsedThisQuestion('ask')) return;
+    if (this.heroineManager.isPowerupUsedThisStage('ask')) return;
     if (!this.stamina.consume()) return;
 
     this.heroineManager.markPowerupUsed('ask');
