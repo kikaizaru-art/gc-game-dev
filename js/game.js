@@ -5,11 +5,12 @@
  * ゲーム全体のフロー制御を行うクラス
  */
 class GameEngine {
-  constructor(heroineManager, uiManager, audioManager, statsManager) {
+  constructor(heroineManager, uiManager, audioManager, statsManager, staminaManager) {
     this.heroineManager = heroineManager;
     this.ui = uiManager;
     this.audio = audioManager;
     this.stats = statsManager;
+    this.stamina = staminaManager;
     this.timerId = null;
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
@@ -21,6 +22,15 @@ class GameEngine {
     await this.heroineManager.loadData();
     this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
     this.bindEvents();
+    this.ui.updateStaminaGauge(this.stamina.getStamina(), this.stamina.getNextRecoveryMs());
+    /* スタミナ変更時にUIを自動更新する */
+    this.stamina.onChange(() => {
+      this.ui.updateStaminaGauge(this.stamina.getStamina(), this.stamina.getNextRecoveryMs());
+    });
+    /* スタミナ回復タイマーの表示を毎秒更新する */
+    setInterval(() => {
+      this.ui.updateStaminaGauge(this.stamina.getStamina(), this.stamina.getNextRecoveryMs());
+    }, 1000);
     this.ui.showScreen('title');
     console.log('ハートクイズ - 初期化完了');
   }
@@ -362,14 +372,29 @@ class GameEngine {
     });
 
     /* パワーアップボタンの状態を更新 */
-    this.ui.updatePowerupButtons(this.heroineManager.powerups);
+    this.updatePowerupState();
+  }
+
+  /* パワーアップボタンの有効/無効状態を更新する */
+  updatePowerupState() {
+    const hm = this.heroineManager;
+    const staminaLeft = this.stamina.getStamina();
+    const states = {
+      fiftyFifty: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('fiftyFifty'),
+      hint: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('hint'),
+      ask: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('ask')
+    };
+    this.ui.updatePowerupButtons(states);
+    this.ui.updateStaminaGauge(staminaLeft, this.stamina.getNextRecoveryMs());
   }
 
   /* 50/50パワーアップ：不正解の選択肢を1つ消す */
   useFiftyFifty() {
     if (!this.isAnswering) return;
-    if (!this.heroineManager.usePowerup('fiftyFifty')) return;
+    if (this.heroineManager.isPowerupUsedThisQuestion('fiftyFifty')) return;
+    if (!this.stamina.consume()) return;
 
+    this.heroineManager.markPowerupUsed('fiftyFifty');
     this.audio.playPowerup();
     const buttons = document.querySelectorAll('.choice-btn');
     const wrongIndices = [];
@@ -387,30 +412,34 @@ class GameEngine {
       buttons[removeIndex].disabled = true;
     }
 
-    this.ui.updatePowerupButtons(this.heroineManager.powerups);
+    this.updatePowerupState();
   }
 
   /* ヒントパワーアップ：正解の選択肢を光らせる */
   useHint() {
     if (!this.isAnswering) return;
-    if (!this.heroineManager.usePowerup('hint')) return;
+    if (this.heroineManager.isPowerupUsedThisQuestion('hint')) return;
+    if (!this.stamina.consume()) return;
 
+    this.heroineManager.markPowerupUsed('hint');
     this.audio.playPowerup();
     const buttons = document.querySelectorAll('.choice-btn');
     buttons[this.currentShuffledCorrectIndex].classList.add('hint-glow');
 
-    this.ui.updatePowerupButtons(this.heroineManager.powerups);
+    this.updatePowerupState();
   }
 
   /* おしえてパワーアップ：ヒロインがヒントコメントを言う */
   useAsk() {
     if (!this.isAnswering) return;
-    if (!this.heroineManager.usePowerup('ask')) return;
+    if (this.heroineManager.isPowerupUsedThisQuestion('ask')) return;
+    if (!this.stamina.consume()) return;
 
+    this.heroineManager.markPowerupUsed('ask');
     this.audio.playPowerup();
     const hintText = this.heroineManager.generateHintComment();
     this.ui.showHintBubble(hintText);
-    this.ui.updatePowerupButtons(this.heroineManager.powerups);
+    this.updatePowerupState();
   }
 
   /* 回答を処理する */

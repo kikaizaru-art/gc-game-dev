@@ -583,9 +583,11 @@ body {
   left: 0;
   right: 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
+  padding-right: 180px; /* スタミナバッジとの重なりを回避 */
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
   z-index: 10;
 }
@@ -833,6 +835,56 @@ body {
   font-size: 12px;
 }
 
+/* スタミナゲージ（右上フローティングバッジ） */
+.stamina-bar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: rgba(15, 10, 30, 0.8);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.stamina-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 208, 232, 0.8);
+}
+
+.stamina-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(236, 72, 153, 0.5);
+  transition: all 0.3s ease;
+}
+
+.stamina-dot.filled {
+  background: linear-gradient(135deg, #ec4899, #f472b6);
+  border-color: rgba(236, 72, 153, 0.8);
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.5);
+}
+
+.stamina-dot.empty {
+  background: rgba(107, 114, 128, 0.2);
+  border-color: rgba(107, 114, 128, 0.4);
+}
+
+.stamina-timer {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 208, 232, 0.6);
+  min-width: 28px;
+  text-align: left;
+}
+
 /* パワーアップボタン */
 .powerup-bar {
   position: relative;
@@ -887,22 +939,6 @@ body {
   white-space: nowrap;
 }
 
-.powerup-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  font-size: 11px;
-  font-weight: 900;
-  background: rgba(236, 72, 153, 0.3);
-  border-radius: 50%;
-  color: #fff;
-}
-
-.powerup-btn.used .powerup-count {
-  background: rgba(107, 114, 128, 0.3);
-}
 
 /* 50/50で消された選択肢 */
 .choice-btn.eliminated {
@@ -1350,6 +1386,7 @@ body {
 
   .quiz-status-bar {
     padding: 6px 10px;
+    padding-right: 155px;
   }
 
   .heroine-name-label {
@@ -1417,6 +1454,18 @@ body {
     margin-right: 8px;
   }
 
+  .stamina-bar {
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+    padding: 4px 8px;
+  }
+
+  .stamina-dot {
+    width: 12px;
+    height: 12px;
+  }
+
   .powerup-bar {
     gap: 8px;
     padding: 0 10px 4px;
@@ -1430,12 +1479,6 @@ body {
 
   .powerup-icon {
     font-size: 14px;
-  }
-
-  .powerup-count {
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
   }
 
   /* 結果画面 */

@@ -265,27 +265,48 @@ class UiManager {
     `).join('');
   }
 
-  /* パワーアップボタンの状態を更新する */
-  updatePowerupButtons(powerups) {
+  /* パワーアップボタンの有効/無効を更新する */
+  updatePowerupButtons(states) {
     const btnMap = {
-      fiftyFifty: { btn: 'btn-fifty-fifty', count: 'fifty-fifty-count' },
-      hint: { btn: 'btn-hint', count: 'hint-count' },
-      ask: { btn: 'btn-ask', count: 'ask-count' }
+      fiftyFifty: 'btn-fifty-fifty',
+      hint: 'btn-hint',
+      ask: 'btn-ask'
     };
 
-    Object.entries(btnMap).forEach(([key, ids]) => {
-      const btn = document.getElementById(ids.btn);
-      const countEl = document.getElementById(ids.count);
-      countEl.textContent = powerups[key];
-
-      if (powerups[key] <= 0) {
-        btn.classList.add('used');
-        btn.disabled = true;
-      } else {
+    Object.entries(btnMap).forEach(([key, btnId]) => {
+      const btn = document.getElementById(btnId);
+      if (states[key]) {
         btn.classList.remove('used');
         btn.disabled = false;
+      } else {
+        btn.classList.add('used');
+        btn.disabled = true;
       }
     });
+  }
+
+  /* スタミナゲージを更新する */
+  updateStaminaGauge(current, nextRecoveryMs) {
+    const dots = document.querySelectorAll('.stamina-dot');
+    dots.forEach((dot, i) => {
+      if (i < current) {
+        dot.classList.add('filled');
+        dot.classList.remove('empty');
+      } else {
+        dot.classList.remove('filled');
+        dot.classList.add('empty');
+      }
+    });
+
+    const timerEl = document.getElementById('stamina-timer');
+    if (current >= STAMINA_MAX || nextRecoveryMs <= 0) {
+      timerEl.textContent = '';
+    } else {
+      const totalSec = Math.ceil(nextRecoveryMs / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      timerEl.textContent = `${min}:${String(sec).padStart(2, '0')}`;
+    }
   }
 
   /* ヒントコメント吹き出しを表示する */

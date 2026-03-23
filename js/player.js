@@ -16,11 +16,6 @@ const THRESHOLD_BAD = 40;
 const QUIZ_COUNT = 10;
 const QUIZ_TIME_LIMIT = 15;
 
-/* パワーアップ設定 */
-const POWERUP_FIFTY_FIFTY_COUNT = 1;
-const POWERUP_HINT_COUNT = 1;
-const POWERUP_ASK_COUNT = 1;
-
 /* UI制御 */
 const FEEDBACK_DISPLAY_MS = 2000;
 const TIMER_INTERVAL_MS = 100;
@@ -67,11 +62,8 @@ class HeroineManager {
     this.correctCount = 0;
     this.currentQuizSet = this.generateQuizSet(heroineId, clearedQuestions);
     this.quizResults = [];
-    this.powerups = {
-      fiftyFifty: POWERUP_FIFTY_FIFTY_COUNT,
-      hint: POWERUP_HINT_COUNT,
-      ask: POWERUP_ASK_COUNT
-    };
+    /* パワーアップの使用済みフラグ（1ゲーム中に同じ問題で同種を重複使用しない） */
+    this.usedPowerups = new Set();
   }
 
   /* クイズセットをシャッフルして指定数を取得する（未確認優先対応） */
@@ -161,18 +153,16 @@ class HeroineManager {
     return `${heroine.shortName}「${templates[randomIndex]}」`;
   }
 
-  /* パワーアップを使用する（残り回数を減らす） */
-  usePowerup(type) {
-    if (this.powerups[type] > 0) {
-      this.powerups[type]--;
-      return true;
-    }
-    return false;
+  /* 現在の問題でパワーアップ使用済みかチェックする */
+  isPowerupUsedThisQuestion(type) {
+    const key = `${this.currentQuizIndex}_${type}`;
+    return this.usedPowerups.has(key);
   }
 
-  /* パワーアップの残り回数を取得する */
-  getPowerupCount(type) {
-    return this.powerups[type] || 0;
+  /* 現在の問題でパワーアップを使用済みにする */
+  markPowerupUsed(type) {
+    const key = `${this.currentQuizIndex}_${type}`;
+    this.usedPowerups.add(key);
   }
 
   /* エンディングの種類を判定する */

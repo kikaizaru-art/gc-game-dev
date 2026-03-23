@@ -11,6 +11,15 @@
 </head>
 <body>
   <div id="game-container">
+    <!-- スタミナゲージ（常時表示） -->
+    <div id="stamina-bar" class="stamina-bar">
+      <span class="stamina-label">スタミナ</span>
+      <span class="stamina-dot empty" data-index="0"></span>
+      <span class="stamina-dot empty" data-index="1"></span>
+      <span class="stamina-dot empty" data-index="2"></span>
+      <span id="stamina-timer" class="stamina-timer"></span>
+    </div>
+
     <!-- ヘッダータイムゲージ（クイズ中のみ表示） -->
     <div id="header-timer-gauge" class="header-timer-gauge hidden">
       <div id="header-timer-bar" class="header-timer-bar"></div>
@@ -115,17 +124,14 @@
         <button id="btn-fifty-fifty" class="powerup-btn" title="不正解の選択肢を1つ消す">
           <span class="powerup-icon">✂</span>
           <span class="powerup-label">二択</span>
-          <span id="fifty-fifty-count" class="powerup-count">1</span>
         </button>
         <button id="btn-hint" class="powerup-btn" title="正解の選択肢を光らせる">
           <span class="powerup-icon">💡</span>
           <span class="powerup-label">ヒント</span>
-          <span id="hint-count" class="powerup-count">1</span>
         </button>
         <button id="btn-ask" class="powerup-btn" title="ヒロインがヒントを教えてくれる">
           <span class="powerup-icon">💬</span>
           <span class="powerup-label">おしえて</span>
-          <span id="ask-count" class="powerup-count">1</span>
         </button>
       </div>
       <!-- ヒントコメント吹き出し -->
@@ -236,6 +242,7 @@
   </div>
 
   <script src="js/stats.js"></script>
+  <script src="js/stamina.js"></script>
   <script src="js/player.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/game.js"></script>
