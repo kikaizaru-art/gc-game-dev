@@ -171,6 +171,9 @@
             <p>正解数: <span id="result-correct" class="result-correct-value"></span> / <span id="result-total-q"></span></p>
           </div>
           <div class="result-buttons">
+            <button id="btn-ad-stamina" class="btn btn-ad-stamina" style="display:none;">
+              <span class="ad-btn-icon">▶</span> 広告を見てスタミナ回復
+            </button>
             <div class="result-buttons-row">
               <button id="btn-retry" class="btn btn-primary">もう一度</button>
               <button id="btn-next-stage" class="btn btn-accent" style="display:none;">次のステージへ</button>
@@ -239,10 +242,25 @@
       </div>
     </div>
 
+    <!-- 広告オーバーレイ（モック） -->
+    <div id="ad-overlay" class="ad-overlay hidden">
+      <div class="ad-modal">
+        <p class="ad-modal-title">広告を視聴中...</p>
+        <div class="ad-modal-content">
+          <p class="ad-mock-label">広告スペース</p>
+        </div>
+        <div class="ad-progress-container">
+          <div id="ad-progress-bar" class="ad-progress-bar"></div>
+        </div>
+        <button id="ad-close-btn" class="btn btn-primary ad-close-btn" style="display:none;">閉じて報酬を受け取る</button>
+      </div>
+    </div>
+
   </div>
 
   <script src="js/stats.js"></script>
   <script src="js/stamina.js"></script>
+  <script src="js/ad.js"></script>
   <script src="js/player.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/game.js"></script>

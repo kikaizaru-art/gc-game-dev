@@ -5,12 +5,13 @@
  * ゲーム全体のフロー制御を行うクラス
  */
 class GameEngine {
-  constructor(heroineManager, uiManager, audioManager, statsManager, staminaManager) {
+  constructor(heroineManager, uiManager, audioManager, statsManager, staminaManager, adManager) {
     this.heroineManager = heroineManager;
     this.ui = uiManager;
     this.audio = audioManager;
     this.stats = statsManager;
     this.stamina = staminaManager;
+    this.ad = adManager || null;
     this.timerId = null;
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
@@ -204,6 +205,12 @@ class GameEngine {
       this.ui.showScreen('title');
     });
 
+    /* 広告視聴でスタミナ回復ボタン */
+    document.getElementById('btn-ad-stamina').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showAdForStamina();
+    });
+
     /* パワーアップボタン */
     document.getElementById('btn-fifty-fifty').addEventListener('click', () => {
       this.useFiftyFifty();
@@ -380,9 +387,9 @@ class GameEngine {
     const hm = this.heroineManager;
     const staminaLeft = this.stamina.getStamina();
     const states = {
-      fiftyFifty: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('fiftyFifty'),
-      hint: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('hint'),
-      ask: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('ask')
+      fiftyFifty: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('fiftyFifty') && !hm.isPowerupUsedThisStage('fiftyFifty'),
+      hint: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('hint') && !hm.isPowerupUsedThisStage('hint'),
+      ask: staminaLeft > 0 && !hm.isPowerupUsedThisQuestion('ask') && !hm.isPowerupUsedThisStage('ask')
     };
     this.ui.updatePowerupButtons(states);
     this.ui.updateStaminaGauge(staminaLeft, this.stamina.getNextRecoveryMs());
@@ -392,6 +399,7 @@ class GameEngine {
   useFiftyFifty() {
     if (!this.isAnswering) return;
     if (this.heroineManager.isPowerupUsedThisQuestion('fiftyFifty')) return;
+    if (this.heroineManager.isPowerupUsedThisStage('fiftyFifty')) return;
     if (!this.stamina.consume()) return;
 
     this.heroineManager.markPowerupUsed('fiftyFifty');
@@ -419,6 +427,7 @@ class GameEngine {
   useHint() {
     if (!this.isAnswering) return;
     if (this.heroineManager.isPowerupUsedThisQuestion('hint')) return;
+    if (this.heroineManager.isPowerupUsedThisStage('hint')) return;
     if (!this.stamina.consume()) return;
 
     this.heroineManager.markPowerupUsed('hint');
@@ -433,6 +442,7 @@ class GameEngine {
   useAsk() {
     if (!this.isAnswering) return;
     if (this.heroineManager.isPowerupUsedThisQuestion('ask')) return;
+    if (this.heroineManager.isPowerupUsedThisStage('ask')) return;
     if (!this.stamina.consume()) return;
 
     this.heroineManager.markPowerupUsed('ask');
@@ -522,6 +532,9 @@ class GameEngine {
     this.ui.renderResult(endingData);
     this.ui.showScreen('result');
 
+    /* 広告ボタンの表示制御（スタミナ未満＆広告準備OK） */
+    this.updateAdButton();
+
     /* 統計を記録する */
     const currentStage = this.heroineManager.currentStage || (this.heroineManager.isSecondPlay ? 2 : 1);
     this.stats.recordGameResult(
@@ -529,6 +542,33 @@ class GameEngine {
       endingData.type,
       this.heroineManager.quizResults,
       currentStage
+    );
+  }
+
+  /* 広告ボタンの表示状態を更新する */
+  updateAdButton() {
+    const btn = document.getElementById('btn-ad-stamina');
+    const canShow = this.ad
+      && this.ad.isRewardedAdReady()
+      && this.stamina.getStamina() < STAMINA_MAX;
+    btn.style.display = canShow ? '' : 'none';
+  }
+
+  /* 広告を視聴してスタミナを回復する */
+  showAdForStamina() {
+    if (!this.ad || !this.ad.isRewardedAdReady()) return;
+
+    this.ad.showRewardedAd(
+      () => {
+        /* 報酬：スタミナ回復 */
+        this.stamina.recover(AD_STAMINA_REWARD);
+        this.audio.playPowerup();
+        this.updateAdButton();
+      },
+      () => {
+        /* 広告閉じた後の処理 */
+        this.updateAdButton();
+      }
     );
   }
 

@@ -61,6 +61,7 @@ class DebugPanel {
           <div class="debug-grid">
             <button class="debug-btn debug-btn-warn" data-action="unlock-all">全キャラ解放（美咲S1 Happy）</button>
             <button class="debug-btn debug-btn-warn" data-action="complete-all">全キャラ完全クリア</button>
+            <button class="debug-btn debug-btn-accent" data-action="stamina-full">スタミナ全回復</button>
             <button class="debug-btn debug-btn-danger" data-action="reset">全データリセット</button>
           </div>
         </div>
@@ -196,6 +197,9 @@ class DebugPanel {
         case 'complete-all':
           this.completeAll();
           break;
+        case 'stamina-full':
+          this.game.stamina.recover(STAMINA_MAX);
+          break;
         case 'reset':
           this.stats.reset();
           break;
@@ -302,6 +306,9 @@ class DebugPanel {
       lines.push(`  S3: H${(h.stage3Clears||{}).happy||0} N${(h.stage3Clears||{}).normal||0} B${(h.stage3Clears||{}).bad||0}`);
       lines.push(`  クイズ: ${clearedQ}/${totalQ} ${s3Happy ? (clearedQ >= totalQ ? '💎パーフェクト' : '✨クリア') : ''}`);
     });
+
+    lines.push('');
+    lines.push(`[スタミナ] ${this.game.stamina.getStamina()} / ${STAMINA_MAX}`);
 
     el.textContent = lines.join('\n');
   }

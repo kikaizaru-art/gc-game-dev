@@ -62,8 +62,9 @@ class HeroineManager {
     this.correctCount = 0;
     this.currentQuizSet = this.generateQuizSet(heroineId, clearedQuestions);
     this.quizResults = [];
-    /* パワーアップの使用済みフラグ（1ゲーム中に同じ問題で同種を重複使用しない） */
+    /* パワーアップの使用済みフラグ（各ステージで各アイテム1回まで） */
     this.usedPowerups = new Set();
+    this.usedPowerupsStage = new Set();
   }
 
   /* クイズセットをシャッフルして指定数を取得する（未確認優先対応） */
@@ -159,10 +160,16 @@ class HeroineManager {
     return this.usedPowerups.has(key);
   }
 
-  /* 現在の問題でパワーアップを使用済みにする */
+  /* このステージでパワーアップ使用済みかチェックする */
+  isPowerupUsedThisStage(type) {
+    return this.usedPowerupsStage.has(type);
+  }
+
+  /* パワーアップを使用済みにする（問題単位＋ステージ単位） */
   markPowerupUsed(type) {
     const key = `${this.currentQuizIndex}_${type}`;
     this.usedPowerups.add(key);
+    this.usedPowerupsStage.add(type);
   }
 
   /* エンディングの種類を判定する */
