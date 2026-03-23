@@ -164,6 +164,9 @@ class UiManager {
     /* 親密度バー */
     this.updateAffinity(affinity);
 
+    /* ヒント吹き出しをリセット */
+    this.hideHintBubble();
+
     /* 質問文 */
     document.getElementById('quiz-question').textContent = quiz.question;
 
@@ -178,29 +181,41 @@ class UiManager {
 
   /* パワーアップボタンの状態を更新する */
   updatePowerupButtons(powerups) {
-    const fiftyBtn = document.getElementById('btn-fifty-fifty');
-    const hintBtn = document.getElementById('btn-hint');
-    const fiftyCount = document.getElementById('fifty-fifty-count');
-    const hintCount = document.getElementById('hint-count');
+    const btnMap = {
+      fiftyFifty: { btn: 'btn-fifty-fifty', count: 'fifty-fifty-count' },
+      hint: { btn: 'btn-hint', count: 'hint-count' },
+      ask: { btn: 'btn-ask', count: 'ask-count' }
+    };
 
-    fiftyCount.textContent = powerups.fiftyFifty;
-    hintCount.textContent = powerups.hint;
+    Object.entries(btnMap).forEach(([key, ids]) => {
+      const btn = document.getElementById(ids.btn);
+      const countEl = document.getElementById(ids.count);
+      countEl.textContent = powerups[key];
 
-    if (powerups.fiftyFifty <= 0) {
-      fiftyBtn.classList.add('used');
-      fiftyBtn.disabled = true;
-    } else {
-      fiftyBtn.classList.remove('used');
-      fiftyBtn.disabled = false;
-    }
+      if (powerups[key] <= 0) {
+        btn.classList.add('used');
+        btn.disabled = true;
+      } else {
+        btn.classList.remove('used');
+        btn.disabled = false;
+      }
+    });
+  }
 
-    if (powerups.hint <= 0) {
-      hintBtn.classList.add('used');
-      hintBtn.disabled = true;
-    } else {
-      hintBtn.classList.remove('used');
-      hintBtn.disabled = false;
-    }
+  /* ヒントコメント吹き出しを表示する */
+  showHintBubble(text) {
+    const bubble = document.getElementById('hint-bubble');
+    const bubbleText = document.getElementById('hint-bubble-text');
+    bubbleText.textContent = text;
+    bubble.classList.remove('hidden');
+    bubble.classList.add('animate-fade-in');
+  }
+
+  /* ヒントコメント吹き出しを非表示にする */
+  hideHintBubble() {
+    const bubble = document.getElementById('hint-bubble');
+    bubble.classList.add('hidden');
+    bubble.classList.remove('animate-fade-in');
   }
 
   /* 親密度バーを更新する */

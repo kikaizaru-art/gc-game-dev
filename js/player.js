@@ -19,6 +19,7 @@ const QUIZ_TIME_LIMIT = 15;
 /* パワーアップ設定 */
 const POWERUP_FIFTY_FIFTY_COUNT = 1;
 const POWERUP_HINT_COUNT = 1;
+const POWERUP_ASK_COUNT = 1;
 
 /* UI制御 */
 const FEEDBACK_DISPLAY_MS = 2000;
@@ -64,7 +65,8 @@ class HeroineManager {
     this.quizResults = [];
     this.powerups = {
       fiftyFifty: POWERUP_FIFTY_FIFTY_COUNT,
-      hint: POWERUP_HINT_COUNT
+      hint: POWERUP_HINT_COUNT,
+      ask: POWERUP_ASK_COUNT
     };
   }
 
@@ -119,6 +121,22 @@ class HeroineManager {
   nextQuiz() {
     this.currentQuizIndex++;
     return this.currentQuizIndex >= QUIZ_COUNT;
+  }
+
+  /* ヒロインがヒントコメントを生成する */
+  generateHintComment() {
+    const quiz = this.getCurrentQuiz();
+    const answer = quiz.choices[quiz.correct];
+    const heroine = this.selectedHeroine;
+    const firstChar = answer.charAt(0);
+    const templates = [
+      `うーんとね…「${firstChar}」から始まる言葉だよ！`,
+      `ヒントだよ！ 最初の文字は「${firstChar}」！`,
+      `えへへ、教えちゃう♪ 「${firstChar}」で始まるよ！`,
+      `これは内緒だけど…「${firstChar}」が最初の文字だよ！`
+    ];
+    const randomIndex = Math.floor(Math.random() * templates.length);
+    return `${heroine.shortName}「${templates[randomIndex]}」`;
   }
 
   /* パワーアップを使用する（残り回数を減らす） */

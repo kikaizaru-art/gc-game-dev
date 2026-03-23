@@ -109,6 +109,10 @@ class GameEngine {
       this.useHint();
     });
 
+    document.getElementById('btn-ask').addEventListener('click', () => {
+      this.useAsk();
+    });
+
     /* キーボード操作 */
     document.addEventListener('keydown', (e) => {
       if (!this.isAnswering) return;
@@ -256,6 +260,17 @@ class GameEngine {
     const buttons = document.querySelectorAll('.choice-btn');
     buttons[this.currentShuffledCorrectIndex].classList.add('hint-glow');
 
+    this.ui.updatePowerupButtons(this.heroineManager.powerups);
+  }
+
+  /* おしえてパワーアップ：ヒロインがヒントコメントを言う */
+  useAsk() {
+    if (!this.isAnswering) return;
+    if (!this.heroineManager.usePowerup('ask')) return;
+
+    this.audio.playPowerup();
+    const hintText = this.heroineManager.generateHintComment();
+    this.ui.showHintBubble(hintText);
     this.ui.updatePowerupButtons(this.heroineManager.powerups);
   }
 
