@@ -1730,6 +1730,17 @@ body {
   padding: 20px 0;
 }
 
+/* 全体カテゴリ別正解率 */
+.stats-global-categories {
+  width: 100%;
+  z-index: 2;
+  position: relative;
+}
+
+.stats-global-categories .stats-category-bar {
+  background: var(--color-primary);
+}
+
 /* ボタン領域 */
 .stats-buttons {
   display: flex;

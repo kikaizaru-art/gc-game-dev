@@ -411,7 +411,6 @@ class UiManager {
     const container = document.getElementById('stats-content');
     const clears = statsManager.getClearsByType(heroine.id);
     const totalClears = statsManager.getTotalClears(heroine.id);
-    const categories = statsManager.getCategoryStats(heroine.id);
 
     /* エンディング別クリア回数 */
     const clearsHtml = `
@@ -438,40 +437,6 @@ class UiManager {
       </div>
     `;
 
-    /* カテゴリ別正解率 */
-    const categoryKeys = Object.keys(categories);
-    let categoryHtml = '';
-    if (categoryKeys.length > 0) {
-      const rows = categoryKeys.map(cat => {
-        const data = categories[cat];
-        const rate = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
-        return `
-          <div class="stats-category-row">
-            <span class="stats-category-name">${cat}</span>
-            <div class="stats-category-bar-container">
-              <div class="stats-category-bar" style="width: ${rate}%; background: ${heroine.color};"></div>
-            </div>
-            <span class="stats-category-rate">${rate}%</span>
-            <span class="stats-category-detail">${data.correct}/${data.total}</span>
-          </div>
-        `;
-      }).join('');
-
-      categoryHtml = `
-        <div class="stats-section">
-          <h3 class="stats-section-title">カテゴリ別正解率</h3>
-          <div class="stats-category-list">${rows}</div>
-        </div>
-      `;
-    } else {
-      categoryHtml = `
-        <div class="stats-section">
-          <h3 class="stats-section-title">カテゴリ別正解率</h3>
-          <p class="stats-empty">まだプレイデータがありません</p>
-        </div>
-      `;
-    }
-
     container.innerHTML = `
       <div class="stats-heroine-header" style="border-color: ${heroine.color};">
         <img src="${CHARA_IMAGES[heroine.id]}" alt="${heroine.shortName}" class="stats-heroine-img">
@@ -481,7 +446,45 @@ class UiManager {
         </div>
       </div>
       ${clearsHtml}
-      ${categoryHtml}
+    `;
+  }
+
+  /* 全体のカテゴリ別正解率を描画する */
+  renderGlobalCategoryStats(statsManager) {
+    const container = document.getElementById('stats-global-categories');
+    const categories = statsManager.getAllCategoryStats();
+    const categoryKeys = Object.keys(categories);
+
+    if (categoryKeys.length === 0) {
+      container.innerHTML = `
+        <div class="stats-section">
+          <h3 class="stats-section-title">カテゴリ別正解率（全体）</h3>
+          <p class="stats-empty">まだプレイデータがありません</p>
+        </div>
+      `;
+      return;
+    }
+
+    const rows = categoryKeys.map(cat => {
+      const data = categories[cat];
+      const rate = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+      return `
+        <div class="stats-category-row">
+          <span class="stats-category-name">${cat}</span>
+          <div class="stats-category-bar-container">
+            <div class="stats-category-bar" style="width: ${rate}%;"></div>
+          </div>
+          <span class="stats-category-rate">${rate}%</span>
+          <span class="stats-category-detail">${data.correct}/${data.total}</span>
+        </div>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="stats-section">
+        <h3 class="stats-section-title">カテゴリ別正解率（全体）</h3>
+        <div class="stats-category-list">${rows}</div>
+      </div>
     `;
   }
 }

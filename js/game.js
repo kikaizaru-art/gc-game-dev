@@ -299,6 +299,7 @@ class GameEngine {
     const heroine = heroines.find(h => h.id === this.activeStatsHeroineId) || heroines[0];
     this.ui.renderStatsTabs(heroines, heroine.id);
     this.ui.renderStatsContent(heroine, this.stats);
+    this.ui.renderGlobalCategoryStats(this.stats);
     this.ui.showScreen('stats');
   }
 }

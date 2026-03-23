@@ -27,17 +27,10 @@ class StatsManager {
   createEmpty() {
     return {
       heroines: {
-        misaki: this.createHeroineStats(),
-        rin: this.createHeroineStats(),
-        hinata: this.createHeroineStats()
-      }
-    };
-  }
-
-  /* ヒロインごとの空の統計データ */
-  createHeroineStats() {
-    return {
-      clears: { happy: 0, normal: 0, bad: 0 },
+        misaki: { clears: { happy: 0, normal: 0, bad: 0 } },
+        rin: { clears: { happy: 0, normal: 0, bad: 0 } },
+        hinata: { clears: { happy: 0, normal: 0, bad: 0 } }
+      },
       categories: {}
     };
   }
@@ -59,15 +52,16 @@ class StatsManager {
     /* クリア回数を加算 */
     heroineStats.clears[endingType]++;
 
-    /* カテゴリ別正解率を更新 */
+    /* 全体のカテゴリ別正解率を更新 */
+    if (!this.stats.categories) this.stats.categories = {};
     quizResults.forEach(result => {
       const category = result.category || '不明';
-      if (!heroineStats.categories[category]) {
-        heroineStats.categories[category] = { correct: 0, total: 0 };
+      if (!this.stats.categories[category]) {
+        this.stats.categories[category] = { correct: 0, total: 0 };
       }
-      heroineStats.categories[category].total++;
+      this.stats.categories[category].total++;
       if (result.isCorrect) {
-        heroineStats.categories[category].correct++;
+        this.stats.categories[category].correct++;
       }
     });
 
@@ -85,9 +79,9 @@ class StatsManager {
     return this.stats.heroines[heroineId].clears;
   }
 
-  /* ヒロインのカテゴリ別正解率を取得する */
-  getCategoryStats(heroineId) {
-    return this.stats.heroines[heroineId].categories;
+  /* 全体のカテゴリ別正解率を取得する */
+  getAllCategoryStats() {
+    return this.stats.categories || {};
   }
 
   /* 全ヒロインの合計クリア回数を取得する */
