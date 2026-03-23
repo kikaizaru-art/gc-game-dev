@@ -54,11 +54,11 @@ body {
 /* ヘッダータイムゲージ */
 .header-timer-gauge {
   position: absolute;
-  top: 34px;
+  top: 0;
   left: 0;
   width: 100%;
   height: 6px;
-  z-index: 99;
+  z-index: 100;
   background: rgba(255, 255, 255, 0.1);
   overflow: hidden;
 }
@@ -833,46 +833,41 @@ body {
   font-size: 12px;
 }
 
-/* スタミナゲージ（常時表示） */
+/* スタミナゲージ（右上フローティングバッジ） */
 .stamina-bar {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+  top: 10px;
+  right: 10px;
+  z-index: 200;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 16px;
-  background: linear-gradient(180deg, rgba(15, 10, 30, 0.85) 0%, rgba(15, 10, 30, 0) 100%);
-  pointer-events: none;
-}
-
-.stamina-bar > * {
-  pointer-events: auto;
+  gap: 5px;
+  padding: 5px 10px;
+  background: rgba(15, 10, 30, 0.8);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
 }
 
 .stamina-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: rgba(255, 208, 232, 0.8);
-  margin-right: 4px;
 }
 
 .stamina-dot {
   display: inline-block;
-  width: 22px;
-  height: 22px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  border: 2px solid rgba(236, 72, 153, 0.5);
+  border: 1.5px solid rgba(236, 72, 153, 0.5);
   transition: all 0.3s ease;
 }
 
 .stamina-dot.filled {
   background: linear-gradient(135deg, #ec4899, #f472b6);
   border-color: rgba(236, 72, 153, 0.8);
-  box-shadow: 0 0 8px rgba(236, 72, 153, 0.5);
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.5);
 }
 
 .stamina-dot.empty {
@@ -881,10 +876,10 @@ body {
 }
 
 .stamina-timer {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
-  color: rgba(255, 208, 232, 0.7);
-  min-width: 36px;
+  color: rgba(255, 208, 232, 0.6);
+  min-width: 28px;
   text-align: left;
 }
 
@@ -1457,13 +1452,15 @@ body {
   }
 
   .stamina-bar {
+    top: 8px;
+    right: 8px;
     gap: 4px;
-    padding: 2px 10px 0;
+    padding: 4px 8px;
   }
 
   .stamina-dot {
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
   }
 
   .powerup-bar {
