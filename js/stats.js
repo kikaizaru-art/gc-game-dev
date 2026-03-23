@@ -164,6 +164,12 @@ class StatsManager {
     return null;
   }
 
+  /* ヒロインが解放済みかを判定する（美咲は常に解放、他は美咲ステージ1ハッピーエンドで解放） */
+  isHeroineUnlocked(heroineId) {
+    if (heroineId === 'misaki') return true;
+    return this.hasHappyEnd('misaki');
+  }
+
   /* 全ヒロインの合計クリア回数を取得する */
   getAllTotalClears() {
     let total = 0;

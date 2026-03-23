@@ -91,7 +91,7 @@ class GameEngine {
 
     document.getElementById('heroine-cards').addEventListener('click', (e) => {
       const card = e.target.closest('.heroine-card');
-      if (!card) return;
+      if (!card || card.classList.contains('locked')) return;
       this.audio.playClick();
       const heroineId = card.dataset.heroineId;
       /* ハッピーエンド達成済みならステージ選択画面を表示 */

@@ -380,6 +380,28 @@ body {
   line-height: 1.5;
 }
 
+/* ロック中のヒロインカード */
+.heroine-card.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.heroine-card.locked:hover {
+  transform: none;
+}
+
+.heroine-card.locked .heroine-card-image img {
+  filter: blur(2px);
+}
+
+.heroine-card-lock-label {
+  font-size: 12px;
+  color: rgba(255, 208, 232, 0.7);
+  margin-top: 8px;
+  font-weight: 600;
+}
+
 .card-stage-badge {
   display: inline-block;
   font-size: 10px;

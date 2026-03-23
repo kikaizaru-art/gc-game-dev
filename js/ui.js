@@ -36,7 +36,25 @@ class UiManager {
   renderHeroineCards(heroines, statsManager) {
     const container = document.getElementById('heroine-cards');
     container.innerHTML = heroines.map(h => {
+      const isUnlocked = statsManager && statsManager.isHeroineUnlocked(h.id);
       const progress = statsManager && statsManager.getBestProgress(h.id);
+
+      /* ロック中のキャラはロック表示 */
+      if (!isUnlocked) {
+        return `
+          <div class="heroine-card locked" data-heroine-id="${h.id}" data-color="${h.colorName}">
+            <div class="heroine-card-image">
+              <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
+            </div>
+            <div class="heroine-card-info">
+              <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
+              <div class="heroine-card-personality">${h.personality}</div>
+              <div class="heroine-card-lock-label">🔒 美咲のハッピーエンドで解放</div>
+            </div>
+          </div>
+        `;
+      }
+
       let stageBadge;
       if (progress) {
         let badgeClass;
