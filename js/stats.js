@@ -164,6 +164,24 @@ class StatsManager {
     return null;
   }
 
+  /* ヒロインのステージ3ハッピーエンドクリア済みかを判定する */
+  hasStage3HappyEnd(heroineId) {
+    const s3 = this.stats.heroines[heroineId].stage3Clears;
+    return s3 && s3.happy >= 1;
+  }
+
+  /* ヒロインの全クイズクリア済みかを判定する */
+  hasAllQuizzesCleared(heroineId, totalQuizCount) {
+    const cats = this.getHeroineCategoryStats(heroineId);
+    let clearedCount = 0;
+    Object.values(cats).forEach(cat => {
+      if (cat.clearedQuestions) {
+        clearedCount += cat.clearedQuestions.length;
+      }
+    });
+    return totalQuizCount > 0 && clearedCount >= totalQuizCount;
+  }
+
   /* ヒロインが解放済みかを判定する（美咲は常に解放、他は美咲ステージ1ハッピーエンドで解放） */
   isHeroineUnlocked(heroineId) {
     if (heroineId === 'misaki') return true;

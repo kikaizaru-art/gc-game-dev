@@ -33,7 +33,7 @@ class UiManager {
   }
 
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */
-  renderHeroineCards(heroines, statsManager) {
+  renderHeroineCards(heroines, statsManager, quizCountByHeroine) {
     const container = document.getElementById('heroine-cards');
     container.innerHTML = heroines.map(h => {
       const isUnlocked = statsManager && statsManager.isHeroineUnlocked(h.id);
@@ -55,6 +55,20 @@ class UiManager {
         `;
       }
 
+      /* クリア・パーフェクト判定 */
+      const quizCounts = quizCountByHeroine && quizCountByHeroine[h.id] || {};
+      const totalQuizCount = Object.values(quizCounts).reduce((sum, n) => sum + n, 0);
+      const hasStage3Happy = statsManager && statsManager.hasStage3HappyEnd(h.id);
+      const hasAllCleared = statsManager && statsManager.hasAllQuizzesCleared(h.id, totalQuizCount);
+
+      /* 完了バッジ：パーフェクト > クリア > 通常進捗 */
+      let completionBadge = '';
+      if (hasStage3Happy && hasAllCleared) {
+        completionBadge = '<span class="card-completion-badge perfect">💎 パーフェクト</span>';
+      } else if (hasStage3Happy) {
+        completionBadge = '<span class="card-completion-badge clear">✨ クリア</span>';
+      }
+
       let stageBadge;
       if (progress) {
         let badgeClass;
@@ -72,6 +86,7 @@ class UiManager {
       return `
         <div class="heroine-card" data-heroine-id="${h.id}" data-color="${h.colorName}">
           <div class="heroine-card-image">
+            ${completionBadge}
             <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
           </div>
           <div class="heroine-card-info">
