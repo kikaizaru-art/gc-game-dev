@@ -111,9 +111,12 @@ class GameEngine {
 
   /* ストーリーを開始する */
   startStory(heroineId) {
-    this.heroineManager.selectHeroine(heroineId);
+    const isSecondPlay = this.stats.getTotalClears(heroineId) >= 1;
+    this.heroineManager.selectHeroine(heroineId, isSecondPlay);
     const heroine = this.heroineManager.selectedHeroine;
-    this.storyLines = heroine.story || [];
+    this.storyLines = isSecondPlay && heroine.story2
+      ? heroine.story2
+      : heroine.story || [];
     this.storyIndex = 0;
 
     this.ui.renderStoryScene(heroine);
