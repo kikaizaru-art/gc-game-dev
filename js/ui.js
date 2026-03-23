@@ -536,7 +536,7 @@ class UiManager {
     container.innerHTML = allTab + heroineTabs;
   }
 
-  /* カテゴリクリア状況のHTMLを生成する */
+  /* カテゴリ別クリア状況のHTMLを生成する（カテゴリごとにゲージ表示） */
   buildCategoryClearHtml(clearStatus, title) {
     if (clearStatus.length === 0) {
       return `
@@ -546,31 +546,29 @@ class UiManager {
         </div>
       `;
     }
-    const clearedCount = clearStatus.filter(c => c.cleared).length;
-    const totalCount = clearStatus.length;
-    const rate = Math.round((clearedCount / totalCount) * 100);
-    const rows = clearStatus.map(cat => `
-      <div class="stats-category-row ${cat.cleared ? 'cleared' : ''}">
-        <span class="stats-category-status">${cat.cleared ? '✅' : '⬜'}</span>
-        <span class="stats-category-name">${cat.name}</span>
-      </div>
-    `).join('');
+    const rows = clearStatus.map(cat => {
+      const rate = cat.total > 0 ? Math.round((cat.cleared / cat.total) * 100) : 0;
+      const isComplete = cat.cleared >= cat.total;
+      return `
+        <div class="stats-category-row ${isComplete ? 'cleared' : ''}">
+          <span class="stats-category-name">${cat.name}</span>
+          <div class="stats-category-bar-container">
+            <div class="stats-category-bar ${isComplete ? 'complete' : ''}" style="width: ${rate}%;"></div>
+          </div>
+          <span class="stats-category-count">${cat.cleared} / ${cat.total}</span>
+        </div>
+      `;
+    }).join('');
     return `
       <div class="stats-section">
         <h3 class="stats-section-title">${title}</h3>
-        <div class="stats-clear-progress">
-          <div class="stats-clear-progress-bar-container">
-            <div class="stats-clear-progress-bar" style="width: ${rate}%;"></div>
-          </div>
-          <span class="stats-clear-progress-text">${clearedCount} / ${totalCount} クリア</span>
-        </div>
         <div class="stats-category-list">${rows}</div>
       </div>
     `;
   }
 
   /* ステータス画面のコンテンツを描画する（キャラ別） */
-  renderStatsContent(heroine, statsManager, allCategories) {
+  renderStatsContent(heroine, statsManager, quizCountByCategory) {
     const container = document.getElementById('stats-content');
     const clears = statsManager.getClearsByType(heroine.id);
     const totalClears = statsManager.getTotalClears(heroine.id);
@@ -601,7 +599,7 @@ class UiManager {
     `;
 
     /* キャラ別カテゴリクリア状況 */
-    const clearStatus = statsManager.getHeroineCategoryClearStatus(heroine.id, allCategories);
+    const clearStatus = statsManager.getHeroineCategoryClearStatus(heroine.id, quizCountByCategory);
     const categoryHtml = this.buildCategoryClearHtml(clearStatus, 'カテゴリクリア状況');
 
     container.innerHTML = `
@@ -623,7 +621,7 @@ class UiManager {
   }
 
   /* 全体ステータス画面を描画する */
-  renderStatsAll(heroines, statsManager, allCategoriesByHeroine) {
+  renderStatsAll(heroines, statsManager, quizCountByHeroine) {
     const container = document.getElementById('stats-content');
 
     /* 全キャラ合計クリア回数 */
@@ -666,8 +664,8 @@ class UiManager {
     /* 全キャラのカテゴリクリア状況をまとめて表示 */
     let allCategoryHtml = '';
     heroines.forEach(h => {
-      const cats = allCategoriesByHeroine[h.id] || [];
-      const clearStatus = statsManager.getHeroineCategoryClearStatus(h.id, cats);
+      const quizCounts = quizCountByHeroine[h.id] || {};
+      const clearStatus = statsManager.getHeroineCategoryClearStatus(h.id, quizCounts);
       allCategoryHtml += this.buildCategoryClearHtml(clearStatus, `${h.emoji} ${h.shortName}`);
     });
 

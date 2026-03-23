@@ -468,21 +468,25 @@ class GameEngine {
     );
   }
 
-  /* ヒロインごとの全カテゴリ一覧を取得する */
-  getAllCategoriesByHeroine() {
+  /* ヒロインごとのカテゴリ別クイズ総数を取得する */
+  getQuizCountByHeroine() {
     const hm = this.heroineManager;
     const result = {};
     const heroineIds = ['misaki', 'rin', 'hinata'];
     heroineIds.forEach(id => {
-      const catSet = new Set();
+      const catCounts = {};
+      const seenQuestions = new Set();
       [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
         if (source && source[id]) {
           source[id].forEach(q => {
-            if (q.category) catSet.add(q.category);
+            if (q.category && !seenQuestions.has(q.question)) {
+              seenQuestions.add(q.question);
+              catCounts[q.category] = (catCounts[q.category] || 0) + 1;
+            }
           });
         }
       });
-      result[id] = [...catSet];
+      result[id] = catCounts;
     });
     return result;
   }
@@ -491,14 +495,14 @@ class GameEngine {
   showStatsScreen() {
     const heroines = this.heroineManager.heroines;
     const activeId = this.activeStatsHeroineId || 'all';
-    const allCatsByHeroine = this.getAllCategoriesByHeroine();
+    const quizCountByHeroine = this.getQuizCountByHeroine();
     this.ui.renderStatsTabs(heroines, activeId);
     if (activeId === 'all') {
-      this.ui.renderStatsAll(heroines, this.stats, allCatsByHeroine);
+      this.ui.renderStatsAll(heroines, this.stats, quizCountByHeroine);
     } else {
       const heroine = heroines.find(h => h.id === activeId) || heroines[0];
-      const cats = allCatsByHeroine[heroine.id] || [];
-      this.ui.renderStatsContent(heroine, this.stats, cats);
+      const quizCounts = quizCountByHeroine[heroine.id] || {};
+      this.ui.renderStatsContent(heroine, this.stats, quizCounts);
     }
     this.ui.renderGlobalCategoryStats(this.stats, activeId);
     this.ui.showScreen('stats');

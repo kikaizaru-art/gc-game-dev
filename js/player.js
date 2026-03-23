@@ -113,9 +113,10 @@ class HeroineManager {
       this.affinity = Math.max(MIN_AFFINITY, this.affinity + AFFINITY_WRONG);
     }
 
-    /* カテゴリ別の結果を記録 */
+    /* カテゴリ別の結果を記録（問題テキストも含む） */
     this.quizResults.push({
       category: quiz.category || '不明',
+      question: quiz.question,
       isCorrect
     });
 

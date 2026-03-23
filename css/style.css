@@ -1933,68 +1933,68 @@ body {
   margin-top: 2px;
 }
 
-/* カテゴリクリア状況 */
+/* カテゴリ別クリア状況 */
 .stats-category-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .stats-category-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 70px 1fr 55px;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 6px;
-  opacity: 0.5;
+  border-radius: 8px;
 }
 
 .stats-category-row.cleared {
-  opacity: 1;
   background: rgba(255, 255, 255, 0.08);
 }
 
-.stats-category-status {
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
 .stats-category-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: rgba(255, 208, 232, 0.9);
+  white-space: nowrap;
 }
 
 .stats-category-row.cleared .stats-category-name {
   color: #fff;
 }
 
-/* クリア進捗バー */
-.stats-clear-progress {
-  margin-bottom: 10px;
-}
-
-.stats-clear-progress-bar-container {
+.stats-category-bar-container {
   width: 100%;
-  height: 10px;
+  height: 12px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 5px;
+  border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 6px;
 }
 
-.stats-clear-progress-bar {
+.stats-category-bar {
   height: 100%;
-  border-radius: 5px;
+  border-radius: 6px;
   background: var(--color-primary);
   transition: width 0.5s ease;
+  min-width: 0;
 }
 
-.stats-clear-progress-text {
+.stats-category-bar.complete {
+  background: linear-gradient(90deg, var(--color-primary), #ffd700);
+}
+
+.stats-category-count {
   font-size: 13px;
   font-weight: 700;
   color: rgba(255, 208, 232, 0.8);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stats-category-row.cleared .stats-category-count {
+  color: #ffd700;
 }
 
 /* キャラ別リセットボタン */
