@@ -5,13 +5,14 @@
  * ゲーム全体のフロー制御を行うクラス
  */
 class GameEngine {
-  constructor(heroineManager, uiManager, audioManager, statsManager, staminaManager, adManager) {
+  constructor(heroineManager, uiManager, audioManager, statsManager, staminaManager, adManager, shopManager) {
     this.heroineManager = heroineManager;
     this.ui = uiManager;
     this.audio = audioManager;
     this.stats = statsManager;
     this.stamina = staminaManager;
     this.ad = adManager || null;
+    this.shop = shopManager || null;
     this.timerId = null;
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
@@ -57,6 +58,29 @@ class GameEngine {
     document.getElementById('btn-back-title-options').addEventListener('click', () => {
       this.audio.playClick();
       this.ui.showScreen('title');
+    });
+
+    /* ショップ画面 */
+    document.getElementById('btn-shop').addEventListener('click', () => {
+      this.audio.init();
+      this.audio.playClick();
+      this.updateShopScreen();
+      this.ui.showScreen('shop');
+    });
+
+    document.getElementById('btn-back-title-shop').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.showScreen('title');
+    });
+
+    document.getElementById('btn-buy-ad-free').addEventListener('click', () => {
+      this.audio.playClick();
+      this.handleBuyAdFree();
+    });
+
+    document.getElementById('btn-restore-purchases').addEventListener('click', () => {
+      this.audio.playClick();
+      this.handleRestorePurchases();
     });
 
     /* BGM音量スライダー */
@@ -532,6 +556,11 @@ class GameEngine {
     this.ui.renderResult(endingData);
     this.ui.showScreen('result');
 
+    /* 広告無しプラン購入済みならスタミナ全回復 */
+    if (this.shop && this.shop.isAdFree()) {
+      this.stamina.recover(STAMINA_MAX);
+    }
+
     /* 広告ボタンの表示制御（スタミナ未満＆広告準備OK） */
     this.updateAdButton();
 
@@ -548,6 +577,11 @@ class GameEngine {
   /* 広告ボタンの表示状態を更新する */
   updateAdButton() {
     const btn = document.getElementById('btn-ad-stamina');
+    /* 広告無しプラン購入済みなら常に非表示 */
+    if (this.shop && this.shop.isAdFree()) {
+      btn.style.display = 'none';
+      return;
+    }
     const canShow = this.ad
       && this.ad.isRewardedAdReady()
       && this.stamina.getStamina() < STAMINA_MAX;
@@ -607,6 +641,51 @@ class GameEngine {
       result[id] = catCounts;
     });
     return result;
+  }
+
+  /* ショップ画面の表示状態を更新する */
+  updateShopScreen() {
+    const btn = document.getElementById('btn-buy-ad-free');
+    const priceEl = document.getElementById('shop-price-ad-free');
+    const item = document.getElementById('shop-item-ad-free');
+
+    if (this.shop && this.shop.isAdFree()) {
+      btn.textContent = '購入済み';
+      btn.disabled = true;
+      btn.classList.add('purchased');
+      priceEl.textContent = '';
+      item.classList.add('purchased');
+    } else {
+      btn.textContent = '購入する';
+      btn.disabled = false;
+      btn.classList.remove('purchased');
+      priceEl.textContent = '¥480';
+      item.classList.remove('purchased');
+    }
+  }
+
+  /* 広告無しプランの購入処理 */
+  async handleBuyAdFree() {
+    if (!this.shop) return;
+    if (this.shop.isAdFree()) return;
+
+    const confirmed = confirm('広告なしプラン（¥480）を購入しますか？');
+    if (!confirmed) return;
+
+    const success = await this.shop.purchase(PRODUCT_ID_AD_FREE);
+    if (success) {
+      this.audio.playPowerup();
+      this.updateShopScreen();
+      /* スタミナを全回復する */
+      this.stamina.recover(STAMINA_MAX);
+    }
+  }
+
+  /* 購入の復元処理 */
+  async handleRestorePurchases() {
+    if (!this.shop) return;
+    await this.shop.restorePurchases();
+    this.updateShopScreen();
   }
 
   /* ステータス画面を表示する */

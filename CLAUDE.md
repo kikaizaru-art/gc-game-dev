@@ -35,6 +35,7 @@ gc-game-dev/
 │   ├── game.js            # ゲームエンジン・シーン管理
 │   ├── player.js          # プレイヤー
 │   ├── stamina.js         # スタミナ管理（時間回復システム）
+│   ├── shop.js            # ショップ管理（課金SDK差し替え対応）
 │   ├── ad.js              # 広告管理（SDK差し替え対応）
 │   ├── stats.js           # ステータス管理（クリア回数・正解率）
 │   ├── audio.js           # 音声管理（Web Audio API）
