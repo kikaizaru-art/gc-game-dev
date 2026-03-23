@@ -293,6 +293,100 @@ body {
 }
 
 /* ============================
+   マイページ画面
+   ============================ */
+#screen-mypage {
+  justify-content: flex-end;
+  background: linear-gradient(180deg, #2a1535 0%, #1a0f25 60%, #0f0a18 100%);
+}
+
+.mypage-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.mypage-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 1;
+}
+
+.mypage-heading {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  color: rgba(255, 208, 232, 0.7);
+  letter-spacing: 4px;
+  font-weight: 700;
+}
+
+.mypage-chara-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.mypage-chara-container {
+  position: relative;
+}
+
+.mypage-chara-img {
+  height: 360px;
+  max-height: 55vh;
+  object-fit: contain;
+  filter: drop-shadow(0 0 24px rgba(236, 72, 153, 0.3));
+  transition: transform 0.5s ease;
+}
+
+.mypage-chara-img:hover {
+  transform: scale(1.03);
+}
+
+.mypage-chara-name {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 8px;
+  letter-spacing: 3px;
+  text-shadow: 0 0 12px currentColor;
+}
+
+.mypage-buttons {
+  width: 100%;
+  text-align: center;
+  padding: 20px 24px 28px;
+  background: linear-gradient(transparent 0%, rgba(15, 10, 24, 0.85) 30%);
+  padding-top: 40px;
+}
+
+.mypage-btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.btn-mypage-sub {
+  font-size: 13px;
+  padding: 8px 18px;
+  min-width: 100px;
+}
+
+/* ============================
    ヒロイン選択画面
    ============================ */
 #screen-select {
@@ -1554,6 +1648,16 @@ body {
   .title-text-area {
     padding-bottom: 24px;
     padding-top: 40px;
+  }
+
+  /* マイページ */
+  .mypage-chara-img {
+    height: 280px;
+  }
+
+  .mypage-buttons {
+    padding: 16px 16px 24px;
+    padding-top: 32px;
   }
 
   /* 選択画面 */

@@ -15,6 +15,7 @@ class UiManager {
   constructor() {
     this.screens = {
       title: document.getElementById('screen-title'),
+      mypage: document.getElementById('screen-mypage'),
       select: document.getElementById('screen-select'),
       stageSelect: document.getElementById('screen-stage-select'),
       story: document.getElementById('screen-story'),
@@ -34,6 +35,17 @@ class UiManager {
     this.screens[screenName].classList.add('active');
     /* クイズ画面のみヘッダータイムゲージを表示 */
     this.showHeaderTimerGauge(screenName === 'quiz');
+  }
+
+  /* マイページを描画する */
+  renderMyPage(heroine) {
+    const charaImg = document.getElementById('mypage-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    const nameEl = document.getElementById('mypage-chara-name');
+    nameEl.textContent = heroine.shortName;
+    nameEl.style.color = heroine.color;
   }
 
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */
