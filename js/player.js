@@ -33,6 +33,7 @@ class HeroineManager {
     this.currentQuizIndex = 0;
     this.correctCount = 0;
     this.currentQuizSet = [];
+    this.quizResults = [];
   }
 
   /* ヒロインデータを読み込む */
@@ -52,6 +53,7 @@ class HeroineManager {
     this.currentQuizIndex = 0;
     this.correctCount = 0;
     this.currentQuizSet = this.generateQuizSet(heroineId);
+    this.quizResults = [];
   }
 
   /* クイズセットをシャッフルして指定数を取得する */
@@ -84,6 +86,12 @@ class HeroineManager {
     } else {
       this.affinity = Math.max(MIN_AFFINITY, this.affinity + AFFINITY_WRONG);
     }
+
+    /* カテゴリ別の結果を記録 */
+    this.quizResults.push({
+      category: quiz.category || '不明',
+      isCorrect
+    });
 
     return {
       isCorrect,

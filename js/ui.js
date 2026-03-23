@@ -18,7 +18,8 @@ class UiManager {
       select: document.getElementById('screen-select'),
       story: document.getElementById('screen-story'),
       quiz: document.getElementById('screen-quiz'),
-      result: document.getElementById('screen-result')
+      result: document.getElementById('screen-result'),
+      stats: document.getElementById('screen-stats')
     };
   }
 
@@ -391,5 +392,96 @@ class UiManager {
     if (endingData.type === 'happy') {
       this.spawnSparkles(resultScreen, 15);
     }
+  }
+
+  /* ステータス画面のタブを描画する */
+  renderStatsTabs(heroines, activeId) {
+    const container = document.getElementById('stats-tabs');
+    container.innerHTML = heroines.map(h => `
+      <button class="stats-tab ${h.id === activeId ? 'active' : ''}"
+        data-heroine-id="${h.id}"
+        style="${h.id === activeId ? `background: ${h.color}; color: #fff;` : `border-color: ${h.color}; color: ${h.color};`}">
+        ${h.emoji} ${h.shortName}
+      </button>
+    `).join('');
+  }
+
+  /* ステータス画面のコンテンツを描画する */
+  renderStatsContent(heroine, statsManager) {
+    const container = document.getElementById('stats-content');
+    const clears = statsManager.getClearsByType(heroine.id);
+    const totalClears = statsManager.getTotalClears(heroine.id);
+    const categories = statsManager.getCategoryStats(heroine.id);
+
+    /* エンディング別クリア回数 */
+    const clearsHtml = `
+      <div class="stats-section">
+        <h3 class="stats-section-title">クリア回数</h3>
+        <div class="stats-clears-grid">
+          <div class="stats-clear-card">
+            <span class="stats-clear-count">${totalClears}</span>
+            <span class="stats-clear-label">合計</span>
+          </div>
+          <div class="stats-clear-card happy">
+            <span class="stats-clear-count">${clears.happy}</span>
+            <span class="stats-clear-label">💕 ハッピー</span>
+          </div>
+          <div class="stats-clear-card normal">
+            <span class="stats-clear-count">${clears.normal}</span>
+            <span class="stats-clear-label">😊 ノーマル</span>
+          </div>
+          <div class="stats-clear-card bad">
+            <span class="stats-clear-count">${clears.bad}</span>
+            <span class="stats-clear-label">💔 バッド</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    /* カテゴリ別正解率 */
+    const categoryKeys = Object.keys(categories);
+    let categoryHtml = '';
+    if (categoryKeys.length > 0) {
+      const rows = categoryKeys.map(cat => {
+        const data = categories[cat];
+        const rate = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+        return `
+          <div class="stats-category-row">
+            <span class="stats-category-name">${cat}</span>
+            <div class="stats-category-bar-container">
+              <div class="stats-category-bar" style="width: ${rate}%; background: ${heroine.color};"></div>
+            </div>
+            <span class="stats-category-rate">${rate}%</span>
+            <span class="stats-category-detail">${data.correct}/${data.total}</span>
+          </div>
+        `;
+      }).join('');
+
+      categoryHtml = `
+        <div class="stats-section">
+          <h3 class="stats-section-title">カテゴリ別正解率</h3>
+          <div class="stats-category-list">${rows}</div>
+        </div>
+      `;
+    } else {
+      categoryHtml = `
+        <div class="stats-section">
+          <h3 class="stats-section-title">カテゴリ別正解率</h3>
+          <p class="stats-empty">まだプレイデータがありません</p>
+        </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="stats-heroine-header" style="border-color: ${heroine.color};">
+        <img src="${CHARA_IMAGES[heroine.id]}" alt="${heroine.shortName}" class="stats-heroine-img">
+        <div class="stats-heroine-info">
+          <span class="stats-heroine-name" style="color: ${heroine.color};">${heroine.name}</span>
+          <span class="stats-heroine-personality">${heroine.personality}</span>
+        </div>
+      </div>
+      ${clearsHtml}
+      ${categoryHtml}
+    `;
   }
 }

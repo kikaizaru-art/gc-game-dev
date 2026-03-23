@@ -34,6 +34,7 @@ gc-game-dev/
 │   ├── main.js            # 初期化・ゲームループ
 │   ├── game.js            # ゲームエンジン・シーン管理
 │   ├── player.js          # プレイヤー
+│   ├── stats.js           # ステータス管理（クリア回数・正解率）
 │   ├── audio.js           # 音声管理（Web Audio API）
 │   └── ui.js              # UI・画面遷移
 ├── assets/
