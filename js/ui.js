@@ -31,6 +31,8 @@ class UiManager {
       screen.classList.remove('active');
     });
     this.screens[screenName].classList.add('active');
+    /* クイズ画面のみヘッダータイムゲージを表示 */
+    this.showHeaderTimerGauge(screenName === 'quiz');
   }
 
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */
@@ -322,7 +324,7 @@ class UiManager {
     }
   }
 
-  /* 円形タイマーを更新する */
+  /* 円形タイマーとヘッダーゲージを更新する */
   updateTimer(remaining, total) {
     const circleBar = document.getElementById('timer-circle-bar');
     const timerText = document.getElementById('timer-text');
@@ -333,14 +335,32 @@ class UiManager {
     circleBar.style.strokeDashoffset = offset;
     timerText.textContent = Math.ceil(remaining);
 
+    /* ヘッダータイムゲージを更新 */
+    const headerBar = document.getElementById('header-timer-bar');
+    const pct = (remaining / total) * 100;
+    headerBar.style.width = `${pct}%`;
+
     /* 残り時間に応じて色を変える */
     circleBar.classList.remove('warning', 'danger');
     container.classList.remove('pulse');
+    headerBar.classList.remove('warning', 'danger');
     if (remaining <= 5) {
       circleBar.classList.add('danger');
       container.classList.add('pulse');
+      headerBar.classList.add('danger');
     } else if (remaining <= 10) {
       circleBar.classList.add('warning');
+      headerBar.classList.add('warning');
+    }
+  }
+
+  /* ヘッダータイムゲージの表示/非表示を切り替える */
+  showHeaderTimerGauge(visible) {
+    const gauge = document.getElementById('header-timer-gauge');
+    if (visible) {
+      gauge.classList.remove('hidden');
+    } else {
+      gauge.classList.add('hidden');
     }
   }
 

@@ -22,8 +22,6 @@ class GameEngine {
     this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
     this.bindEvents();
     this.ui.showScreen('title');
-    /* 保存済みミュート状態をボタンに反映 */
-    document.getElementById('btn-mute').textContent = this.audio.isMuted ? '🔇' : '🔊';
     console.log('ハートクイズ - 初期化完了');
   }
 
@@ -36,12 +34,6 @@ class GameEngine {
       this.audio.startBgm();
       this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
       this.ui.showScreen('select');
-    });
-
-    /* ミュートボタン（ヘッダー） */
-    document.getElementById('btn-mute').addEventListener('click', () => {
-      const muted = this.audio.toggleMute();
-      document.getElementById('btn-mute').textContent = muted ? '🔇' : '🔊';
     });
 
     /* オプション画面 */
@@ -78,7 +70,6 @@ class GameEngine {
     /* ミュートチェックボックス（オプション画面） */
     document.getElementById('chk-mute').addEventListener('change', (e) => {
       this.audio.setMuted(e.target.checked);
-      document.getElementById('btn-mute').textContent = e.target.checked ? '🔇' : '🔊';
     });
 
     /* 未確認クイズ優先チェックボックス（オプション画面） */
