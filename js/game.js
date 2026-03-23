@@ -5,12 +5,13 @@
  * ゲーム全体のフロー制御を行うクラス
  */
 class GameEngine {
-  constructor(heroineManager, uiManager, audioManager, statsManager, staminaManager) {
+  constructor(heroineManager, uiManager, audioManager, statsManager, staminaManager, adManager) {
     this.heroineManager = heroineManager;
     this.ui = uiManager;
     this.audio = audioManager;
     this.stats = statsManager;
     this.stamina = staminaManager;
+    this.ad = adManager || null;
     this.timerId = null;
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
@@ -202,6 +203,12 @@ class GameEngine {
       this.audio.playClick();
       this.audio.startBgm();
       this.ui.showScreen('title');
+    });
+
+    /* 広告視聴でスタミナ回復ボタン */
+    document.getElementById('btn-ad-stamina').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showAdForStamina();
     });
 
     /* パワーアップボタン */
@@ -522,6 +529,9 @@ class GameEngine {
     this.ui.renderResult(endingData);
     this.ui.showScreen('result');
 
+    /* 広告ボタンの表示制御（スタミナ未満＆広告準備OK） */
+    this.updateAdButton();
+
     /* 統計を記録する */
     const currentStage = this.heroineManager.currentStage || (this.heroineManager.isSecondPlay ? 2 : 1);
     this.stats.recordGameResult(
@@ -529,6 +539,33 @@ class GameEngine {
       endingData.type,
       this.heroineManager.quizResults,
       currentStage
+    );
+  }
+
+  /* 広告ボタンの表示状態を更新する */
+  updateAdButton() {
+    const btn = document.getElementById('btn-ad-stamina');
+    const canShow = this.ad
+      && this.ad.isRewardedAdReady()
+      && this.stamina.getStamina() < STAMINA_MAX;
+    btn.style.display = canShow ? '' : 'none';
+  }
+
+  /* 広告を視聴してスタミナを回復する */
+  showAdForStamina() {
+    if (!this.ad || !this.ad.isRewardedAdReady()) return;
+
+    this.ad.showRewardedAd(
+      () => {
+        /* 報酬：スタミナ回復 */
+        this.stamina.recover(AD_STAMINA_REWARD);
+        this.audio.playPowerup();
+        this.updateAdButton();
+      },
+      () => {
+        /* 広告閉じた後の処理 */
+        this.updateAdButton();
+      }
     );
   }
 

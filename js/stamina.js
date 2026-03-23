@@ -110,6 +110,20 @@ class StaminaManager {
     return remainder;
   }
 
+  /* スタミナを指定量回復する（広告報酬等） */
+  recover(amount) {
+    const before = this.stamina;
+    this.stamina = Math.min(STAMINA_MAX, this.stamina + amount);
+    if (this.stamina >= STAMINA_MAX) {
+      this.lastUsedAt = null;
+    }
+    this.save();
+    if (this.stamina !== before && this.onChangeCallback) {
+      this.onChangeCallback(this.stamina);
+    }
+    return this.stamina - before;
+  }
+
   /* スタミナ変更時のコールバックを登録する */
   onChange(callback) {
     this.onChangeCallback = callback;
