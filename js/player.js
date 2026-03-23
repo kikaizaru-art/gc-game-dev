@@ -47,8 +47,9 @@ class HeroineManager {
   }
 
   /* ヒロインを選択してゲーム状態をリセットする */
-  selectHeroine(heroineId) {
+  selectHeroine(heroineId, isSecondPlay = false) {
     this.selectedHeroine = this.heroines.find(h => h.id === heroineId);
+    this.isSecondPlay = isSecondPlay;
     this.affinity = INITIAL_AFFINITY;
     this.currentQuizIndex = 0;
     this.correctCount = 0;
@@ -116,9 +117,12 @@ class HeroineManager {
   /* エンディングデータを取得する */
   getEndingData() {
     const type = this.getEndingType();
+    const endings = this.isSecondPlay && this.selectedHeroine.endings2
+      ? this.selectedHeroine.endings2
+      : this.selectedHeroine.endings;
     return {
       type,
-      ...this.selectedHeroine.endings[type],
+      ...endings[type],
       heroine: this.selectedHeroine,
       affinity: this.affinity,
       correctCount: this.correctCount,
