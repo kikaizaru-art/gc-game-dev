@@ -1150,9 +1150,21 @@ body {
 
 .result-buttons {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.result-buttons-row {
+  display: flex;
   gap: 12px;
   justify-content: center;
-  padding-bottom: 4px;
+}
+
+.result-btn-title {
+  width: 60%;
+  min-width: 160px;
 }
 
 /* ============================
