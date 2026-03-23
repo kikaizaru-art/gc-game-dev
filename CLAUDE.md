@@ -34,7 +34,7 @@ gc-game-dev/
 │   ├── main.js            # 初期化・ゲームループ
 │   ├── game.js            # ゲームエンジン・シーン管理
 │   ├── player.js          # プレイヤー
-│   ├── enemy.js           # 敵キャラ
+│   ├── audio.js           # 音声管理（Web Audio API）
 │   └── ui.js              # UI・画面遷移
 ├── assets/
 │   ├── images/            # 画像素材（Gemini API生成）
@@ -48,6 +48,16 @@ gc-game-dev/
 - コミットメッセージ: `[カテゴリ] 変更内容`
 - カテゴリ: `feat` / `fix` / `refactor` / `asset` / `docs`
 - リモート: `https://github.com/kikaizaru-art/gc-game-dev.git`
+
+## 🚀 Vercel プレビュー確認フロー
+- Vercel GitHub連携済み（自動デプロイ有効）
+- ブランチにプッシュすると自動でプレビューURLが生成される
+- 実装後の確認フロー:
+  1. コード実装・コミット
+  2. ブランチにプッシュ
+  3. Vercelが自動でプレビューデプロイを作成
+  4. ユーザーがプレビューURLで動作確認（mainマージ不要）
+- プレビューURL: Vercelダッシュボード → Deployments で確認
 
 ## 🎨 Gemini API 利用（画像生成のみ）
 - キャラクター・背景・UI素材の生成に使用

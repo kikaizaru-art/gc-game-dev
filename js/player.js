@@ -16,6 +16,11 @@ const THRESHOLD_BAD = 40;
 const QUIZ_COUNT = 10;
 const QUIZ_TIME_LIMIT = 15;
 
+/* UI制御 */
+const FEEDBACK_DISPLAY_MS = 2000;
+const TIMER_INTERVAL_MS = 100;
+const TIMER_STEP = 0.1;
+
 /**
  * ヒロインデータとクイズデータを管理するクラス
  */
@@ -69,10 +74,9 @@ class HeroineManager {
     return this.currentQuizSet[this.currentQuizIndex];
   }
 
-  /* 回答を処理して結果を返す */
-  answerQuiz(choiceIndex) {
+  /* 正誤結果を受け取りスコアを更新する */
+  recordAnswer(isCorrect) {
     const quiz = this.getCurrentQuiz();
-    const isCorrect = choiceIndex === quiz.correct;
 
     if (isCorrect) {
       this.affinity = Math.min(MAX_AFFINITY, this.affinity + AFFINITY_CORRECT);
@@ -83,7 +87,6 @@ class HeroineManager {
 
     return {
       isCorrect,
-      correctIndex: quiz.correct,
       comment: quiz.comment,
       affinity: this.affinity
     };

@@ -11,6 +11,7 @@
 </head>
 <body>
   <div id="game-container">
+    <button id="btn-mute" class="btn-mute" title="ミュート切り替え">🔊</button>
 
     <!-- タイトル画面 -->
     <div id="screen-title" class="screen active">
@@ -46,6 +47,11 @@
       <div id="quiz-chara-container" class="quiz-chara-container">
         <img id="quiz-chara-img" class="quiz-chara-img" src="" alt="">
       </div>
+      <!-- フィードバック吹き出し（キャラ付近に表示） -->
+      <div id="quiz-feedback" class="quiz-feedback hidden">
+        <p id="feedback-text"></p>
+        <p id="feedback-comment" class="feedback-comment"></p>
+      </div>
       <!-- ステータスバー -->
       <div class="quiz-status-bar">
         <div class="quiz-heroine-info">
@@ -59,11 +65,16 @@
           </div>
         </div>
         <div class="quiz-right-info">
-          <div class="quiz-progress">
-            <span id="quiz-number">1</span> / <span id="quiz-total">10</span>
+          <div id="quiz-score-dots" class="quiz-score-dots">
+            <!-- JSで動的生成 -->
           </div>
-          <div class="timer-container">
-            <div id="timer-bar" class="timer-bar"></div>
+          <div class="timer-circle-container" id="timer-circle-container">
+            <svg class="timer-circle-svg" viewBox="0 0 44 44">
+              <circle class="timer-circle-bg" cx="22" cy="22" r="18"></circle>
+              <circle id="timer-circle-bar" class="timer-circle-bar" cx="22" cy="22" r="18"
+                stroke-dasharray="113.1" stroke-dashoffset="0"></circle>
+            </svg>
+            <span id="timer-text" class="timer-text">15</span>
           </div>
         </div>
       </div>
@@ -76,10 +87,6 @@
         <div id="quiz-choices" class="quiz-choices">
           <!-- JSで動的生成 -->
         </div>
-      </div>
-      <div id="quiz-feedback" class="quiz-feedback hidden">
-        <p id="feedback-text"></p>
-        <p id="feedback-comment" class="feedback-comment"></p>
       </div>
     </div>
 
@@ -113,6 +120,7 @@
   </div>
 
   <script src="js/player.js"></script>
+  <script src="js/audio.js"></script>
   <script src="js/game.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/main.js"></script>
