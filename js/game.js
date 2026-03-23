@@ -48,7 +48,12 @@ class GameEngine {
       const card = e.target.closest('.heroine-card');
       if (!card) return;
       this.audio.playClick();
-      this.startQuiz(card.dataset.heroineId);
+      this.startStory(card.dataset.heroineId);
+    });
+
+    /* ストーリー画面クリックで次へ進む */
+    document.getElementById('screen-story').addEventListener('click', () => {
+      this.handleStoryClick();
     });
 
     /* 結果画面 */
@@ -74,7 +79,52 @@ class GameEngine {
     });
   }
 
-  /* クイズを開始する */
+  /* ストーリーを開始する */
+  startStory(heroineId) {
+    this.heroineManager.selectHeroine(heroineId);
+    const heroine = this.heroineManager.selectedHeroine;
+    this.storyLines = heroine.story || [];
+    this.storyIndex = 0;
+
+    this.ui.renderStoryScene(heroine);
+    this.ui.showScreen('story');
+    this.showNextStoryLine();
+  }
+
+  /* ストーリーの次の行を表示する */
+  async showNextStoryLine() {
+    const heroine = this.heroineManager.selectedHeroine;
+
+    if (this.storyIndex >= this.storyLines.length) {
+      this.storyClickHandler = null;
+      this.startQuizFromStory();
+      return;
+    }
+
+    const line = this.storyLines[this.storyIndex];
+    this.storyIndex++;
+    await this.ui.showStoryLine(line, heroine);
+  }
+
+  /* ストーリー画面のクリック処理 */
+  handleStoryClick() {
+    if (this.ui.isTyping()) {
+      this.ui.skipTyping();
+      return;
+    }
+    this.audio.playClick();
+    this.showNextStoryLine();
+  }
+
+  /* ストーリー終了後にクイズを開始する */
+  startQuizFromStory() {
+    this.ui.showScreen('quiz');
+    this.ui.renderScoreDots(QUIZ_COUNT);
+    this.ui.highlightCurrentDot(0);
+    this.showCurrentQuiz();
+  }
+
+  /* クイズを開始する（選択画面から直接） */
   startQuiz(heroineId) {
     this.heroineManager.selectHeroine(heroineId);
     this.ui.showScreen('quiz');
