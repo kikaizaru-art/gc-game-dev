@@ -38,13 +38,43 @@
           <h1 class="game-title">ハートクイズ</h1>
           <p class="game-subtitle">～3人の想い～</p>
           <button id="btn-start" class="btn btn-primary btn-glow">スタート</button>
-          <div class="title-btn-row">
-            <button id="btn-stats" class="btn btn-secondary btn-stats-title">ステータス</button>
-            <button id="btn-shop" class="btn btn-secondary btn-stats-title">ショップ</button>
-            <button id="btn-options" class="btn btn-secondary btn-stats-title">オプション</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- マイページ画面 -->
+    <div id="screen-mypage" class="screen">
+      <div class="mypage-bg"></div>
+      <div class="mypage-content">
+        <h2 class="mypage-heading">マイページ</h2>
+        <div class="mypage-chara-area">
+          <div class="mypage-chara-container">
+            <img id="mypage-chara-img" class="mypage-chara-img" src="assets/images/misaki.png" alt="美咲">
+          </div>
+          <div id="mypage-chara-name" class="mypage-chara-name" style="color: #FF6B9D;">美咲</div>
+        </div>
+        <div class="mypage-buttons">
+          <button id="btn-mypage-play" class="btn btn-primary btn-glow">あそぶ</button>
+          <div class="mypage-btn-row">
+            <button id="btn-mypage-favorite" class="btn btn-secondary btn-mypage-sub">お気に入り</button>
+            <button id="btn-mypage-stats" class="btn btn-secondary btn-mypage-sub">ステータス</button>
+          </div>
+          <div class="mypage-btn-row">
+            <button id="btn-mypage-shop" class="btn btn-secondary btn-mypage-sub">ショップ</button>
+            <button id="btn-mypage-options" class="btn btn-secondary btn-mypage-sub">オプション</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- お気に入り選択画面 -->
+    <div id="screen-fav-select" class="screen">
+      <div class="select-bg"></div>
+      <h2 class="screen-heading">お気に入りを選んでね</h2>
+      <div id="fav-heroine-cards" class="heroine-cards">
+        <!-- JSで動的生成 -->
+      </div>
+      <button id="btn-back-mypage-fav" class="btn btn-secondary">戻る</button>
     </div>
 
     <!-- ヒロイン選択画面 -->

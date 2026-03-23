@@ -15,6 +15,8 @@ class UiManager {
   constructor() {
     this.screens = {
       title: document.getElementById('screen-title'),
+      mypage: document.getElementById('screen-mypage'),
+      favSelect: document.getElementById('screen-fav-select'),
       select: document.getElementById('screen-select'),
       stageSelect: document.getElementById('screen-stage-select'),
       story: document.getElementById('screen-story'),
@@ -34,6 +36,48 @@ class UiManager {
     this.screens[screenName].classList.add('active');
     /* クイズ画面のみヘッダータイムゲージを表示 */
     this.showHeaderTimerGauge(screenName === 'quiz');
+  }
+
+  /* マイページを描画する */
+  renderMyPage(heroine) {
+    const charaImg = document.getElementById('mypage-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    const nameEl = document.getElementById('mypage-chara-name');
+    nameEl.textContent = heroine.shortName;
+    nameEl.style.color = heroine.color;
+  }
+
+  /* お気に入り選択カードを生成する */
+  renderFavoriteCards(heroines, currentFavoriteId, statsManager) {
+    const container = document.getElementById('fav-heroine-cards');
+    container.innerHTML = heroines.map(h => {
+      const isFavorite = h.id === currentFavoriteId;
+      /* 美咲は常に選択可、他はステージ1ハッピーエンド達成済みのみ */
+      const isSelectable = h.id === 'misaki' || (statsManager && statsManager.hasHappyEnd(h.id));
+      const cardClass = isFavorite ? 'favorite-current' : !isSelectable ? 'locked' : '';
+      const badge = isFavorite
+        ? '<span class="card-completion-badge fav-badge">お気に入り</span>'
+        : '';
+      const lockLabel = !isSelectable
+        ? '<div class="heroine-card-lock-label">🔒 STAGE1 ハッピーエンドで解放</div>'
+        : '';
+      return `
+        <div class="heroine-card ${cardClass}" data-heroine-id="${h.id}" data-color="${h.colorName}">
+          <div class="heroine-card-image">
+            ${badge}
+            <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
+          </div>
+          <div class="heroine-card-info">
+            <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
+            <div class="heroine-card-personality">${h.personality}</div>
+            <div class="heroine-card-likes">${h.description}</div>
+            ${lockLabel}
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */

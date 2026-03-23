@@ -17,6 +17,7 @@ class GameEngine {
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
     this.activeStatsHeroineId = 'all';
+    this.favoriteHeroineId = this.loadFavoriteHeroine();
   }
 
   /* ゲーム初期化 */
@@ -39,30 +40,56 @@ class GameEngine {
 
   /* イベントリスナーを登録する */
   bindEvents() {
-    /* タイトル画面 */
+    /* タイトル画面 → マイページへ */
     document.getElementById('btn-start').addEventListener('click', () => {
       this.audio.init();
       this.audio.playClick();
       this.audio.startBgm();
+      this.showMyPage();
+    });
+
+    /* マイページ → あそぶ（ヒロイン選択へ） */
+    document.getElementById('btn-mypage-play').addEventListener('click', () => {
+      this.audio.playClick();
       this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
       this.ui.showScreen('select');
     });
 
-    /* オプション画面 */
-    document.getElementById('btn-options').addEventListener('click', () => {
-      this.audio.init();
+    /* マイページ → お気に入り選択 */
+    document.getElementById('btn-mypage-favorite').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.renderFavoriteCards(this.heroineManager.heroines, this.favoriteHeroineId, this.stats);
+      this.ui.showScreen('favSelect');
+    });
+
+    document.getElementById('btn-back-mypage-fav').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
+    /* お気に入り選択カードのクリック */
+    document.getElementById('fav-heroine-cards').addEventListener('click', (e) => {
+      const card = e.target.closest('.heroine-card');
+      if (!card || card.classList.contains('favorite-current') || card.classList.contains('locked')) return;
+      this.audio.playClick();
+      const heroineId = card.dataset.heroineId;
+      this.saveFavoriteHeroine(heroineId);
+      this.showMyPage();
+    });
+
+    /* マイページ → オプション */
+    document.getElementById('btn-mypage-options').addEventListener('click', () => {
       this.audio.playClick();
       this.showOptionsScreen();
     });
 
     document.getElementById('btn-back-title-options').addEventListener('click', () => {
       this.audio.playClick();
-      this.ui.showScreen('title');
+      this.showMyPage();
     });
 
-    /* ショップ画面 */
-    document.getElementById('btn-shop').addEventListener('click', () => {
-      this.audio.init();
+    /* マイページ → ショップ */
+    document.getElementById('btn-mypage-shop').addEventListener('click', () => {
       this.audio.playClick();
       this.updateShopScreen();
       this.ui.showScreen('shop');
@@ -70,7 +97,7 @@ class GameEngine {
 
     document.getElementById('btn-back-title-shop').addEventListener('click', () => {
       this.audio.playClick();
-      this.ui.showScreen('title');
+      this.showMyPage();
     });
 
     document.getElementById('btn-buy-ad-free').addEventListener('click', () => {
@@ -112,16 +139,15 @@ class GameEngine {
       this.stats.setPrioritizeUnconfirmed(e.target.checked);
     });
 
-    /* ステータス画面 */
-    document.getElementById('btn-stats').addEventListener('click', () => {
-      this.audio.init();
+    /* マイページ → ステータス */
+    document.getElementById('btn-mypage-stats').addEventListener('click', () => {
       this.audio.playClick();
       this.showStatsScreen();
     });
 
     document.getElementById('btn-back-title-stats').addEventListener('click', () => {
       this.audio.playClick();
-      this.ui.showScreen('title');
+      this.showMyPage();
     });
 
     document.getElementById('btn-stats-reset').addEventListener('click', () => {
@@ -156,7 +182,8 @@ class GameEngine {
 
     /* ヒロイン選択画面 */
     document.getElementById('btn-back-title').addEventListener('click', () => {
-      this.ui.showScreen('title');
+      this.audio.playClick();
+      this.showMyPage();
     });
 
     document.getElementById('heroine-cards').addEventListener('click', (e) => {
@@ -226,7 +253,7 @@ class GameEngine {
     document.getElementById('btn-back-title-result').addEventListener('click', () => {
       this.audio.playClick();
       this.audio.startBgm();
-      this.ui.showScreen('title');
+      this.showMyPage();
     });
 
     /* 広告視聴でスタミナ回復ボタン */
@@ -686,6 +713,33 @@ class GameEngine {
     if (!this.shop) return;
     await this.shop.restorePurchases();
     this.updateShopScreen();
+  }
+
+  /* お気に入りヒロインをlocalStorageから読み込む */
+  loadFavoriteHeroine() {
+    try {
+      return localStorage.getItem('heartQuizFavoriteHeroine') || 'misaki';
+    } catch (e) {
+      return 'misaki';
+    }
+  }
+
+  /* お気に入りヒロインをlocalStorageに保存する */
+  saveFavoriteHeroine(heroineId) {
+    this.favoriteHeroineId = heroineId;
+    try {
+      localStorage.setItem('heartQuizFavoriteHeroine', heroineId);
+    } catch (e) {
+      console.warn('お気に入り保存に失敗:', e);
+    }
+  }
+
+  /* マイページを表示する */
+  showMyPage() {
+    const heroine = this.heroineManager.heroines.find(h => h.id === this.favoriteHeroineId)
+      || this.heroineManager.heroines[0];
+    this.ui.renderMyPage(heroine);
+    this.ui.showScreen('mypage');
   }
 
   /* ステータス画面を表示する */
