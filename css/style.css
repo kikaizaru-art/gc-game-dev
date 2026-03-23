@@ -133,6 +133,19 @@ body {
   box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
 }
 
+.btn-accent {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #1a1a2e;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+  animation: btnGlow-accent 2s ease-in-out infinite;
+}
+
+@keyframes btnGlow-accent {
+  0%, 100% { box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4); }
+  50% { box-shadow: 0 4px 30px rgba(251, 191, 36, 0.7), 0 0 60px rgba(251, 191, 36, 0.3); }
+}
+
 .btn-glow {
   animation: btnGlow 2s ease-in-out infinite;
 }

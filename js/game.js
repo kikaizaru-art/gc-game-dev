@@ -129,6 +129,16 @@ class GameEngine {
       }
     });
 
+    /* 次のステージへボタン */
+    document.getElementById('btn-next-stage').addEventListener('click', () => {
+      this.audio.playClick();
+      this.audio.startBgm();
+      const heroineId = this.heroineManager.selectedHeroine.id;
+      const currentStage = this.heroineManager.currentStage || 1;
+      const nextStage = currentStage + 1;
+      this.startStoryWithStage(heroineId, nextStage);
+    });
+
     document.getElementById('btn-back-title-result').addEventListener('click', () => {
       this.audio.playClick();
       this.audio.startBgm();

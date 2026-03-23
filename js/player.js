@@ -186,7 +186,8 @@ class HeroineManager {
       heroine: this.selectedHeroine,
       affinity: this.affinity,
       correctCount: this.correctCount,
-      totalQuestions: QUIZ_COUNT
+      totalQuestions: QUIZ_COUNT,
+      currentStage: this.currentStage || 1
     };
   }
 }

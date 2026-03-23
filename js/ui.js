@@ -496,6 +496,17 @@ class UiManager {
     if (endingData.type === 'happy') {
       this.spawnSparkles(resultScreen, 15);
     }
+
+    /* 次のステージボタンの表示制御 */
+    const MAX_STAGE = 3;
+    const btnNextStage = document.getElementById('btn-next-stage');
+    const currentStage = endingData.currentStage || 1;
+    if (endingData.type === 'happy' && currentStage < MAX_STAGE) {
+      btnNextStage.style.display = '';
+      btnNextStage.textContent = `次のステージへ（STAGE ${currentStage + 1}）`;
+    } else {
+      btnNextStage.style.display = 'none';
+    }
   }
 
   /* ステータス画面のタブを描画する */
