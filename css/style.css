@@ -583,9 +583,11 @@ body {
   left: 0;
   right: 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
+  padding-right: 180px; /* スタミナバッジとの重なりを回避 */
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
   z-index: 10;
 }
@@ -1384,6 +1386,7 @@ body {
 
   .quiz-status-bar {
     padding: 6px 10px;
+    padding-right: 155px;
   }
 
   .heroine-name-label {
