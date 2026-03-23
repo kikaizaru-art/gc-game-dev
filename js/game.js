@@ -86,6 +86,9 @@ class GameEngine {
         const heroine = this.heroineManager.heroines.find(h => h.id === heroineId);
         this.ui.renderStageSelect(heroine, this.stats);
         this.ui.showScreen('stageSelect');
+      } else if (this.stats.getTotalClears(heroineId) > 0) {
+        /* クリア済みだがハッピーエンド未達成 → やり直しストーリー */
+        this.startRetry(heroineId);
       } else {
         this.startStory(heroineId);
       }
