@@ -91,7 +91,7 @@ class GameEngine {
     document.getElementById('btn-retry').addEventListener('click', () => {
       this.audio.playClick();
       this.audio.startBgm();
-      this.startQuiz(this.heroineManager.selectedHeroine.id);
+      this.startRetry(this.heroineManager.selectedHeroine.id);
     });
 
     document.getElementById('btn-back-title-result').addEventListener('click', () => {
@@ -123,14 +123,42 @@ class GameEngine {
     });
   }
 
-  /* ストーリーを開始する */
-  startStory(heroineId) {
+  /* リトライ時のストーリー付き再開 */
+  startRetry(heroineId) {
     const isSecondPlay = this.stats.hasHappyEnd(heroineId);
     this.heroineManager.selectHeroine(heroineId, isSecondPlay);
     const heroine = this.heroineManager.selectedHeroine;
-    this.storyLines = isSecondPlay && heroine.story2
-      ? heroine.story2
-      : heroine.story || [];
+
+    /* ステージ1未クリアならリトライストーリーを表示 */
+    if (!isSecondPlay && heroine.storyRetry) {
+      this.storyLines = heroine.storyRetry;
+      this.storyIndex = 0;
+      this.ui.renderStoryScene(heroine);
+      this.ui.showScreen('story');
+      this.showNextStoryLine();
+    } else {
+      this.ui.showScreen('quiz');
+      this.ui.renderScoreDots(QUIZ_COUNT);
+      this.ui.highlightCurrentDot(0);
+      this.showCurrentQuiz();
+    }
+  }
+
+  /* ストーリーを開始する */
+  startStory(heroineId) {
+    const isSecondPlay = this.stats.hasHappyEnd(heroineId);
+    const hasPlayed = this.stats.getTotalClears(heroineId) > 0;
+    this.heroineManager.selectHeroine(heroineId, isSecondPlay);
+    const heroine = this.heroineManager.selectedHeroine;
+
+    /* ストーリー分岐：ステージ2 → リトライ → 初回 */
+    if (isSecondPlay && heroine.story2) {
+      this.storyLines = heroine.story2;
+    } else if (!isSecondPlay && hasPlayed && heroine.storyRetry) {
+      this.storyLines = heroine.storyRetry;
+    } else {
+      this.storyLines = heroine.story || [];
+    }
     this.storyIndex = 0;
 
     this.ui.renderStoryScene(heroine);
