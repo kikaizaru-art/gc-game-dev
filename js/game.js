@@ -91,7 +91,7 @@ class GameEngine {
     document.getElementById('btn-retry').addEventListener('click', () => {
       this.audio.playClick();
       this.audio.startBgm();
-      this.startQuiz(this.heroineManager.selectedHeroine.id);
+      this.startRetry(this.heroineManager.selectedHeroine.id);
     });
 
     document.getElementById('btn-back-title-result').addEventListener('click', () => {
@@ -121,6 +121,27 @@ class GameEngine {
         this.handleAnswer(keyMap[e.key]);
       }
     });
+  }
+
+  /* リトライ時のストーリー付き再開 */
+  startRetry(heroineId) {
+    const isSecondPlay = this.stats.hasHappyEnd(heroineId);
+    this.heroineManager.selectHeroine(heroineId, isSecondPlay);
+    const heroine = this.heroineManager.selectedHeroine;
+
+    /* ステージ1未クリアならリトライストーリーを表示 */
+    if (!isSecondPlay && heroine.storyRetry) {
+      this.storyLines = heroine.storyRetry;
+      this.storyIndex = 0;
+      this.ui.renderStoryScene(heroine);
+      this.ui.showScreen('story');
+      this.showNextStoryLine();
+    } else {
+      this.ui.showScreen('quiz');
+      this.ui.renderScoreDots(QUIZ_COUNT);
+      this.ui.highlightCurrentDot(0);
+      this.showCurrentQuiz();
+    }
   }
 
   /* ストーリーを開始する */
