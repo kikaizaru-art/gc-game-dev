@@ -21,7 +21,8 @@ class UiManager {
       quiz: document.getElementById('screen-quiz'),
       result: document.getElementById('screen-result'),
       options: document.getElementById('screen-options'),
-      stats: document.getElementById('screen-stats')
+      stats: document.getElementById('screen-stats'),
+      shop: document.getElementById('screen-shop')
     };
   }
 

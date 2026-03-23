@@ -69,6 +69,25 @@
 - 将来的にAdMob等のSDKに差し替え可能な設計（`js/ad.js` の `AdManager` クラス）
 - SDK導入時の変更箇所: `AdManager.isRewardedAdReady()` と `AdManager.showRewardedAd()` のみ
 
+### ショップ（アプリ内課金） ✅
+タイトル画面からアクセスできるショップ。Google Play Billing / StoreKit に差し替え可能な設計。
+
+#### 商品一覧
+| 商品ID | 名前 | 価格 | 種別 | 内容 |
+|---|---|---|---|---|
+| `ad_free_stamina_recovery` | 広告なしプラン | ¥480 | 買い切り | 広告非表示＋ステージクリア時スタミナ全回復 |
+
+#### 広告なしプランの効果
+- 結果画面の「広告を見てスタミナ回復」ボタンが非表示になる
+- ステージクリア時（結果画面表示時）にスタミナが自動で全回復する
+- 購入状態はlocalStorageに保存（SDK導入時はレシート検証に差し替え）
+
+#### 実装
+- `js/shop.js` の `ShopManager` クラスで購入状態を管理
+- 現在はモック実装（即座に購入成功）
+- SDK導入時の変更箇所: `ShopManager.purchase()` と `ShopManager.restorePurchases()` のみ
+- 購入復元機能あり（App Store審査要件対応）
+
 ### ストーリー分岐 ✅
 プレイ状況に応じて異なるストーリーを表示する。
 
