@@ -16,6 +16,7 @@ class UiManager {
     this.screens = {
       title: document.getElementById('screen-title'),
       mypage: document.getElementById('screen-mypage'),
+      favSelect: document.getElementById('screen-fav-select'),
       select: document.getElementById('screen-select'),
       stageSelect: document.getElementById('screen-stage-select'),
       story: document.getElementById('screen-story'),
@@ -46,6 +47,27 @@ class UiManager {
     const nameEl = document.getElementById('mypage-chara-name');
     nameEl.textContent = heroine.shortName;
     nameEl.style.color = heroine.color;
+  }
+
+  /* お気に入り選択カードを生成する */
+  renderFavoriteCards(heroines, currentFavoriteId) {
+    const container = document.getElementById('fav-heroine-cards');
+    container.innerHTML = heroines.map(h => {
+      const isFavorite = h.id === currentFavoriteId;
+      return `
+        <div class="heroine-card ${isFavorite ? 'favorite-current' : ''}" data-heroine-id="${h.id}" data-color="${h.colorName}">
+          <div class="heroine-card-image">
+            ${isFavorite ? '<span class="card-completion-badge fav-badge">お気に入り</span>' : ''}
+            <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
+          </div>
+          <div class="heroine-card-info">
+            <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
+            <div class="heroine-card-personality">${h.personality}</div>
+            <div class="heroine-card-likes">${h.description}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */

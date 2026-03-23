@@ -389,7 +389,8 @@ body {
 /* ============================
    ヒロイン選択画面
    ============================ */
-#screen-select {
+#screen-select,
+#screen-fav-select {
   justify-content: flex-start;
   padding-top: 28px;
   background: linear-gradient(180deg, #2a1535 0%, #1a0f25 100%);
@@ -519,6 +520,26 @@ body {
   color: rgba(255, 208, 232, 0.7);
   margin-top: 8px;
   font-weight: 600;
+}
+
+/* お気に入り済みカード（グレーアウト） */
+.heroine-card.favorite-current {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.heroine-card.favorite-current:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.card-completion-badge.fav-badge {
+  background: rgba(236, 72, 153, 0.8);
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 10px;
 }
 
 /* クリア・パーフェクトバッジ */

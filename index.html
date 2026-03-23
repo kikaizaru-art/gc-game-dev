@@ -56,12 +56,25 @@
         <div class="mypage-buttons">
           <button id="btn-mypage-play" class="btn btn-primary btn-glow">あそぶ</button>
           <div class="mypage-btn-row">
+            <button id="btn-mypage-favorite" class="btn btn-secondary btn-mypage-sub">お気に入り</button>
             <button id="btn-mypage-stats" class="btn btn-secondary btn-mypage-sub">ステータス</button>
+          </div>
+          <div class="mypage-btn-row">
             <button id="btn-mypage-shop" class="btn btn-secondary btn-mypage-sub">ショップ</button>
             <button id="btn-mypage-options" class="btn btn-secondary btn-mypage-sub">オプション</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- お気に入り選択画面 -->
+    <div id="screen-fav-select" class="screen">
+      <div class="select-bg"></div>
+      <h2 class="screen-heading">お気に入りを選んでね</h2>
+      <div id="fav-heroine-cards" class="heroine-cards">
+        <!-- JSで動的生成 -->
+      </div>
+      <button id="btn-back-mypage-fav" class="btn btn-secondary">戻る</button>
     </div>
 
     <!-- ヒロイン選択画面 -->

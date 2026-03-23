@@ -55,6 +55,28 @@ class GameEngine {
       this.ui.showScreen('select');
     });
 
+    /* マイページ → お気に入り選択 */
+    document.getElementById('btn-mypage-favorite').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.renderFavoriteCards(this.heroineManager.heroines, this.favoriteHeroineId);
+      this.ui.showScreen('favSelect');
+    });
+
+    document.getElementById('btn-back-mypage-fav').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
+    /* お気に入り選択カードのクリック */
+    document.getElementById('fav-heroine-cards').addEventListener('click', (e) => {
+      const card = e.target.closest('.heroine-card');
+      if (!card || card.classList.contains('favorite-current')) return;
+      this.audio.playClick();
+      const heroineId = card.dataset.heroineId;
+      this.saveFavoriteHeroine(heroineId);
+      this.showMyPage();
+    });
+
     /* マイページ → オプション */
     document.getElementById('btn-mypage-options').addEventListener('click', () => {
       this.audio.playClick();
