@@ -19,7 +19,7 @@ class GameEngine {
   /* ゲーム初期化 */
   async init() {
     await this.heroineManager.loadData();
-    this.ui.renderHeroineCards(this.heroineManager.heroines);
+    this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats);
     this.bindEvents();
     this.ui.showScreen('title');
     console.log('ハートクイズ - 初期化完了');
@@ -32,6 +32,7 @@ class GameEngine {
       this.audio.init();
       this.audio.playClick();
       this.audio.startBgm();
+      this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats);
       this.ui.showScreen('select');
     });
 
@@ -111,7 +112,7 @@ class GameEngine {
 
   /* ストーリーを開始する */
   startStory(heroineId) {
-    const isSecondPlay = this.stats.getTotalClears(heroineId) >= 1;
+    const isSecondPlay = this.stats.hasHappyEnd(heroineId);
     this.heroineManager.selectHeroine(heroineId, isSecondPlay);
     const heroine = this.heroineManager.selectedHeroine;
     this.storyLines = isSecondPlay && heroine.story2
@@ -193,7 +194,8 @@ class GameEngine {
       heroine,
       questionNumber: this.heroineManager.currentQuizIndex + 1,
       totalQuestions: QUIZ_COUNT,
-      affinity: this.heroineManager.affinity
+      affinity: this.heroineManager.affinity,
+      isSecondPlay: this.heroineManager.isSecondPlay
     });
 
     this.ui.hideFeedback();

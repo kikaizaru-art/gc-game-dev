@@ -84,6 +84,11 @@ class StatsManager {
     return this.stats.categories || {};
   }
 
+  /* ヒロインのハッピーエンドクリア済みかを判定する */
+  hasHappyEnd(heroineId) {
+    return this.stats.heroines[heroineId].clears.happy >= 1;
+  }
+
   /* 全ヒロインの合計クリア回数を取得する */
   getAllTotalClears() {
     let total = 0;

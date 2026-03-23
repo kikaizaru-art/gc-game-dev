@@ -367,6 +367,28 @@ body {
   line-height: 1.5;
 }
 
+.card-stage-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+
+.card-stage-badge.easy {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.card-stage-badge.hard {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
 /* ============================
    クイズ画面（ビジュアルノベル風）
    ============================ */
@@ -469,6 +491,33 @@ body {
   font-weight: 700;
   white-space: nowrap;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.difficulty-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.difficulty-badge.easy {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.4);
+}
+
+.difficulty-badge.hard {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.4);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 1px 4px rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 1px 8px rgba(239, 68, 68, 0.7); }
 }
 
 .affinity-hearts {
@@ -1113,6 +1162,11 @@ body {
 
   .heroine-name-label {
     font-size: 12px;
+  }
+
+  .difficulty-badge {
+    font-size: 9px;
+    padding: 1px 6px;
   }
 
   .affinity-bar-container {
