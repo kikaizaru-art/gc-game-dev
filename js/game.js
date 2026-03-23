@@ -70,6 +70,20 @@ class GameEngine {
       this.showStatsScreen();
     });
 
+    /* キャラ別データリセット */
+    document.getElementById('stats-content').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-reset-heroine]');
+      if (!btn) return;
+      this.audio.playClick();
+      const heroineId = btn.dataset.resetHeroine;
+      const heroine = this.heroineManager.heroines.find(h => h.id === heroineId);
+      const name = heroine ? heroine.shortName : heroineId;
+      if (confirm(`${name}のプレイデータをリセットしますか？`)) {
+        this.stats.resetHeroine(heroineId);
+        this.showStatsScreen();
+      }
+    });
+
     /* ヒロイン選択画面 */
     document.getElementById('btn-back-title').addEventListener('click', () => {
       this.ui.showScreen('title');
@@ -454,16 +468,37 @@ class GameEngine {
     );
   }
 
+  /* ヒロインごとの全カテゴリ一覧を取得する */
+  getAllCategoriesByHeroine() {
+    const hm = this.heroineManager;
+    const result = {};
+    const heroineIds = ['misaki', 'rin', 'hinata'];
+    heroineIds.forEach(id => {
+      const catSet = new Set();
+      [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+        if (source && source[id]) {
+          source[id].forEach(q => {
+            if (q.category) catSet.add(q.category);
+          });
+        }
+      });
+      result[id] = [...catSet];
+    });
+    return result;
+  }
+
   /* ステータス画面を表示する */
   showStatsScreen() {
     const heroines = this.heroineManager.heroines;
     const activeId = this.activeStatsHeroineId || 'all';
+    const allCatsByHeroine = this.getAllCategoriesByHeroine();
     this.ui.renderStatsTabs(heroines, activeId);
     if (activeId === 'all') {
-      this.ui.renderStatsAll(heroines, this.stats);
+      this.ui.renderStatsAll(heroines, this.stats, allCatsByHeroine);
     } else {
       const heroine = heroines.find(h => h.id === activeId) || heroines[0];
-      this.ui.renderStatsContent(heroine, this.stats);
+      const cats = allCatsByHeroine[heroine.id] || [];
+      this.ui.renderStatsContent(heroine, this.stats, cats);
     }
     this.ui.renderGlobalCategoryStats(this.stats, activeId);
     this.ui.showScreen('stats');

@@ -115,6 +115,44 @@ class StatsManager {
     return (h && h.categories) ? h.categories : {};
   }
 
+  /* キャラ別のカテゴリクリア状況を取得する */
+  getHeroineCategoryClearStatus(heroineId, allCategories) {
+    const cats = this.getHeroineCategoryStats(heroineId);
+    return allCategories.map(cat => ({
+      name: cat,
+      cleared: cats[cat] ? cats[cat].correct >= 1 : false
+    }));
+  }
+
+  /* キャラ別データのみリセットする */
+  resetHeroine(heroineId) {
+    const h = this.stats.heroines[heroineId];
+    if (!h) return;
+    h.clears = { happy: 0, normal: 0, bad: 0 };
+    h.stage2Clears = { happy: 0, normal: 0, bad: 0 };
+    h.stage3Clears = { happy: 0, normal: 0, bad: 0 };
+    h.categories = {};
+    /* 全体カテゴリも再計算する */
+    this.recalcGlobalCategories();
+    this.save();
+  }
+
+  /* 全体カテゴリ統計をキャラ別データから再計算する */
+  recalcGlobalCategories() {
+    const globalCats = {};
+    Object.keys(this.stats.heroines).forEach(id => {
+      const cats = this.stats.heroines[id].categories || {};
+      Object.keys(cats).forEach(cat => {
+        if (!globalCats[cat]) {
+          globalCats[cat] = { correct: 0, total: 0 };
+        }
+        globalCats[cat].correct += cats[cat].correct;
+        globalCats[cat].total += cats[cat].total;
+      });
+    });
+    this.stats.categories = globalCats;
+  }
+
   /* ヒロインのステージ1ハッピーエンドクリア済みかを判定する */
   hasHappyEnd(heroineId) {
     return this.stats.heroines[heroineId].clears.happy >= 1;

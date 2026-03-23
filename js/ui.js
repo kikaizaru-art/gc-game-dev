@@ -536,10 +536,9 @@ class UiManager {
     container.innerHTML = allTab + heroineTabs;
   }
 
-  /* カテゴリ別正解率のHTMLを生成する */
-  buildCategoryHtml(categories, title) {
-    const categoryKeys = Object.keys(categories);
-    if (categoryKeys.length === 0) {
+  /* カテゴリクリア状況のHTMLを生成する */
+  buildCategoryClearHtml(clearStatus, title) {
+    if (clearStatus.length === 0) {
       return `
         <div class="stats-section">
           <h3 class="stats-section-title">${title}</h3>
@@ -547,30 +546,31 @@ class UiManager {
         </div>
       `;
     }
-    const rows = categoryKeys.map(cat => {
-      const data = categories[cat];
-      const rate = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
-      return `
-        <div class="stats-category-row">
-          <span class="stats-category-name">${cat}</span>
-          <div class="stats-category-bar-container">
-            <div class="stats-category-bar" style="width: ${rate}%;"></div>
-          </div>
-          <span class="stats-category-rate">${rate}%</span>
-          <span class="stats-category-detail">${data.correct}/${data.total}</span>
-        </div>
-      `;
-    }).join('');
+    const clearedCount = clearStatus.filter(c => c.cleared).length;
+    const totalCount = clearStatus.length;
+    const rate = Math.round((clearedCount / totalCount) * 100);
+    const rows = clearStatus.map(cat => `
+      <div class="stats-category-row ${cat.cleared ? 'cleared' : ''}">
+        <span class="stats-category-status">${cat.cleared ? '✅' : '⬜'}</span>
+        <span class="stats-category-name">${cat.name}</span>
+      </div>
+    `).join('');
     return `
       <div class="stats-section">
         <h3 class="stats-section-title">${title}</h3>
+        <div class="stats-clear-progress">
+          <div class="stats-clear-progress-bar-container">
+            <div class="stats-clear-progress-bar" style="width: ${rate}%;"></div>
+          </div>
+          <span class="stats-clear-progress-text">${clearedCount} / ${totalCount} クリア</span>
+        </div>
         <div class="stats-category-list">${rows}</div>
       </div>
     `;
   }
 
   /* ステータス画面のコンテンツを描画する（キャラ別） */
-  renderStatsContent(heroine, statsManager) {
+  renderStatsContent(heroine, statsManager, allCategories) {
     const container = document.getElementById('stats-content');
     const clears = statsManager.getClearsByType(heroine.id);
     const totalClears = statsManager.getTotalClears(heroine.id);
@@ -600,9 +600,9 @@ class UiManager {
       </div>
     `;
 
-    /* キャラ別カテゴリ正解率 */
-    const heroineCats = statsManager.getHeroineCategoryStats(heroine.id);
-    const categoryHtml = this.buildCategoryHtml(heroineCats, 'カテゴリ別正解率');
+    /* キャラ別カテゴリクリア状況 */
+    const clearStatus = statsManager.getHeroineCategoryClearStatus(heroine.id, allCategories);
+    const categoryHtml = this.buildCategoryClearHtml(clearStatus, 'カテゴリクリア状況');
 
     container.innerHTML = `
       <div class="stats-heroine-header" style="border-color: ${heroine.color};">
@@ -614,11 +614,16 @@ class UiManager {
       </div>
       ${clearsHtml}
       ${categoryHtml}
+      <div class="stats-heroine-reset">
+        <button class="btn btn-danger-small" data-reset-heroine="${heroine.id}">
+          ${heroine.shortName}のデータをリセット
+        </button>
+      </div>
     `;
   }
 
   /* 全体ステータス画面を描画する */
-  renderStatsAll(heroines, statsManager) {
+  renderStatsAll(heroines, statsManager, allCategoriesByHeroine) {
     const container = document.getElementById('stats-content');
 
     /* 全キャラ合計クリア回数 */
@@ -658,9 +663,13 @@ class UiManager {
       </div>
     `;
 
-    /* 全体カテゴリ別正解率 */
-    const globalCats = statsManager.getAllCategoryStats();
-    const categoryHtml = this.buildCategoryHtml(globalCats, 'カテゴリ別正解率（全体）');
+    /* 全キャラのカテゴリクリア状況をまとめて表示 */
+    let allCategoryHtml = '';
+    heroines.forEach(h => {
+      const cats = allCategoriesByHeroine[h.id] || [];
+      const clearStatus = statsManager.getHeroineCategoryClearStatus(h.id, cats);
+      allCategoryHtml += this.buildCategoryClearHtml(clearStatus, `${h.emoji} ${h.shortName}`);
+    });
 
     container.innerHTML = `
       <div class="stats-all-header">
@@ -668,7 +677,7 @@ class UiManager {
         <span class="stats-all-title">全体ステータス</span>
       </div>
       ${clearsHtml}
-      ${categoryHtml}
+      ${allCategoryHtml}
     `;
   }
 

@@ -1933,59 +1933,74 @@ body {
   margin-top: 2px;
 }
 
-/* カテゴリ別正解率 */
+/* カテゴリクリア状況 */
 .stats-category-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .stats-category-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 40px 50px;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
+  gap: 10px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 6px;
+  opacity: 0.5;
+}
+
+.stats-category-row.cleared {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.stats-category-status {
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
 .stats-category-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: rgba(255, 208, 232, 0.9);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.stats-category-bar-container {
+.stats-category-row.cleared .stats-category-name {
+  color: #fff;
+}
+
+/* クリア進捗バー */
+.stats-clear-progress {
+  margin-bottom: 10px;
+}
+
+.stats-clear-progress-bar-container {
   width: 100%;
-  height: 8px;
+  height: 10px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  border-radius: 5px;
   overflow: hidden;
+  margin-bottom: 6px;
 }
 
-.stats-category-bar {
+.stats-clear-progress-bar {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease;
-  min-width: 2px;
+  border-radius: 5px;
   background: var(--color-primary);
+  transition: width 0.5s ease;
 }
 
-.stats-category-rate {
+.stats-clear-progress-text {
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
-  text-align: right;
+  color: rgba(255, 208, 232, 0.8);
 }
 
-.stats-category-detail {
-  font-size: 11px;
-  color: rgba(255, 208, 232, 0.5);
-  text-align: right;
+/* キャラ別リセットボタン */
+.stats-heroine-reset {
+  margin-top: 12px;
+  text-align: center;
 }
 
 .stats-empty {
@@ -2069,13 +2084,11 @@ body {
   }
 
   .stats-category-row {
-    grid-template-columns: 60px 1fr 36px 40px;
-    gap: 4px;
-    padding: 4px 8px;
+    padding: 6px 8px;
   }
 
   .stats-category-name {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .stats-heroine-header {
