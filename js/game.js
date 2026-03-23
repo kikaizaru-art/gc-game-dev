@@ -80,8 +80,8 @@ class GameEngine {
       if (!card) return;
       this.audio.playClick();
       const heroineId = card.dataset.heroineId;
-      /* クリア済みならステージ選択画面を表示 */
-      if (this.stats.getTotalClears(heroineId) > 0) {
+      /* ハッピーエンド達成済みならステージ選択画面を表示 */
+      if (this.stats.hasHappyEnd(heroineId)) {
         this.pendingHeroineId = heroineId;
         const heroine = this.heroineManager.heroines.find(h => h.id === heroineId);
         this.ui.renderStageSelect(heroine, this.stats);
@@ -115,8 +115,8 @@ class GameEngine {
       this.audio.playClick();
       this.audio.startBgm();
       const heroineId = this.heroineManager.selectedHeroine.id;
-      /* クリア済みならステージ選択画面に戻す */
-      if (this.stats.getTotalClears(heroineId) > 0) {
+      /* ハッピーエンド達成済みならステージ選択画面に戻す */
+      if (this.stats.hasHappyEnd(heroineId)) {
         this.pendingHeroineId = heroineId;
         const heroine = this.heroineManager.selectedHeroine;
         this.ui.renderStageSelect(heroine, this.stats);
@@ -429,10 +429,12 @@ class GameEngine {
     this.ui.showScreen('result');
 
     /* 統計を記録する */
+    const currentStage = this.heroineManager.isSecondPlay ? 2 : 1;
     this.stats.recordGameResult(
       this.heroineManager.selectedHeroine.id,
       endingData.type,
-      this.heroineManager.quizResults
+      this.heroineManager.quizResults,
+      currentStage
     );
   }
 

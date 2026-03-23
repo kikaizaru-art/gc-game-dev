@@ -395,6 +395,12 @@ body {
   border: 1px solid rgba(251, 191, 36, 0.4);
 }
 
+.card-stage-badge.bad {
+  background: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.4);
+}
+
 /* ============================
    クイズ画面（ビジュアルノベル風）
    ============================ */

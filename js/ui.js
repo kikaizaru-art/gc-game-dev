@@ -36,13 +36,12 @@ class UiManager {
   renderHeroineCards(heroines, statsManager) {
     const container = document.getElementById('heroine-cards');
     container.innerHTML = heroines.map(h => {
-      const hasCleared = statsManager && statsManager.getTotalClears(h.id) > 0;
-      const hasHappy = statsManager && statsManager.hasHappyEnd(h.id);
+      const progress = statsManager && statsManager.getBestProgress(h.id);
       let stageBadge;
-      if (hasHappy) {
-        stageBadge = '<span class="card-stage-badge hard">STAGE 2 解放済み</span>';
-      } else if (hasCleared) {
-        stageBadge = '<span class="card-stage-badge cleared">クリア済み</span>';
+      if (progress) {
+        const badgeClass = progress.ending === 'happy' ? 'hard'
+          : progress.ending === 'normal' ? 'cleared' : 'bad';
+        stageBadge = `<span class="card-stage-badge ${badgeClass}">${progress.label}</span>`;
       } else {
         stageBadge = '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
       }

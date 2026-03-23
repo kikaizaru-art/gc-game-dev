@@ -27,9 +27,9 @@ class StatsManager {
   createEmpty() {
     return {
       heroines: {
-        misaki: { clears: { happy: 0, normal: 0, bad: 0 } },
-        rin: { clears: { happy: 0, normal: 0, bad: 0 } },
-        hinata: { clears: { happy: 0, normal: 0, bad: 0 } }
+        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 } },
+        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 } },
+        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 } }
       },
       categories: {}
     };
@@ -45,12 +45,21 @@ class StatsManager {
   }
 
   /* ゲームクリア時に結果を記録する */
-  recordGameResult(heroineId, endingType, quizResults) {
+  recordGameResult(heroineId, endingType, quizResults, stage) {
     const heroineStats = this.stats.heroines[heroineId];
     if (!heroineStats) return;
 
+    /* stage2Clearsが未初期化なら追加（既存データ互換） */
+    if (!heroineStats.stage2Clears) {
+      heroineStats.stage2Clears = { happy: 0, normal: 0, bad: 0 };
+    }
+
     /* クリア回数を加算 */
-    heroineStats.clears[endingType]++;
+    if (stage === 2) {
+      heroineStats.stage2Clears[endingType]++;
+    } else {
+      heroineStats.clears[endingType]++;
+    }
 
     /* 全体のカテゴリ別正解率を更新 */
     if (!this.stats.categories) this.stats.categories = {};
@@ -87,6 +96,25 @@ class StatsManager {
   /* ヒロインのハッピーエンドクリア済みかを判定する */
   hasHappyEnd(heroineId) {
     return this.stats.heroines[heroineId].clears.happy >= 1;
+  }
+
+  /* ヒロインの最高到達点を取得する（表示用テキスト） */
+  getBestProgress(heroineId) {
+    const h = this.stats.heroines[heroineId];
+    if (!h) return null;
+    const s2 = h.stage2Clears || { happy: 0, normal: 0, bad: 0 };
+
+    /* ステージ2の最高エンディングを判定 */
+    if (s2.happy > 0) return { stage: 2, ending: 'happy', label: 'STAGE 2 - ハッピーエンド' };
+    if (s2.normal > 0) return { stage: 2, ending: 'normal', label: 'STAGE 2 - ノーマルエンド' };
+    if (s2.bad > 0) return { stage: 2, ending: 'bad', label: 'STAGE 2 - バッドエンド' };
+
+    /* ステージ1の最高エンディングを判定 */
+    if (h.clears.happy > 0) return { stage: 1, ending: 'happy', label: 'STAGE 1 - ハッピーエンド' };
+    if (h.clears.normal > 0) return { stage: 1, ending: 'normal', label: 'STAGE 1 - ノーマルエンド' };
+    if (h.clears.bad > 0) return { stage: 1, ending: 'bad', label: 'STAGE 1 - バッドエンド' };
+
+    return null;
   }
 
   /* 全ヒロインの合計クリア回数を取得する */
