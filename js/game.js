@@ -182,11 +182,11 @@ class GameEngine {
     this.heroineManager.selectHeroine(heroineId, isSecondPlay);
     const heroine = this.heroineManager.selectedHeroine;
 
-    /* ストーリー分岐：ステージ2 → ステージ1リプレイ */
+    /* ストーリー分岐：ステージ2 → ステージ1リプレイ（好感度高） */
     if (isSecondPlay && heroine.story2) {
       this.storyLines = heroine.story2;
-    } else if (heroine.storyRetry) {
-      this.storyLines = heroine.storyRetry;
+    } else if (heroine.storyReplay) {
+      this.storyLines = heroine.storyReplay;
     } else {
       this.storyLines = heroine.story || [];
     }
