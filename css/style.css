@@ -1785,11 +1785,21 @@ body {
 /* タブ */
 .stats-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
   z-index: 2;
   position: relative;
   margin-bottom: 12px;
+}
+
+.stats-tabs-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.stats-tabs-row-all {
+  margin-bottom: 2px;
 }
 
 .stats-tab {
@@ -1802,6 +1812,13 @@ body {
   background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.stats-tab-all {
+  flex: none;
+  min-width: 120px;
 }
 
 .stats-tab:hover {

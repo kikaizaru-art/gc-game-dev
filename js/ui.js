@@ -520,11 +520,13 @@ class UiManager {
     const allColor = '#aaa';
     const isAll = activeId === 'all';
     const allTab = `
-      <button class="stats-tab ${isAll ? 'active' : ''}"
-        data-heroine-id="all"
-        style="${isAll ? `background: ${allColor}; color: #fff;` : `border-color: ${allColor}; color: ${allColor};`}">
-        📊 全体
-      </button>
+      <div class="stats-tabs-row stats-tabs-row-all">
+        <button class="stats-tab stats-tab-all ${isAll ? 'active' : ''}"
+          data-heroine-id="all"
+          style="${isAll ? `background: ${allColor}; color: #fff;` : `border-color: ${allColor}; color: ${allColor};`}">
+          📊 全体
+        </button>
+      </div>
     `;
     const heroineTabs = heroines.map(h => `
       <button class="stats-tab ${h.id === activeId ? 'active' : ''}"
@@ -533,7 +535,7 @@ class UiManager {
         ${h.emoji} ${h.shortName}
       </button>
     `).join('');
-    container.innerHTML = allTab + heroineTabs;
+    container.innerHTML = allTab + `<div class="stats-tabs-row">${heroineTabs}</div>`;
   }
 
   /* カテゴリ別クリア状況のHTMLを生成する（カテゴリごとにゲージ表示） */
