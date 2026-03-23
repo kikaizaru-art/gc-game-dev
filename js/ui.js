@@ -324,32 +324,17 @@ class UiManager {
     }
   }
 
-  /* 円形タイマーとヘッダーゲージを更新する */
+  /* ヘッダータイムゲージを更新する */
   updateTimer(remaining, total) {
-    const circleBar = document.getElementById('timer-circle-bar');
-    const timerText = document.getElementById('timer-text');
-    const container = document.getElementById('timer-circle-container');
-    const circumference = 2 * Math.PI * 18; /* r=18 */
-    const offset = circumference * (1 - remaining / total);
-
-    circleBar.style.strokeDashoffset = offset;
-    timerText.textContent = Math.ceil(remaining);
-
-    /* ヘッダータイムゲージを更新 */
     const headerBar = document.getElementById('header-timer-bar');
     const pct = (remaining / total) * 100;
     headerBar.style.width = `${pct}%`;
 
     /* 残り時間に応じて色を変える */
-    circleBar.classList.remove('warning', 'danger');
-    container.classList.remove('pulse');
     headerBar.classList.remove('warning', 'danger');
     if (remaining <= 5) {
-      circleBar.classList.add('danger');
-      container.classList.add('pulse');
       headerBar.classList.add('danger');
     } else if (remaining <= 10) {
-      circleBar.classList.add('warning');
       headerBar.classList.add('warning');
     }
   }

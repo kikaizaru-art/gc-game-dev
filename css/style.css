@@ -688,62 +688,6 @@ body {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* 円形タイマー */
-.timer-circle-container {
-  position: relative;
-  width: 44px;
-  height: 44px;
-}
-
-.timer-circle-svg {
-  width: 44px;
-  height: 44px;
-  transform: rotate(-90deg);
-}
-
-.timer-circle-bg {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.15);
-  stroke-width: 3;
-}
-
-.timer-circle-bar {
-  fill: none;
-  stroke: #60d0ff;
-  stroke-width: 3;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.1s linear, stroke 0.3s;
-}
-
-.timer-circle-bar.warning {
-  stroke: #fbbf24;
-}
-
-.timer-circle-bar.danger {
-  stroke: #ef4444;
-}
-
-.timer-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 14px;
-  font-weight: 900;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-  line-height: 1;
-}
-
-.timer-circle-container.pulse .timer-text {
-  animation: timerPulse 0.5s ease-in-out infinite;
-}
-
-@keyframes timerPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.2); color: #ef4444; }
-}
-
 /* 正解数ドットインジケーター */
 .quiz-score-dots {
   display: flex;
@@ -1382,20 +1326,6 @@ body {
 
   .quiz-chara-img {
     height: 500px;
-  }
-
-  .timer-circle-container {
-    width: 38px;
-    height: 38px;
-  }
-
-  .timer-circle-svg {
-    width: 38px;
-    height: 38px;
-  }
-
-  .timer-text {
-    font-size: 12px;
   }
 
   .score-dot {
