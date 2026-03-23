@@ -20,6 +20,7 @@ class UiManager {
       story: document.getElementById('screen-story'),
       quiz: document.getElementById('screen-quiz'),
       result: document.getElementById('screen-result'),
+      options: document.getElementById('screen-options'),
       stats: document.getElementById('screen-stats')
     };
   }
@@ -720,20 +721,25 @@ class UiManager {
     container.innerHTML = '';
   }
 
-  /* 未確認クイズ優先チェックボックスを描画する */
-  renderPrioritizeToggle(statsManager) {
-    const container = document.getElementById('stats-settings');
-    if (!container) return;
-    const checked = statsManager.getPrioritizeUnconfirmed();
-    container.innerHTML = `
-      <div class="stats-setting-row">
-        <label class="stats-toggle-label" for="chk-prioritize-unconfirmed">
-          <input type="checkbox" id="chk-prioritize-unconfirmed" class="stats-toggle-checkbox"
-            ${checked ? 'checked' : ''}>
-          <span class="stats-toggle-switch"></span>
-          <span class="stats-toggle-text">未確認クイズを優先</span>
-        </label>
-      </div>
-    `;
+  /* オプション画面の状態を反映する */
+  renderOptions(audioManager, statsManager) {
+    /* 音量スライダー */
+    const bgmRange = document.getElementById('range-bgm');
+    const seRange = document.getElementById('range-se');
+    const bgmValue = document.getElementById('range-bgm-value');
+    const seValue = document.getElementById('range-se-value');
+
+    const bgmVol = audioManager.getBgmVolume();
+    const seVol = audioManager.getSeVolume();
+    bgmRange.value = Math.round(bgmVol * 100);
+    seRange.value = Math.round(seVol * 100);
+    bgmValue.textContent = Math.round(bgmVol * 100);
+    seValue.textContent = Math.round(seVol * 100);
+
+    /* ミュート */
+    document.getElementById('chk-mute').checked = audioManager.isMuted;
+
+    /* 未確認クイズ優先 */
+    document.getElementById('chk-prioritize-unconfirmed').checked = statsManager.getPrioritizeUnconfirmed();
   }
 }

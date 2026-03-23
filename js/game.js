@@ -22,6 +22,8 @@ class GameEngine {
     this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
     this.bindEvents();
     this.ui.showScreen('title');
+    /* 保存済みミュート状態をボタンに反映 */
+    document.getElementById('btn-mute').textContent = this.audio.isMuted ? '🔇' : '🔊';
     console.log('ハートクイズ - 初期化完了');
   }
 
@@ -36,10 +38,52 @@ class GameEngine {
       this.ui.showScreen('select');
     });
 
-    /* ミュートボタン */
+    /* ミュートボタン（ヘッダー） */
     document.getElementById('btn-mute').addEventListener('click', () => {
       const muted = this.audio.toggleMute();
       document.getElementById('btn-mute').textContent = muted ? '🔇' : '🔊';
+    });
+
+    /* オプション画面 */
+    document.getElementById('btn-options').addEventListener('click', () => {
+      this.audio.init();
+      this.audio.playClick();
+      this.showOptionsScreen();
+    });
+
+    document.getElementById('btn-back-title-options').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.showScreen('title');
+    });
+
+    /* BGM音量スライダー */
+    document.getElementById('range-bgm').addEventListener('input', (e) => {
+      const value = parseInt(e.target.value, 10);
+      document.getElementById('range-bgm-value').textContent = value;
+      this.audio.setBgmVolume(value / 100);
+    });
+
+    /* SE音量スライダー */
+    document.getElementById('range-se').addEventListener('input', (e) => {
+      const value = parseInt(e.target.value, 10);
+      document.getElementById('range-se-value').textContent = value;
+      this.audio.setSeVolume(value / 100);
+    });
+
+    /* SE音量変更時にプレビュー音を鳴らす */
+    document.getElementById('range-se').addEventListener('change', () => {
+      this.audio.playClick();
+    });
+
+    /* ミュートチェックボックス（オプション画面） */
+    document.getElementById('chk-mute').addEventListener('change', (e) => {
+      this.audio.setMuted(e.target.checked);
+      document.getElementById('btn-mute').textContent = e.target.checked ? '🔇' : '🔊';
+    });
+
+    /* 未確認クイズ優先チェックボックス（オプション画面） */
+    document.getElementById('chk-prioritize-unconfirmed').addEventListener('change', (e) => {
+      this.stats.setPrioritizeUnconfirmed(e.target.checked);
     });
 
     /* ステータス画面 */
@@ -68,13 +112,6 @@ class GameEngine {
       this.audio.playClick();
       this.activeStatsHeroineId = tab.dataset.heroineId;
       this.showStatsScreen();
-    });
-
-    /* 未確認クイズ優先チェックボックス */
-    document.getElementById('stats-settings').addEventListener('change', (e) => {
-      if (e.target.id === 'chk-prioritize-unconfirmed') {
-        this.stats.setPrioritizeUnconfirmed(e.target.checked);
-      }
     });
 
     /* キャラ別データリセット */
@@ -475,6 +512,12 @@ class GameEngine {
     );
   }
 
+  /* オプション画面を表示する */
+  showOptionsScreen() {
+    this.ui.renderOptions(this.audio, this.stats);
+    this.ui.showScreen('options');
+  }
+
   /* 未確認クイズ優先時のクリア済み問題を取得する */
   getClearedQuestionsIfEnabled(heroineId) {
     if (this.stats.getPrioritizeUnconfirmed()) {
@@ -520,7 +563,6 @@ class GameEngine {
       this.ui.renderStatsContent(heroine, this.stats, quizCounts);
     }
     this.ui.renderGlobalCategoryStats(this.stats, activeId);
-    this.ui.renderPrioritizeToggle(this.stats);
     this.ui.showScreen('stats');
   }
 }

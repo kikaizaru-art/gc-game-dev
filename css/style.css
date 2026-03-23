@@ -246,6 +246,13 @@ body {
   padding-top: 60px;
 }
 
+.title-btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
 .game-title {
   font-size: 52px;
   font-weight: 900;
@@ -1811,6 +1818,156 @@ body {
 }
 
 /* ============================
+   オプション画面
+   ============================ */
+#screen-options {
+  justify-content: flex-start;
+  padding-top: 28px;
+  background: linear-gradient(180deg, #2a1535 0%, #1a0f25 100%);
+}
+
+.options-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.options-content {
+  width: 90%;
+  max-width: 400px;
+  z-index: 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.options-section {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.options-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.options-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.options-row:last-child {
+  margin-bottom: 0;
+}
+
+.options-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 36px;
+}
+
+.options-range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  outline: none;
+}
+
+.options-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+}
+
+.options-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+}
+
+.options-range-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 28px;
+  text-align: right;
+}
+
+.options-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.options-toggle-checkbox {
+  display: none;
+}
+
+.options-toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 11px;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.options-toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.options-toggle-checkbox:checked + .options-toggle-switch {
+  background: var(--color-primary);
+}
+
+.options-toggle-checkbox:checked + .options-toggle-switch::after {
+  transform: translateX(18px);
+}
+
+.options-toggle-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ============================
    ステータス画面
    ============================ */
 #screen-stats {
@@ -2112,69 +2269,6 @@ body {
 
 .stats-global-categories .stats-category-bar {
   background: var(--color-primary);
-}
-
-/* 設定エリア */
-.stats-settings {
-  width: 100%;
-  z-index: 2;
-  position: relative;
-  margin-top: 12px;
-}
-
-.stats-setting-row {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 10px 14px;
-}
-
-.stats-toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.stats-toggle-checkbox {
-  display: none;
-}
-
-.stats-toggle-switch {
-  position: relative;
-  width: 40px;
-  height: 22px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 11px;
-  transition: background 0.3s ease;
-  flex-shrink: 0;
-}
-
-.stats-toggle-switch::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-
-.stats-toggle-checkbox:checked + .stats-toggle-switch {
-  background: var(--color-primary);
-}
-
-.stats-toggle-checkbox:checked + .stats-toggle-switch::after {
-  transform: translateX(18px);
-}
-
-.stats-toggle-text {
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
 }
 
 /* ボタン領域 */
