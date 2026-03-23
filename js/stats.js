@@ -27,9 +27,9 @@ class StatsManager {
   createEmpty() {
     return {
       heroines: {
-        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } },
-        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } },
-        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } }
+        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
+        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
+        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} }
       },
       categories: {}
     };
@@ -66,16 +66,20 @@ class StatsManager {
       heroineStats.clears[endingType]++;
     }
 
-    /* 全体のカテゴリ別正解率を更新 */
-    if (!this.stats.categories) this.stats.categories = {};
+    /* キャラ別カテゴリのクリア済み問題を更新 */
+    if (!heroineStats.categories) heroineStats.categories = {};
     quizResults.forEach(result => {
+      if (!result.isCorrect) return;
       const category = result.category || '不明';
-      if (!this.stats.categories[category]) {
-        this.stats.categories[category] = { correct: 0, total: 0 };
+      if (!heroineStats.categories[category]) {
+        heroineStats.categories[category] = { clearedQuestions: [] };
       }
-      this.stats.categories[category].total++;
-      if (result.isCorrect) {
-        this.stats.categories[category].correct++;
+      const cat = heroineStats.categories[category];
+      /* 既存データ互換：旧形式からの移行 */
+      if (!cat.clearedQuestions) cat.clearedQuestions = [];
+      /* 重複しないように追加 */
+      if (!cat.clearedQuestions.includes(result.question)) {
+        cat.clearedQuestions.push(result.question);
       }
     });
 
@@ -93,9 +97,35 @@ class StatsManager {
     return this.stats.heroines[heroineId].clears;
   }
 
-  /* 全体のカテゴリ別正解率を取得する */
-  getAllCategoryStats() {
-    return this.stats.categories || {};
+  /* キャラ別のカテゴリデータを取得する */
+  getHeroineCategoryStats(heroineId) {
+    const h = this.stats.heroines[heroineId];
+    return (h && h.categories) ? h.categories : {};
+  }
+
+  /* キャラ別のカテゴリクリア状況を取得する（問題単位） */
+  getHeroineCategoryClearStatus(heroineId, quizCountByCategory) {
+    const cats = this.getHeroineCategoryStats(heroineId);
+    return Object.keys(quizCountByCategory).map(cat => {
+      const catData = cats[cat];
+      const cleared = catData && catData.clearedQuestions ? catData.clearedQuestions.length : 0;
+      return {
+        name: cat,
+        cleared,
+        total: quizCountByCategory[cat]
+      };
+    });
+  }
+
+  /* キャラ別データのみリセットする */
+  resetHeroine(heroineId) {
+    const h = this.stats.heroines[heroineId];
+    if (!h) return;
+    h.clears = { happy: 0, normal: 0, bad: 0 };
+    h.stage2Clears = { happy: 0, normal: 0, bad: 0 };
+    h.stage3Clears = { happy: 0, normal: 0, bad: 0 };
+    h.categories = {};
+    this.save();
   }
 
   /* ヒロインのステージ1ハッピーエンドクリア済みかを判定する */

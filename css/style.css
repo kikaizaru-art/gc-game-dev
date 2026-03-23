@@ -1057,6 +1057,23 @@ body {
   background: linear-gradient(transparent 0%, rgba(10, 5, 20, 0.85) 20%);
 }
 
+/* パーフェクト（全問正解）ラベル */
+.perfect-label {
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFD700;
+  text-align: center;
+  margin-bottom: 8px;
+  animation: perfectPulse 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px #FFD700) drop-shadow(0 0 24px rgba(255, 215, 0, 0.5));
+  letter-spacing: 4px;
+}
+
+@keyframes perfectPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.9; }
+}
+
 .ending-type {
   font-size: 28px;
   font-weight: 900;
@@ -1133,9 +1150,21 @@ body {
 
 .result-buttons {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.result-buttons-row {
+  display: flex;
   gap: 12px;
   justify-content: center;
-  padding-bottom: 4px;
+}
+
+.result-btn-title {
+  width: 60%;
+  min-width: 160px;
 }
 
 /* ============================
@@ -1407,6 +1436,11 @@ body {
 
   .result-chara-img {
     height: 260px;
+  }
+
+  .perfect-label {
+    font-size: 24px;
+    letter-spacing: 2px;
   }
 
   .ending-type {
@@ -1751,10 +1785,21 @@ body {
 /* タブ */
 .stats-tabs {
   display: flex;
+  flex-direction: column;
   gap: 8px;
   z-index: 2;
   position: relative;
   margin-bottom: 12px;
+}
+
+.stats-tabs-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.stats-tabs-row-all {
+  margin-bottom: 2px;
 }
 
 .stats-tab {
@@ -1767,6 +1812,13 @@ body {
   background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.stats-tab-all {
+  flex: none;
+  min-width: 120px;
 }
 
 .stats-tab:hover {
@@ -1898,21 +1950,25 @@ body {
   margin-top: 2px;
 }
 
-/* カテゴリ別正解率 */
+/* カテゴリ別クリア状況 */
 .stats-category-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .stats-category-row {
   display: grid;
-  grid-template-columns: 80px 1fr 40px 50px;
+  grid-template-columns: 70px 1fr 55px;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 6px;
+  border-radius: 8px;
+}
+
+.stats-category-row.cleared {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .stats-category-name {
@@ -1920,36 +1976,48 @@ body {
   font-weight: 700;
   color: rgba(255, 208, 232, 0.9);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.stats-category-row.cleared .stats-category-name {
+  color: #fff;
 }
 
 .stats-category-bar-container {
   width: 100%;
-  height: 8px;
+  height: 12px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
 }
 
 .stats-category-bar {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 6px;
+  background: var(--color-primary);
   transition: width 0.5s ease;
-  min-width: 2px;
+  min-width: 0;
 }
 
-.stats-category-rate {
+.stats-category-bar.complete {
+  background: linear-gradient(90deg, var(--color-primary), #ffd700);
+}
+
+.stats-category-count {
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: rgba(255, 208, 232, 0.8);
   text-align: right;
+  white-space: nowrap;
 }
 
-.stats-category-detail {
-  font-size: 11px;
-  color: rgba(255, 208, 232, 0.5);
-  text-align: right;
+.stats-category-row.cleared .stats-category-count {
+  color: #ffd700;
+}
+
+/* キャラ別リセットボタン */
+.stats-heroine-reset {
+  margin-top: 12px;
+  text-align: center;
 }
 
 .stats-empty {
@@ -1957,6 +2025,28 @@ body {
   color: rgba(255, 208, 232, 0.4);
   text-align: center;
   padding: 20px 0;
+}
+
+/* 全体ステータスヘッダー */
+.stats-all-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 12px;
+}
+
+.stats-all-icon {
+  font-size: 28px;
+}
+
+.stats-all-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
 }
 
 /* 全体カテゴリ別正解率 */
@@ -2011,13 +2101,11 @@ body {
   }
 
   .stats-category-row {
-    grid-template-columns: 60px 1fr 36px 40px;
-    gap: 4px;
-    padding: 4px 8px;
+    padding: 6px 8px;
   }
 
   .stats-category-name {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .stats-heroine-header {

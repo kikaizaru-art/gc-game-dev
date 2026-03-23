@@ -13,7 +13,7 @@ class GameEngine {
     this.timerId = null;
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
-    this.activeStatsHeroineId = 'misaki';
+    this.activeStatsHeroineId = 'all';
   }
 
   /* ゲーム初期化 */
@@ -68,6 +68,20 @@ class GameEngine {
       this.audio.playClick();
       this.activeStatsHeroineId = tab.dataset.heroineId;
       this.showStatsScreen();
+    });
+
+    /* キャラ別データリセット */
+    document.getElementById('stats-content').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-reset-heroine]');
+      if (!btn) return;
+      this.audio.playClick();
+      const heroineId = btn.dataset.resetHeroine;
+      const heroine = this.heroineManager.heroines.find(h => h.id === heroineId);
+      const name = heroine ? heroine.shortName : heroineId;
+      if (confirm(`${name}のプレイデータをリセットしますか？`)) {
+        this.stats.resetHeroine(heroineId);
+        this.showStatsScreen();
+      }
     });
 
     /* ヒロイン選択画面 */
@@ -454,13 +468,43 @@ class GameEngine {
     );
   }
 
+  /* ヒロインごとのカテゴリ別クイズ総数を取得する */
+  getQuizCountByHeroine() {
+    const hm = this.heroineManager;
+    const result = {};
+    const heroineIds = ['misaki', 'rin', 'hinata'];
+    heroineIds.forEach(id => {
+      const catCounts = {};
+      const seenQuestions = new Set();
+      [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+        if (source && source[id]) {
+          source[id].forEach(q => {
+            if (q.category && !seenQuestions.has(q.question)) {
+              seenQuestions.add(q.question);
+              catCounts[q.category] = (catCounts[q.category] || 0) + 1;
+            }
+          });
+        }
+      });
+      result[id] = catCounts;
+    });
+    return result;
+  }
+
   /* ステータス画面を表示する */
   showStatsScreen() {
     const heroines = this.heroineManager.heroines;
-    const heroine = heroines.find(h => h.id === this.activeStatsHeroineId) || heroines[0];
-    this.ui.renderStatsTabs(heroines, heroine.id);
-    this.ui.renderStatsContent(heroine, this.stats);
-    this.ui.renderGlobalCategoryStats(this.stats);
+    const activeId = this.activeStatsHeroineId || 'all';
+    const quizCountByHeroine = this.getQuizCountByHeroine();
+    this.ui.renderStatsTabs(heroines, activeId);
+    if (activeId === 'all') {
+      this.ui.renderStatsAll(heroines, this.stats, quizCountByHeroine);
+    } else {
+      const heroine = heroines.find(h => h.id === activeId) || heroines[0];
+      const quizCounts = quizCountByHeroine[heroine.id] || {};
+      this.ui.renderStatsContent(heroine, this.stats, quizCounts);
+    }
+    this.ui.renderGlobalCategoryStats(this.stats, activeId);
     this.ui.showScreen('stats');
   }
 }
