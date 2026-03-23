@@ -50,20 +50,30 @@ class UiManager {
   }
 
   /* お気に入り選択カードを生成する */
-  renderFavoriteCards(heroines, currentFavoriteId) {
+  renderFavoriteCards(heroines, currentFavoriteId, statsManager) {
     const container = document.getElementById('fav-heroine-cards');
     container.innerHTML = heroines.map(h => {
       const isFavorite = h.id === currentFavoriteId;
+      /* 美咲は常に選択可、他はステージ1ハッピーエンド達成済みのみ */
+      const isSelectable = h.id === 'misaki' || (statsManager && statsManager.hasHappyEnd(h.id));
+      const cardClass = isFavorite ? 'favorite-current' : !isSelectable ? 'locked' : '';
+      const badge = isFavorite
+        ? '<span class="card-completion-badge fav-badge">お気に入り</span>'
+        : '';
+      const lockLabel = !isSelectable
+        ? '<div class="heroine-card-lock-label">🔒 STAGE1 ハッピーエンドで解放</div>'
+        : '';
       return `
-        <div class="heroine-card ${isFavorite ? 'favorite-current' : ''}" data-heroine-id="${h.id}" data-color="${h.colorName}">
+        <div class="heroine-card ${cardClass}" data-heroine-id="${h.id}" data-color="${h.colorName}">
           <div class="heroine-card-image">
-            ${isFavorite ? '<span class="card-completion-badge fav-badge">お気に入り</span>' : ''}
+            ${badge}
             <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
           </div>
           <div class="heroine-card-info">
             <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
             <div class="heroine-card-personality">${h.personality}</div>
             <div class="heroine-card-likes">${h.description}</div>
+            ${lockLabel}
           </div>
         </div>
       `;

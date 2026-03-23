@@ -58,7 +58,7 @@ class GameEngine {
     /* マイページ → お気に入り選択 */
     document.getElementById('btn-mypage-favorite').addEventListener('click', () => {
       this.audio.playClick();
-      this.ui.renderFavoriteCards(this.heroineManager.heroines, this.favoriteHeroineId);
+      this.ui.renderFavoriteCards(this.heroineManager.heroines, this.favoriteHeroineId, this.stats);
       this.ui.showScreen('favSelect');
     });
 
@@ -70,7 +70,7 @@ class GameEngine {
     /* お気に入り選択カードのクリック */
     document.getElementById('fav-heroine-cards').addEventListener('click', (e) => {
       const card = e.target.closest('.heroine-card');
-      if (!card || card.classList.contains('favorite-current')) return;
+      if (!card || card.classList.contains('favorite-current') || card.classList.contains('locked')) return;
       this.audio.playClick();
       const heroineId = card.dataset.heroineId;
       this.saveFavoriteHeroine(heroineId);
