@@ -51,27 +51,45 @@ body {
   overflow: hidden;
 }
 
-/* ミュートボタン */
-.btn-mute {
+/* ヘッダータイムゲージ */
+.header-timer-gauge {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
   z-index: 100;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  line-height: 1;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
 
-.btn-mute:hover {
-  background: rgba(255, 255, 255, 0.3);
+.header-timer-gauge.hidden {
+  display: none;
+}
+
+.header-timer-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #60d0ff, #a0e0ff);
+  transition: width 0.1s linear;
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 8px rgba(96, 208, 255, 0.5);
+}
+
+.header-timer-bar.warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.header-timer-bar.danger {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  animation: timerBarPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes timerBarPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 /* 画面共通 */
@@ -244,6 +262,13 @@ body {
   width: 100%;
   background: linear-gradient(transparent 0%, rgba(15, 10, 24, 0.85) 30%);
   padding-top: 60px;
+}
+
+.title-btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
 }
 
 .game-title {
@@ -661,62 +686,6 @@ body {
   color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* 円形タイマー */
-.timer-circle-container {
-  position: relative;
-  width: 44px;
-  height: 44px;
-}
-
-.timer-circle-svg {
-  width: 44px;
-  height: 44px;
-  transform: rotate(-90deg);
-}
-
-.timer-circle-bg {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.15);
-  stroke-width: 3;
-}
-
-.timer-circle-bar {
-  fill: none;
-  stroke: #60d0ff;
-  stroke-width: 3;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.1s linear, stroke 0.3s;
-}
-
-.timer-circle-bar.warning {
-  stroke: #fbbf24;
-}
-
-.timer-circle-bar.danger {
-  stroke: #ef4444;
-}
-
-.timer-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 14px;
-  font-weight: 900;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-  line-height: 1;
-}
-
-.timer-circle-container.pulse .timer-text {
-  animation: timerPulse 0.5s ease-in-out infinite;
-}
-
-@keyframes timerPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.2); color: #ef4444; }
 }
 
 /* 正解数ドットインジケーター */
@@ -1359,20 +1328,6 @@ body {
     height: 500px;
   }
 
-  .timer-circle-container {
-    width: 38px;
-    height: 38px;
-  }
-
-  .timer-circle-svg {
-    width: 38px;
-    height: 38px;
-  }
-
-  .timer-text {
-    font-size: 12px;
-  }
-
   .score-dot {
     width: 8px;
     height: 8px;
@@ -1808,6 +1763,156 @@ body {
   .story-text {
     font-size: 13px;
   }
+}
+
+/* ============================
+   オプション画面
+   ============================ */
+#screen-options {
+  justify-content: flex-start;
+  padding-top: 28px;
+  background: linear-gradient(180deg, #2a1535 0%, #1a0f25 100%);
+}
+
+.options-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.options-content {
+  width: 90%;
+  max-width: 400px;
+  z-index: 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.options-section {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.options-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.options-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.options-row:last-child {
+  margin-bottom: 0;
+}
+
+.options-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 36px;
+}
+
+.options-range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  outline: none;
+}
+
+.options-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+}
+
+.options-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+}
+
+.options-range-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 28px;
+  text-align: right;
+}
+
+.options-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.options-toggle-checkbox {
+  display: none;
+}
+
+.options-toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 11px;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.options-toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.options-toggle-checkbox:checked + .options-toggle-switch {
+  background: var(--color-primary);
+}
+
+.options-toggle-checkbox:checked + .options-toggle-switch::after {
+  transform: translateX(18px);
+}
+
+.options-toggle-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* ============================

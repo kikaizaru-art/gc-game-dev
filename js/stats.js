@@ -197,6 +197,36 @@ class StatsManager {
     return total;
   }
 
+  /* 未確認クイズ優先設定を取得する */
+  getPrioritizeUnconfirmed() {
+    try {
+      return localStorage.getItem('prioritizeUnconfirmed') === 'true';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /* 未確認クイズ優先設定を保存する */
+  setPrioritizeUnconfirmed(enabled) {
+    try {
+      localStorage.setItem('prioritizeUnconfirmed', enabled ? 'true' : 'false');
+    } catch (e) {
+      console.warn('設定の保存に失敗:', e);
+    }
+  }
+
+  /* ヒロインのクリア済み問題テキスト一覧を取得する */
+  getClearedQuestions(heroineId) {
+    const cats = this.getHeroineCategoryStats(heroineId);
+    const cleared = new Set();
+    Object.values(cats).forEach(cat => {
+      if (cat.clearedQuestions) {
+        cat.clearedQuestions.forEach(q => cleared.add(q));
+      }
+    });
+    return cleared;
+  }
+
   /* 統計データをリセットする */
   reset() {
     this.stats = this.createEmpty();

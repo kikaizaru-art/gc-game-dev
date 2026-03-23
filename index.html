@@ -11,7 +11,10 @@
 </head>
 <body>
   <div id="game-container">
-    <button id="btn-mute" class="btn-mute" title="ミュート切り替え">🔊</button>
+    <!-- ヘッダータイムゲージ（クイズ中のみ表示） -->
+    <div id="header-timer-gauge" class="header-timer-gauge hidden">
+      <div id="header-timer-bar" class="header-timer-bar"></div>
+    </div>
 
     <!-- タイトル画面 -->
     <div id="screen-title" class="screen active">
@@ -26,7 +29,10 @@
           <h1 class="game-title">ハートクイズ</h1>
           <p class="game-subtitle">～3人の想い～</p>
           <button id="btn-start" class="btn btn-primary btn-glow">スタート</button>
-          <button id="btn-stats" class="btn btn-secondary btn-stats-title">ステータス</button>
+          <div class="title-btn-row">
+            <button id="btn-stats" class="btn btn-secondary btn-stats-title">ステータス</button>
+            <button id="btn-options" class="btn btn-secondary btn-stats-title">オプション</button>
+          </div>
         </div>
       </div>
     </div>
@@ -102,14 +108,6 @@
           <div id="quiz-score-dots" class="quiz-score-dots">
             <!-- JSで動的生成 -->
           </div>
-          <div class="timer-circle-container" id="timer-circle-container">
-            <svg class="timer-circle-svg" viewBox="0 0 44 44">
-              <circle class="timer-circle-bg" cx="22" cy="22" r="18"></circle>
-              <circle id="timer-circle-bar" class="timer-circle-bar" cx="22" cy="22" r="18"
-                stroke-dasharray="113.1" stroke-dashoffset="0"></circle>
-            </svg>
-            <span id="timer-text" class="timer-text">15</span>
-          </div>
         </div>
       </div>
       <!-- パワーアップボタン -->
@@ -175,6 +173,45 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- オプション画面 -->
+    <div id="screen-options" class="screen">
+      <div class="options-bg"></div>
+      <h2 class="screen-heading">オプション</h2>
+      <div class="options-content">
+        <div class="options-section">
+          <h3 class="options-section-title">サウンド</h3>
+          <div class="options-row">
+            <span class="options-label">BGM</span>
+            <input type="range" id="range-bgm" class="options-range" min="0" max="100" value="30">
+            <span id="range-bgm-value" class="options-range-value">30</span>
+          </div>
+          <div class="options-row">
+            <span class="options-label">SE</span>
+            <input type="range" id="range-se" class="options-range" min="0" max="100" value="50">
+            <span id="range-se-value" class="options-range-value">50</span>
+          </div>
+          <div class="options-row">
+            <label class="options-toggle-label" for="chk-mute">
+              <input type="checkbox" id="chk-mute" class="options-toggle-checkbox">
+              <span class="options-toggle-switch"></span>
+              <span class="options-toggle-text">ミュート</span>
+            </label>
+          </div>
+        </div>
+        <div class="options-section">
+          <h3 class="options-section-title">ゲーム設定</h3>
+          <div class="options-row">
+            <label class="options-toggle-label" for="chk-prioritize-unconfirmed">
+              <input type="checkbox" id="chk-prioritize-unconfirmed" class="options-toggle-checkbox">
+              <span class="options-toggle-switch"></span>
+              <span class="options-toggle-text">未確認クイズを優先</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <button id="btn-back-title-options" class="btn btn-secondary">戻る</button>
     </div>
 
     <!-- ステータス画面 -->

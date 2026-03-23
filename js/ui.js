@@ -20,6 +20,7 @@ class UiManager {
       story: document.getElementById('screen-story'),
       quiz: document.getElementById('screen-quiz'),
       result: document.getElementById('screen-result'),
+      options: document.getElementById('screen-options'),
       stats: document.getElementById('screen-stats')
     };
   }
@@ -30,6 +31,8 @@ class UiManager {
       screen.classList.remove('active');
     });
     this.screens[screenName].classList.add('active');
+    /* クイズ画面のみヘッダータイムゲージを表示 */
+    this.showHeaderTimerGauge(screenName === 'quiz');
   }
 
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */
@@ -321,25 +324,28 @@ class UiManager {
     }
   }
 
-  /* 円形タイマーを更新する */
+  /* ヘッダータイムゲージを更新する */
   updateTimer(remaining, total) {
-    const circleBar = document.getElementById('timer-circle-bar');
-    const timerText = document.getElementById('timer-text');
-    const container = document.getElementById('timer-circle-container');
-    const circumference = 2 * Math.PI * 18; /* r=18 */
-    const offset = circumference * (1 - remaining / total);
-
-    circleBar.style.strokeDashoffset = offset;
-    timerText.textContent = Math.ceil(remaining);
+    const headerBar = document.getElementById('header-timer-bar');
+    const pct = (remaining / total) * 100;
+    headerBar.style.width = `${pct}%`;
 
     /* 残り時間に応じて色を変える */
-    circleBar.classList.remove('warning', 'danger');
-    container.classList.remove('pulse');
+    headerBar.classList.remove('warning', 'danger');
     if (remaining <= 5) {
-      circleBar.classList.add('danger');
-      container.classList.add('pulse');
+      headerBar.classList.add('danger');
     } else if (remaining <= 10) {
-      circleBar.classList.add('warning');
+      headerBar.classList.add('warning');
+    }
+  }
+
+  /* ヘッダータイムゲージの表示/非表示を切り替える */
+  showHeaderTimerGauge(visible) {
+    const gauge = document.getElementById('header-timer-gauge');
+    if (visible) {
+      gauge.classList.remove('hidden');
+    } else {
+      gauge.classList.add('hidden');
     }
   }
 
@@ -718,5 +724,27 @@ class UiManager {
   renderGlobalCategoryStats(statsManager, activeId) {
     const container = document.getElementById('stats-global-categories');
     container.innerHTML = '';
+  }
+
+  /* オプション画面の状態を反映する */
+  renderOptions(audioManager, statsManager) {
+    /* 音量スライダー */
+    const bgmRange = document.getElementById('range-bgm');
+    const seRange = document.getElementById('range-se');
+    const bgmValue = document.getElementById('range-bgm-value');
+    const seValue = document.getElementById('range-se-value');
+
+    const bgmVol = audioManager.getBgmVolume();
+    const seVol = audioManager.getSeVolume();
+    bgmRange.value = Math.round(bgmVol * 100);
+    seRange.value = Math.round(seVol * 100);
+    bgmValue.textContent = Math.round(bgmVol * 100);
+    seValue.textContent = Math.round(seVol * 100);
+
+    /* ミュート */
+    document.getElementById('chk-mute').checked = audioManager.isMuted;
+
+    /* 未確認クイズ優先 */
+    document.getElementById('chk-prioritize-unconfirmed').checked = statsManager.getPrioritizeUnconfirmed();
   }
 }

@@ -58,14 +58,14 @@ class HeroineManager {
   }
 
   /* ヒロインを選択してゲーム状態をリセットする */
-  selectHeroine(heroineId, isSecondPlay = false, stage = 1) {
+  selectHeroine(heroineId, isSecondPlay = false, stage = 1, clearedQuestions = null) {
     this.selectedHeroine = this.heroines.find(h => h.id === heroineId);
     this.isSecondPlay = isSecondPlay;
     this.currentStage = stage;
     this.affinity = INITIAL_AFFINITY;
     this.currentQuizIndex = 0;
     this.correctCount = 0;
-    this.currentQuizSet = this.generateQuizSet(heroineId);
+    this.currentQuizSet = this.generateQuizSet(heroineId, clearedQuestions);
     this.quizResults = [];
     this.powerups = {
       fiftyFifty: POWERUP_FIFTY_FIFTY_COUNT,
@@ -74,8 +74,8 @@ class HeroineManager {
     };
   }
 
-  /* クイズセットをシャッフルして指定数を取得する */
-  generateQuizSet(heroineId) {
+  /* クイズセットをシャッフルして指定数を取得する（未確認優先対応） */
+  generateQuizSet(heroineId, clearedQuestions = null) {
     let source;
     if (this.currentStage === 3) {
       source = this.quizzesExpert[heroineId];
@@ -85,6 +85,18 @@ class HeroineManager {
       source = this.quizzes[heroineId];
     }
     const allQuizzes = [...source];
+
+    /* 未確認クイズ優先：クリア済み問題を後回しにする */
+    if (clearedQuestions && clearedQuestions.size > 0) {
+      const unconfirmed = allQuizzes.filter(q => !clearedQuestions.has(q.question));
+      const confirmed = allQuizzes.filter(q => clearedQuestions.has(q.question));
+      const shuffledUnconfirmed = this.shuffle(unconfirmed);
+      const shuffledConfirmed = this.shuffle(confirmed);
+
+      /* 未確認を先に、足りなければ確認済みで補充 */
+      return [...shuffledUnconfirmed, ...shuffledConfirmed].slice(0, QUIZ_COUNT);
+    }
+
     return this.shuffle(allQuizzes).slice(0, QUIZ_COUNT);
   }
 
