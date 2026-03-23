@@ -1785,6 +1785,7 @@ body {
 /* タブ */
 .stats-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   z-index: 2;
   position: relative;
@@ -1991,6 +1992,28 @@ body {
   color: rgba(255, 208, 232, 0.4);
   text-align: center;
   padding: 20px 0;
+}
+
+/* 全体ステータスヘッダー */
+.stats-all-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 12px;
+}
+
+.stats-all-icon {
+  font-size: 28px;
+}
+
+.stats-all-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
 }
 
 /* 全体カテゴリ別正解率 */

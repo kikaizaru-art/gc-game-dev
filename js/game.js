@@ -13,7 +13,7 @@ class GameEngine {
     this.timerId = null;
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
-    this.activeStatsHeroineId = 'misaki';
+    this.activeStatsHeroineId = 'all';
   }
 
   /* ゲーム初期化 */
@@ -457,10 +457,15 @@ class GameEngine {
   /* ステータス画面を表示する */
   showStatsScreen() {
     const heroines = this.heroineManager.heroines;
-    const heroine = heroines.find(h => h.id === this.activeStatsHeroineId) || heroines[0];
-    this.ui.renderStatsTabs(heroines, heroine.id);
-    this.ui.renderStatsContent(heroine, this.stats);
-    this.ui.renderGlobalCategoryStats(this.stats);
+    const activeId = this.activeStatsHeroineId || 'all';
+    this.ui.renderStatsTabs(heroines, activeId);
+    if (activeId === 'all') {
+      this.ui.renderStatsAll(heroines, this.stats);
+    } else {
+      const heroine = heroines.find(h => h.id === activeId) || heroines[0];
+      this.ui.renderStatsContent(heroine, this.stats);
+    }
+    this.ui.renderGlobalCategoryStats(this.stats, activeId);
     this.ui.showScreen('stats');
   }
 }

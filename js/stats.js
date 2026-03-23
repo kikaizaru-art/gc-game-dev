@@ -27,9 +27,9 @@ class StatsManager {
   createEmpty() {
     return {
       heroines: {
-        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } },
-        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } },
-        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } }
+        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
+        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
+        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} }
       },
       categories: {}
     };
@@ -68,14 +68,25 @@ class StatsManager {
 
     /* 全体のカテゴリ別正解率を更新 */
     if (!this.stats.categories) this.stats.categories = {};
+    /* キャラ別カテゴリ正解率を更新 */
+    if (!heroineStats.categories) heroineStats.categories = {};
     quizResults.forEach(result => {
       const category = result.category || '不明';
+      /* 全体 */
       if (!this.stats.categories[category]) {
         this.stats.categories[category] = { correct: 0, total: 0 };
       }
       this.stats.categories[category].total++;
       if (result.isCorrect) {
         this.stats.categories[category].correct++;
+      }
+      /* キャラ別 */
+      if (!heroineStats.categories[category]) {
+        heroineStats.categories[category] = { correct: 0, total: 0 };
+      }
+      heroineStats.categories[category].total++;
+      if (result.isCorrect) {
+        heroineStats.categories[category].correct++;
       }
     });
 
@@ -96,6 +107,12 @@ class StatsManager {
   /* 全体のカテゴリ別正解率を取得する */
   getAllCategoryStats() {
     return this.stats.categories || {};
+  }
+
+  /* キャラ別のカテゴリ正解率を取得する */
+  getHeroineCategoryStats(heroineId) {
+    const h = this.stats.heroines[heroineId];
+    return (h && h.categories) ? h.categories : {};
   }
 
   /* ヒロインのステージ1ハッピーエンドクリア済みかを判定する */

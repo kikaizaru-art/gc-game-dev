@@ -517,16 +517,59 @@ class UiManager {
   /* ステータス画面のタブを描画する */
   renderStatsTabs(heroines, activeId) {
     const container = document.getElementById('stats-tabs');
-    container.innerHTML = heroines.map(h => `
+    const allColor = '#aaa';
+    const isAll = activeId === 'all';
+    const allTab = `
+      <button class="stats-tab ${isAll ? 'active' : ''}"
+        data-heroine-id="all"
+        style="${isAll ? `background: ${allColor}; color: #fff;` : `border-color: ${allColor}; color: ${allColor};`}">
+        📊 全体
+      </button>
+    `;
+    const heroineTabs = heroines.map(h => `
       <button class="stats-tab ${h.id === activeId ? 'active' : ''}"
         data-heroine-id="${h.id}"
         style="${h.id === activeId ? `background: ${h.color}; color: #fff;` : `border-color: ${h.color}; color: ${h.color};`}">
         ${h.emoji} ${h.shortName}
       </button>
     `).join('');
+    container.innerHTML = allTab + heroineTabs;
   }
 
-  /* ステータス画面のコンテンツを描画する */
+  /* カテゴリ別正解率のHTMLを生成する */
+  buildCategoryHtml(categories, title) {
+    const categoryKeys = Object.keys(categories);
+    if (categoryKeys.length === 0) {
+      return `
+        <div class="stats-section">
+          <h3 class="stats-section-title">${title}</h3>
+          <p class="stats-empty">まだプレイデータがありません</p>
+        </div>
+      `;
+    }
+    const rows = categoryKeys.map(cat => {
+      const data = categories[cat];
+      const rate = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+      return `
+        <div class="stats-category-row">
+          <span class="stats-category-name">${cat}</span>
+          <div class="stats-category-bar-container">
+            <div class="stats-category-bar" style="width: ${rate}%;"></div>
+          </div>
+          <span class="stats-category-rate">${rate}%</span>
+          <span class="stats-category-detail">${data.correct}/${data.total}</span>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="stats-section">
+        <h3 class="stats-section-title">${title}</h3>
+        <div class="stats-category-list">${rows}</div>
+      </div>
+    `;
+  }
+
+  /* ステータス画面のコンテンツを描画する（キャラ別） */
   renderStatsContent(heroine, statsManager) {
     const container = document.getElementById('stats-content');
     const clears = statsManager.getClearsByType(heroine.id);
@@ -557,6 +600,10 @@ class UiManager {
       </div>
     `;
 
+    /* キャラ別カテゴリ正解率 */
+    const heroineCats = statsManager.getHeroineCategoryStats(heroine.id);
+    const categoryHtml = this.buildCategoryHtml(heroineCats, 'カテゴリ別正解率');
+
     container.innerHTML = `
       <div class="stats-heroine-header" style="border-color: ${heroine.color};">
         <img src="${CHARA_IMAGES[heroine.id]}" alt="${heroine.shortName}" class="stats-heroine-img">
@@ -566,45 +613,68 @@ class UiManager {
         </div>
       </div>
       ${clearsHtml}
+      ${categoryHtml}
     `;
   }
 
-  /* 全体のカテゴリ別正解率を描画する */
-  renderGlobalCategoryStats(statsManager) {
-    const container = document.getElementById('stats-global-categories');
-    const categories = statsManager.getAllCategoryStats();
-    const categoryKeys = Object.keys(categories);
+  /* 全体ステータス画面を描画する */
+  renderStatsAll(heroines, statsManager) {
+    const container = document.getElementById('stats-content');
 
-    if (categoryKeys.length === 0) {
-      container.innerHTML = `
-        <div class="stats-section">
-          <h3 class="stats-section-title">カテゴリ別正解率（全体）</h3>
-          <p class="stats-empty">まだプレイデータがありません</p>
-        </div>
-      `;
-      return;
-    }
+    /* 全キャラ合計クリア回数 */
+    let totalAll = 0;
+    let happyAll = 0;
+    let normalAll = 0;
+    let badAll = 0;
+    heroines.forEach(h => {
+      const c = statsManager.getClearsByType(h.id);
+      happyAll += c.happy;
+      normalAll += c.normal;
+      badAll += c.bad;
+    });
+    totalAll = happyAll + normalAll + badAll;
 
-    const rows = categoryKeys.map(cat => {
-      const data = categories[cat];
-      const rate = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
-      return `
-        <div class="stats-category-row">
-          <span class="stats-category-name">${cat}</span>
-          <div class="stats-category-bar-container">
-            <div class="stats-category-bar" style="width: ${rate}%;"></div>
-          </div>
-          <span class="stats-category-rate">${rate}%</span>
-          <span class="stats-category-detail">${data.correct}/${data.total}</span>
-        </div>
-      `;
-    }).join('');
-
-    container.innerHTML = `
+    const clearsHtml = `
       <div class="stats-section">
-        <h3 class="stats-section-title">カテゴリ別正解率（全体）</h3>
-        <div class="stats-category-list">${rows}</div>
+        <h3 class="stats-section-title">全体クリア回数</h3>
+        <div class="stats-clears-grid">
+          <div class="stats-clear-card">
+            <span class="stats-clear-count">${totalAll}</span>
+            <span class="stats-clear-label">合計</span>
+          </div>
+          <div class="stats-clear-card happy">
+            <span class="stats-clear-count">${happyAll}</span>
+            <span class="stats-clear-label">💕 ハッピー</span>
+          </div>
+          <div class="stats-clear-card normal">
+            <span class="stats-clear-count">${normalAll}</span>
+            <span class="stats-clear-label">😊 ノーマル</span>
+          </div>
+          <div class="stats-clear-card bad">
+            <span class="stats-clear-count">${badAll}</span>
+            <span class="stats-clear-label">💔 バッド</span>
+          </div>
+        </div>
       </div>
     `;
+
+    /* 全体カテゴリ別正解率 */
+    const globalCats = statsManager.getAllCategoryStats();
+    const categoryHtml = this.buildCategoryHtml(globalCats, 'カテゴリ別正解率（全体）');
+
+    container.innerHTML = `
+      <div class="stats-all-header">
+        <span class="stats-all-icon">📊</span>
+        <span class="stats-all-title">全体ステータス</span>
+      </div>
+      ${clearsHtml}
+      ${categoryHtml}
+    `;
+  }
+
+  /* 全体のカテゴリ別正解率を描画する（非表示制御用） */
+  renderGlobalCategoryStats(statsManager, activeId) {
+    const container = document.getElementById('stats-global-categories');
+    container.innerHTML = '';
   }
 }
