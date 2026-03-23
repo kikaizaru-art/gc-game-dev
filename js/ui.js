@@ -39,8 +39,14 @@ class UiManager {
       const progress = statsManager && statsManager.getBestProgress(h.id);
       let stageBadge;
       if (progress) {
-        const badgeClass = progress.ending === 'happy' ? 'hard'
-          : progress.ending === 'normal' ? 'cleared' : 'bad';
+        let badgeClass;
+        if (progress.stage === 3) {
+          badgeClass = progress.ending === 'happy' ? 'hard' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        } else if (progress.stage === 2) {
+          badgeClass = progress.ending === 'happy' ? 'normal-badge' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        } else {
+          badgeClass = progress.ending === 'happy' ? 'easy' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        }
         stageBadge = `<span class="card-stage-badge ${badgeClass}">${progress.label}</span>`;
       } else {
         stageBadge = '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
@@ -71,6 +77,7 @@ class UiManager {
     charaImg.alt = heroine.shortName;
 
     const hasHappy = statsManager.hasHappyEnd(heroine.id);
+    const hasStage2Happy = statsManager.hasStage2HappyEnd(heroine.id);
     const container = document.getElementById('stage-select-cards');
 
     container.innerHTML = `
@@ -81,10 +88,16 @@ class UiManager {
         <div class="stage-card-note">※ クリア後限定ストーリー</div>
       </div>
       <div class="stage-card ${hasHappy ? '' : 'locked'}" data-stage="2">
-        <div class="stage-card-badge hard">STAGE 2</div>
-        <div class="stage-card-difficulty">HARD</div>
+        <div class="stage-card-badge normal">STAGE 2</div>
+        <div class="stage-card-difficulty">NORMAL</div>
         <div class="stage-card-desc">${hasHappy ? `${heroine.shortName}との特別なデート` : '???'}</div>
         ${hasHappy ? '' : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
+      </div>
+      <div class="stage-card ${hasStage2Happy ? '' : 'locked'}" data-stage="3">
+        <div class="stage-card-badge hard">STAGE 3</div>
+        <div class="stage-card-difficulty">HARD</div>
+        <div class="stage-card-desc">${hasStage2Happy ? `${heroine.shortName}との最後の試練` : '???'}</div>
+        ${hasStage2Happy ? '' : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
       </div>
     `;
   }
@@ -166,7 +179,7 @@ class UiManager {
   }
 
   /* クイズ画面を描画する（VN風レイアウト） */
-  renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity, isSecondPlay }) {
+  renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity, isSecondPlay, currentStage }) {
     /* 背景をキャラ別に変更 */
     const quizBg = document.getElementById('quiz-bg');
     quizBg.className = `quiz-bg ${heroine.colorName}`;
@@ -178,8 +191,11 @@ class UiManager {
 
     /* 難易度バッジ */
     const diffBadge = document.getElementById('quiz-difficulty-badge');
-    diffBadge.textContent = isSecondPlay ? 'HARD' : 'EASY';
-    diffBadge.className = `difficulty-badge ${isSecondPlay ? 'hard' : 'easy'}`;
+    const stage = currentStage || (isSecondPlay ? 2 : 1);
+    const diffLabels = { 1: 'EASY', 2: 'NORMAL', 3: 'HARD' };
+    const diffClasses = { 1: 'easy', 2: 'normal', 3: 'hard' };
+    diffBadge.textContent = diffLabels[stage] || 'EASY';
+    diffBadge.className = `difficulty-badge ${diffClasses[stage] || 'easy'}`;
 
     /* ネームプレート */
     const namePlate = document.getElementById('vn-name-plate');
@@ -479,6 +495,17 @@ class UiManager {
     resultScreen.querySelectorAll('.sparkle').forEach(s => s.remove());
     if (endingData.type === 'happy') {
       this.spawnSparkles(resultScreen, 15);
+    }
+
+    /* 次のステージボタンの表示制御 */
+    const MAX_STAGE = 3;
+    const btnNextStage = document.getElementById('btn-next-stage');
+    const currentStage = endingData.currentStage || 1;
+    if (endingData.type === 'happy' && currentStage < MAX_STAGE) {
+      btnNextStage.style.display = '';
+      btnNextStage.textContent = `次のステージへ（STAGE ${currentStage + 1}）`;
+    } else {
+      btnNextStage.style.display = 'none';
     }
   }
 

@@ -27,9 +27,9 @@ class StatsManager {
   createEmpty() {
     return {
       heroines: {
-        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 } },
-        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 } },
-        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 } }
+        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } },
+        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } },
+        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 } }
       },
       categories: {}
     };
@@ -49,13 +49,18 @@ class StatsManager {
     const heroineStats = this.stats.heroines[heroineId];
     if (!heroineStats) return;
 
-    /* stage2Clearsが未初期化なら追加（既存データ互換） */
+    /* 既存データ互換：未初期化なら追加 */
     if (!heroineStats.stage2Clears) {
       heroineStats.stage2Clears = { happy: 0, normal: 0, bad: 0 };
     }
+    if (!heroineStats.stage3Clears) {
+      heroineStats.stage3Clears = { happy: 0, normal: 0, bad: 0 };
+    }
 
     /* クリア回数を加算 */
-    if (stage === 2) {
+    if (stage === 3) {
+      heroineStats.stage3Clears[endingType]++;
+    } else if (stage === 2) {
       heroineStats.stage2Clears[endingType]++;
     } else {
       heroineStats.clears[endingType]++;
@@ -93,26 +98,38 @@ class StatsManager {
     return this.stats.categories || {};
   }
 
-  /* ヒロインのハッピーエンドクリア済みかを判定する */
+  /* ヒロインのステージ1ハッピーエンドクリア済みかを判定する */
   hasHappyEnd(heroineId) {
     return this.stats.heroines[heroineId].clears.happy >= 1;
+  }
+
+  /* ヒロインのステージ2ハッピーエンドクリア済みかを判定する */
+  hasStage2HappyEnd(heroineId) {
+    const s2 = this.stats.heroines[heroineId].stage2Clears;
+    return s2 && s2.happy >= 1;
   }
 
   /* ヒロインの最高到達点を取得する（表示用テキスト） */
   getBestProgress(heroineId) {
     const h = this.stats.heroines[heroineId];
     if (!h) return null;
+    const s3 = h.stage3Clears || { happy: 0, normal: 0, bad: 0 };
     const s2 = h.stage2Clears || { happy: 0, normal: 0, bad: 0 };
 
-    /* ステージ2の最高エンディングを判定 */
-    if (s2.happy > 0) return { stage: 2, ending: 'happy', label: 'STAGE 2 - ハッピーエンド' };
-    if (s2.normal > 0) return { stage: 2, ending: 'normal', label: 'STAGE 2 - ノーマルエンド' };
-    if (s2.bad > 0) return { stage: 2, ending: 'bad', label: 'STAGE 2 - バッドエンド' };
+    /* ステージ3（HARD）の最高エンディングを判定 */
+    if (s3.happy > 0) return { stage: 3, ending: 'happy', label: 'STAGE 3 HARD - パーフェクト' };
+    if (s3.normal > 0) return { stage: 3, ending: 'normal', label: 'STAGE 3 HARD - ノーマル' };
+    if (s3.bad > 0) return { stage: 3, ending: 'bad', label: 'STAGE 3 HARD - バッド' };
 
-    /* ステージ1の最高エンディングを判定 */
-    if (h.clears.happy > 0) return { stage: 1, ending: 'happy', label: 'STAGE 1 - ハッピーエンド' };
-    if (h.clears.normal > 0) return { stage: 1, ending: 'normal', label: 'STAGE 1 - ノーマルエンド' };
-    if (h.clears.bad > 0) return { stage: 1, ending: 'bad', label: 'STAGE 1 - バッドエンド' };
+    /* ステージ2（NORMAL）の最高エンディングを判定 */
+    if (s2.happy > 0) return { stage: 2, ending: 'happy', label: 'STAGE 2 NORMAL - ハッピー' };
+    if (s2.normal > 0) return { stage: 2, ending: 'normal', label: 'STAGE 2 NORMAL - ノーマル' };
+    if (s2.bad > 0) return { stage: 2, ending: 'bad', label: 'STAGE 2 NORMAL - バッド' };
+
+    /* ステージ1（EASY）の最高エンディングを判定 */
+    if (h.clears.happy > 0) return { stage: 1, ending: 'happy', label: 'STAGE 1 EASY - ハッピー' };
+    if (h.clears.normal > 0) return { stage: 1, ending: 'normal', label: 'STAGE 1 EASY - ノーマル' };
+    if (h.clears.bad > 0) return { stage: 1, ending: 'bad', label: 'STAGE 1 EASY - バッド' };
 
     return null;
   }

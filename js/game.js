@@ -129,6 +129,16 @@ class GameEngine {
       }
     });
 
+    /* 次のステージへボタン */
+    document.getElementById('btn-next-stage').addEventListener('click', () => {
+      this.audio.playClick();
+      this.audio.startBgm();
+      const heroineId = this.heroineManager.selectedHeroine.id;
+      const currentStage = this.heroineManager.currentStage || 1;
+      const nextStage = currentStage + 1;
+      this.startStoryWithStage(heroineId, nextStage);
+    });
+
     document.getElementById('btn-back-title-result').addEventListener('click', () => {
       this.audio.playClick();
       this.audio.startBgm();
@@ -181,13 +191,15 @@ class GameEngine {
 
   /* ステージ指定でストーリーを開始する */
   startStoryWithStage(heroineId, stage) {
-    const isSecondPlay = stage === 2;
-    this.heroineManager.selectHeroine(heroineId, isSecondPlay);
+    const isSecondPlay = stage >= 2;
+    this.heroineManager.selectHeroine(heroineId, isSecondPlay, stage);
     const heroine = this.heroineManager.selectedHeroine;
 
-    /* ストーリー分岐：ステージ2 → ハッピーエンド済リプレイ → リトライ */
+    /* ストーリー分岐：ステージ3 → ステージ2 → ハッピーエンド済リプレイ → リトライ */
     const hasHappy = this.stats.hasHappyEnd(heroineId);
-    if (isSecondPlay && heroine.story2) {
+    if (stage === 3 && heroine.story3) {
+      this.storyLines = heroine.story3;
+    } else if (stage === 2 && heroine.story2) {
       this.storyLines = heroine.story2;
     } else if (hasHappy && heroine.storyReplay) {
       this.storyLines = heroine.storyReplay;
@@ -285,7 +297,8 @@ class GameEngine {
       questionNumber: this.heroineManager.currentQuizIndex + 1,
       totalQuestions: QUIZ_COUNT,
       affinity: this.heroineManager.affinity,
-      isSecondPlay: this.heroineManager.isSecondPlay
+      isSecondPlay: this.heroineManager.isSecondPlay,
+      currentStage: this.heroineManager.currentStage
     });
 
     this.ui.hideFeedback();
@@ -432,7 +445,7 @@ class GameEngine {
     this.ui.showScreen('result');
 
     /* 統計を記録する */
-    const currentStage = this.heroineManager.isSecondPlay ? 2 : 1;
+    const currentStage = this.heroineManager.currentStage || (this.heroineManager.isSecondPlay ? 2 : 1);
     this.stats.recordGameResult(
       this.heroineManager.selectedHeroine.id,
       endingData.type,
