@@ -116,20 +116,20 @@ class StatsManager {
     const s3 = h.stage3Clears || { happy: 0, normal: 0, bad: 0 };
     const s2 = h.stage2Clears || { happy: 0, normal: 0, bad: 0 };
 
-    /* ステージ3の最高エンディングを判定 */
-    if (s3.happy > 0) return { stage: 3, ending: 'happy', label: 'STAGE 3 - パーフェクト' };
-    if (s3.normal > 0) return { stage: 3, ending: 'normal', label: 'STAGE 3 - ノーマルエンド' };
-    if (s3.bad > 0) return { stage: 3, ending: 'bad', label: 'STAGE 3 - バッドエンド' };
+    /* ステージ3（HARD）の最高エンディングを判定 */
+    if (s3.happy > 0) return { stage: 3, ending: 'happy', label: 'STAGE 3 HARD - パーフェクト' };
+    if (s3.normal > 0) return { stage: 3, ending: 'normal', label: 'STAGE 3 HARD - ノーマル' };
+    if (s3.bad > 0) return { stage: 3, ending: 'bad', label: 'STAGE 3 HARD - バッド' };
 
-    /* ステージ2の最高エンディングを判定 */
-    if (s2.happy > 0) return { stage: 2, ending: 'happy', label: 'STAGE 2 - ハッピーエンド' };
-    if (s2.normal > 0) return { stage: 2, ending: 'normal', label: 'STAGE 2 - ノーマルエンド' };
-    if (s2.bad > 0) return { stage: 2, ending: 'bad', label: 'STAGE 2 - バッドエンド' };
+    /* ステージ2（NORMAL）の最高エンディングを判定 */
+    if (s2.happy > 0) return { stage: 2, ending: 'happy', label: 'STAGE 2 NORMAL - ハッピー' };
+    if (s2.normal > 0) return { stage: 2, ending: 'normal', label: 'STAGE 2 NORMAL - ノーマル' };
+    if (s2.bad > 0) return { stage: 2, ending: 'bad', label: 'STAGE 2 NORMAL - バッド' };
 
-    /* ステージ1の最高エンディングを判定 */
-    if (h.clears.happy > 0) return { stage: 1, ending: 'happy', label: 'STAGE 1 - ハッピーエンド' };
-    if (h.clears.normal > 0) return { stage: 1, ending: 'normal', label: 'STAGE 1 - ノーマルエンド' };
-    if (h.clears.bad > 0) return { stage: 1, ending: 'bad', label: 'STAGE 1 - バッドエンド' };
+    /* ステージ1（EASY）の最高エンディングを判定 */
+    if (h.clears.happy > 0) return { stage: 1, ending: 'happy', label: 'STAGE 1 EASY - ハッピー' };
+    if (h.clears.normal > 0) return { stage: 1, ending: 'normal', label: 'STAGE 1 EASY - ノーマル' };
+    if (h.clears.bad > 0) return { stage: 1, ending: 'bad', label: 'STAGE 1 EASY - バッド' };
 
     return null;
   }

@@ -41,9 +41,11 @@ class UiManager {
       if (progress) {
         let badgeClass;
         if (progress.stage === 3) {
-          badgeClass = progress.ending === 'happy' ? 'expert' : progress.ending === 'normal' ? 'cleared' : 'bad';
-        } else {
           badgeClass = progress.ending === 'happy' ? 'hard' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        } else if (progress.stage === 2) {
+          badgeClass = progress.ending === 'happy' ? 'normal-badge' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        } else {
+          badgeClass = progress.ending === 'happy' ? 'easy' : progress.ending === 'normal' ? 'cleared' : 'bad';
         }
         stageBadge = `<span class="card-stage-badge ${badgeClass}">${progress.label}</span>`;
       } else {
@@ -86,14 +88,14 @@ class UiManager {
         <div class="stage-card-note">※ クリア後限定ストーリー</div>
       </div>
       <div class="stage-card ${hasHappy ? '' : 'locked'}" data-stage="2">
-        <div class="stage-card-badge hard">STAGE 2</div>
-        <div class="stage-card-difficulty">HARD</div>
+        <div class="stage-card-badge normal">STAGE 2</div>
+        <div class="stage-card-difficulty">NORMAL</div>
         <div class="stage-card-desc">${hasHappy ? `${heroine.shortName}との特別なデート` : '???'}</div>
         ${hasHappy ? '' : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
       </div>
       <div class="stage-card ${hasStage2Happy ? '' : 'locked'}" data-stage="3">
-        <div class="stage-card-badge expert">STAGE 3</div>
-        <div class="stage-card-difficulty">EXPERT</div>
+        <div class="stage-card-badge hard">STAGE 3</div>
+        <div class="stage-card-difficulty">HARD</div>
         <div class="stage-card-desc">${hasStage2Happy ? `${heroine.shortName}との最後の試練` : '???'}</div>
         ${hasStage2Happy ? '' : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
       </div>
@@ -190,8 +192,8 @@ class UiManager {
     /* 難易度バッジ */
     const diffBadge = document.getElementById('quiz-difficulty-badge');
     const stage = currentStage || (isSecondPlay ? 2 : 1);
-    const diffLabels = { 1: 'EASY', 2: 'HARD', 3: 'EXPERT' };
-    const diffClasses = { 1: 'easy', 2: 'hard', 3: 'expert' };
+    const diffLabels = { 1: 'EASY', 2: 'NORMAL', 3: 'HARD' };
+    const diffClasses = { 1: 'easy', 2: 'normal', 3: 'hard' };
     diffBadge.textContent = diffLabels[stage] || 'EASY';
     diffBadge.className = `difficulty-badge ${diffClasses[stage] || 'easy'}`;
 
