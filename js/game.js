@@ -182,11 +182,14 @@ class GameEngine {
     this.heroineManager.selectHeroine(heroineId, isSecondPlay);
     const heroine = this.heroineManager.selectedHeroine;
 
-    /* ストーリー分岐：ステージ2 → ステージ1リプレイ（好感度高） */
+    /* ストーリー分岐：ステージ2 → クリア済ステージ1 → 未クリアリトライ */
+    const hasCleared = this.stats.getTotalClears(heroineId) > 0;
     if (isSecondPlay && heroine.story2) {
       this.storyLines = heroine.story2;
-    } else if (heroine.storyReplay) {
+    } else if (hasCleared && heroine.storyReplay) {
       this.storyLines = heroine.storyReplay;
+    } else if (heroine.storyRetry) {
+      this.storyLines = heroine.storyRetry;
     } else {
       this.storyLines = heroine.story || [];
     }
