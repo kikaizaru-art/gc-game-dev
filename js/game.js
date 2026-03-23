@@ -147,11 +147,18 @@ class GameEngine {
   /* ストーリーを開始する */
   startStory(heroineId) {
     const isSecondPlay = this.stats.hasHappyEnd(heroineId);
+    const hasPlayed = this.stats.getTotalClears(heroineId) > 0;
     this.heroineManager.selectHeroine(heroineId, isSecondPlay);
     const heroine = this.heroineManager.selectedHeroine;
-    this.storyLines = isSecondPlay && heroine.story2
-      ? heroine.story2
-      : heroine.story || [];
+
+    /* ストーリー分岐：ステージ2 → リトライ → 初回 */
+    if (isSecondPlay && heroine.story2) {
+      this.storyLines = heroine.story2;
+    } else if (!isSecondPlay && hasPlayed && heroine.storyRetry) {
+      this.storyLines = heroine.storyRetry;
+    } else {
+      this.storyLines = heroine.story || [];
+    }
     this.storyIndex = 0;
 
     this.ui.renderStoryScene(heroine);
