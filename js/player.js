@@ -34,6 +34,7 @@ class HeroineManager {
     this.heroines = [];
     this.quizzes = {};
     this.quizzesHard = {};
+    this.quizzesExpert = {};
     this.selectedHeroine = null;
     this.affinity = INITIAL_AFFINITY;
     this.currentQuizIndex = 0;
@@ -44,20 +45,23 @@ class HeroineManager {
 
   /* ヒロインデータとクイズデータを読み込む */
   async loadData() {
-    const [heroinesRes, quizzesRes, quizzesHardRes] = await Promise.all([
+    const [heroinesRes, quizzesRes, quizzesHardRes, quizzesExpertRes] = await Promise.all([
       fetch('assets/data/heroines.json'),
       fetch('assets/data/quizzes.json'),
-      fetch('assets/data/quizzes-hard.json')
+      fetch('assets/data/quizzes-hard.json'),
+      fetch('assets/data/quizzes-expert.json')
     ]);
     this.heroines = await heroinesRes.json();
     this.quizzes = await quizzesRes.json();
     this.quizzesHard = await quizzesHardRes.json();
+    this.quizzesExpert = await quizzesExpertRes.json();
   }
 
   /* ヒロインを選択してゲーム状態をリセットする */
-  selectHeroine(heroineId, isSecondPlay = false) {
+  selectHeroine(heroineId, isSecondPlay = false, stage = 1) {
     this.selectedHeroine = this.heroines.find(h => h.id === heroineId);
     this.isSecondPlay = isSecondPlay;
+    this.currentStage = stage;
     this.affinity = INITIAL_AFFINITY;
     this.currentQuizIndex = 0;
     this.correctCount = 0;
@@ -72,9 +76,14 @@ class HeroineManager {
 
   /* クイズセットをシャッフルして指定数を取得する */
   generateQuizSet(heroineId) {
-    const source = this.isSecondPlay
-      ? this.quizzesHard[heroineId]
-      : this.quizzes[heroineId];
+    let source;
+    if (this.currentStage === 3) {
+      source = this.quizzesExpert[heroineId];
+    } else if (this.currentStage === 2) {
+      source = this.quizzesHard[heroineId];
+    } else {
+      source = this.quizzes[heroineId];
+    }
     const allQuizzes = [...source];
     return this.shuffle(allQuizzes).slice(0, QUIZ_COUNT);
   }
@@ -163,9 +172,14 @@ class HeroineManager {
   /* エンディングデータを取得する */
   getEndingData() {
     const type = this.getEndingType();
-    const endings = this.isSecondPlay && this.selectedHeroine.endings2
-      ? this.selectedHeroine.endings2
-      : this.selectedHeroine.endings;
+    let endings;
+    if (this.currentStage === 3 && this.selectedHeroine.endings3) {
+      endings = this.selectedHeroine.endings3;
+    } else if (this.currentStage === 2 && this.selectedHeroine.endings2) {
+      endings = this.selectedHeroine.endings2;
+    } else {
+      endings = this.selectedHeroine.endings;
+    }
     return {
       type,
       ...endings[type],

@@ -389,6 +389,12 @@ body {
   border: 1px solid rgba(248, 113, 113, 0.4);
 }
 
+.card-stage-badge.expert {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
 .card-stage-badge.cleared {
   background: rgba(251, 191, 36, 0.2);
   color: #fbbf24;
@@ -525,6 +531,18 @@ body {
   color: #fff;
   box-shadow: 0 1px 4px rgba(239, 68, 68, 0.4);
   animation: badge-pulse 2s ease-in-out infinite;
+}
+
+.difficulty-badge.expert {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(168, 85, 247, 0.4);
+  animation: badge-pulse-expert 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse-expert {
+  0%, 100% { box-shadow: 0 1px 4px rgba(168, 85, 247, 0.4); }
+  50% { box-shadow: 0 2px 12px rgba(168, 85, 247, 0.8); }
 }
 
 @keyframes badge-pulse {
@@ -2107,6 +2125,12 @@ body {
   background: rgba(248, 113, 113, 0.2);
   color: #f87171;
   border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.stage-card-badge.expert {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.4);
 }
 
 .stage-card-difficulty {

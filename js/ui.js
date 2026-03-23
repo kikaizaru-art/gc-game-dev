@@ -39,8 +39,12 @@ class UiManager {
       const progress = statsManager && statsManager.getBestProgress(h.id);
       let stageBadge;
       if (progress) {
-        const badgeClass = progress.ending === 'happy' ? 'hard'
-          : progress.ending === 'normal' ? 'cleared' : 'bad';
+        let badgeClass;
+        if (progress.stage === 3) {
+          badgeClass = progress.ending === 'happy' ? 'expert' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        } else {
+          badgeClass = progress.ending === 'happy' ? 'hard' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        }
         stageBadge = `<span class="card-stage-badge ${badgeClass}">${progress.label}</span>`;
       } else {
         stageBadge = '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
@@ -71,6 +75,7 @@ class UiManager {
     charaImg.alt = heroine.shortName;
 
     const hasHappy = statsManager.hasHappyEnd(heroine.id);
+    const hasStage2Happy = statsManager.hasStage2HappyEnd(heroine.id);
     const container = document.getElementById('stage-select-cards');
 
     container.innerHTML = `
@@ -85,6 +90,12 @@ class UiManager {
         <div class="stage-card-difficulty">HARD</div>
         <div class="stage-card-desc">${hasHappy ? `${heroine.shortName}との特別なデート` : '???'}</div>
         ${hasHappy ? '' : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
+      </div>
+      <div class="stage-card ${hasStage2Happy ? '' : 'locked'}" data-stage="3">
+        <div class="stage-card-badge expert">STAGE 3</div>
+        <div class="stage-card-difficulty">EXPERT</div>
+        <div class="stage-card-desc">${hasStage2Happy ? `${heroine.shortName}との最後の試練` : '???'}</div>
+        ${hasStage2Happy ? '' : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
       </div>
     `;
   }
@@ -166,7 +177,7 @@ class UiManager {
   }
 
   /* クイズ画面を描画する（VN風レイアウト） */
-  renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity, isSecondPlay }) {
+  renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity, isSecondPlay, currentStage }) {
     /* 背景をキャラ別に変更 */
     const quizBg = document.getElementById('quiz-bg');
     quizBg.className = `quiz-bg ${heroine.colorName}`;
@@ -178,8 +189,11 @@ class UiManager {
 
     /* 難易度バッジ */
     const diffBadge = document.getElementById('quiz-difficulty-badge');
-    diffBadge.textContent = isSecondPlay ? 'HARD' : 'EASY';
-    diffBadge.className = `difficulty-badge ${isSecondPlay ? 'hard' : 'easy'}`;
+    const stage = currentStage || (isSecondPlay ? 2 : 1);
+    const diffLabels = { 1: 'EASY', 2: 'HARD', 3: 'EXPERT' };
+    const diffClasses = { 1: 'easy', 2: 'hard', 3: 'expert' };
+    diffBadge.textContent = diffLabels[stage] || 'EASY';
+    diffBadge.className = `difficulty-badge ${diffClasses[stage] || 'easy'}`;
 
     /* ネームプレート */
     const namePlate = document.getElementById('vn-name-plate');
