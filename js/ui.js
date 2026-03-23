@@ -16,6 +16,7 @@ class UiManager {
     this.screens = {
       title: document.getElementById('screen-title'),
       select: document.getElementById('screen-select'),
+      stageSelect: document.getElementById('screen-stage-select'),
       story: document.getElementById('screen-story'),
       quiz: document.getElementById('screen-quiz'),
       result: document.getElementById('screen-result'),
@@ -35,10 +36,15 @@ class UiManager {
   renderHeroineCards(heroines, statsManager) {
     const container = document.getElementById('heroine-cards');
     container.innerHTML = heroines.map(h => {
-      const hasHappy = statsManager && statsManager.hasHappyEnd(h.id);
-      const stageBadge = hasHappy
-        ? '<span class="card-stage-badge hard">STAGE 2 - HARD</span>'
-        : '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
+      const progress = statsManager && statsManager.getBestProgress(h.id);
+      let stageBadge;
+      if (progress) {
+        const badgeClass = progress.ending === 'happy' ? 'hard'
+          : progress.ending === 'normal' ? 'cleared' : 'bad';
+        stageBadge = `<span class="card-stage-badge ${badgeClass}">${progress.label}</span>`;
+      } else {
+        stageBadge = '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
+      }
       return `
         <div class="heroine-card" data-heroine-id="${h.id}" data-color="${h.colorName}">
           <div class="heroine-card-image">
@@ -53,6 +59,34 @@ class UiManager {
         </div>
       `;
     }).join('');
+  }
+
+  /* ステージ選択画面を描画する */
+  renderStageSelect(heroine, statsManager) {
+    /* 背景とキャラ画像を設定 */
+    const bg = document.getElementById('stage-select-bg');
+    bg.className = `stage-select-bg ${heroine.colorName}`;
+    const charaImg = document.getElementById('stage-select-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    const hasHappy = statsManager.hasHappyEnd(heroine.id);
+    const container = document.getElementById('stage-select-cards');
+
+    container.innerHTML = `
+      <div class="stage-card" data-stage="1">
+        <div class="stage-card-badge easy">STAGE 1</div>
+        <div class="stage-card-difficulty">EASY</div>
+        <div class="stage-card-desc">もう一度${heroine.shortName}と会話しよう</div>
+        <div class="stage-card-note">※ クリア後限定ストーリー</div>
+      </div>
+      <div class="stage-card ${hasHappy ? '' : 'locked'}" data-stage="2">
+        <div class="stage-card-badge hard">STAGE 2</div>
+        <div class="stage-card-difficulty">HARD</div>
+        <div class="stage-card-desc">${hasHappy ? `${heroine.shortName}との特別なデート` : '???'}</div>
+        ${hasHappy ? '' : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
+      </div>
+    `;
   }
 
   /* ストーリー画面を初期化する */
