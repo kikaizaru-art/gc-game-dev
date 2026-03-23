@@ -833,6 +833,52 @@ body {
   font-size: 12px;
 }
 
+/* スタミナゲージ */
+.stamina-bar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 16px 2px;
+}
+
+.stamina-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 208, 232, 0.8);
+  margin-right: 4px;
+}
+
+.stamina-dot {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(236, 72, 153, 0.5);
+  transition: all 0.3s ease;
+}
+
+.stamina-dot.filled {
+  background: linear-gradient(135deg, #ec4899, #f472b6);
+  border-color: rgba(236, 72, 153, 0.8);
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.5);
+}
+
+.stamina-dot.empty {
+  background: rgba(107, 114, 128, 0.2);
+  border-color: rgba(107, 114, 128, 0.4);
+}
+
+.stamina-timer {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 208, 232, 0.7);
+  min-width: 36px;
+  text-align: left;
+}
+
 /* パワーアップボタン */
 .powerup-bar {
   position: relative;
@@ -887,22 +933,6 @@ body {
   white-space: nowrap;
 }
 
-.powerup-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  font-size: 11px;
-  font-weight: 900;
-  background: rgba(236, 72, 153, 0.3);
-  border-radius: 50%;
-  color: #fff;
-}
-
-.powerup-btn.used .powerup-count {
-  background: rgba(107, 114, 128, 0.3);
-}
 
 /* 50/50で消された選択肢 */
 .choice-btn.eliminated {
@@ -1417,6 +1447,16 @@ body {
     margin-right: 8px;
   }
 
+  .stamina-bar {
+    gap: 4px;
+    padding: 2px 10px 0;
+  }
+
+  .stamina-dot {
+    width: 18px;
+    height: 18px;
+  }
+
   .powerup-bar {
     gap: 8px;
     padding: 0 10px 4px;
@@ -1430,12 +1470,6 @@ body {
 
   .powerup-icon {
     font-size: 14px;
-  }
-
-  .powerup-count {
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
   }
 
   /* 結果画面 */
