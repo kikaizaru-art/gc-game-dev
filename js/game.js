@@ -19,7 +19,7 @@ class GameEngine {
   /* ゲーム初期化 */
   async init() {
     await this.heroineManager.loadData();
-    this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats);
+    this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
     this.bindEvents();
     this.ui.showScreen('title');
     console.log('ハートクイズ - 初期化完了');
@@ -32,7 +32,7 @@ class GameEngine {
       this.audio.init();
       this.audio.playClick();
       this.audio.startBgm();
-      this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats);
+      this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
       this.ui.showScreen('select');
     });
 
@@ -91,7 +91,7 @@ class GameEngine {
 
     document.getElementById('heroine-cards').addEventListener('click', (e) => {
       const card = e.target.closest('.heroine-card');
-      if (!card) return;
+      if (!card || card.classList.contains('locked')) return;
       this.audio.playClick();
       const heroineId = card.dataset.heroineId;
       /* ハッピーエンド達成済みならステージ選択画面を表示 */
