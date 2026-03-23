@@ -182,11 +182,11 @@ class GameEngine {
     this.heroineManager.selectHeroine(heroineId, isSecondPlay);
     const heroine = this.heroineManager.selectedHeroine;
 
-    /* ストーリー分岐：ステージ2 → クリア済ステージ1 → 未クリアリトライ */
-    const hasCleared = this.stats.getTotalClears(heroineId) > 0;
+    /* ストーリー分岐：ステージ2 → クリア2回以上でリプレイ → 未クリアリトライ */
+    const clearCount = this.stats.getTotalClears(heroineId);
     if (isSecondPlay && heroine.story2) {
       this.storyLines = heroine.story2;
-    } else if (hasCleared && heroine.storyReplay) {
+    } else if (clearCount >= 2 && heroine.storyReplay) {
       this.storyLines = heroine.storyReplay;
     } else if (heroine.storyRetry) {
       this.storyLines = heroine.storyRetry;
