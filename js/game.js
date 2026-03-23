@@ -5,13 +5,15 @@
  * ゲーム全体のフロー制御を行うクラス
  */
 class GameEngine {
-  constructor(heroineManager, uiManager, audioManager) {
+  constructor(heroineManager, uiManager, audioManager, statsManager) {
     this.heroineManager = heroineManager;
     this.ui = uiManager;
     this.audio = audioManager;
+    this.stats = statsManager;
     this.timerId = null;
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
+    this.activeStatsHeroineId = 'misaki';
   }
 
   /* ゲーム初期化 */
@@ -37,6 +39,34 @@ class GameEngine {
     document.getElementById('btn-mute').addEventListener('click', () => {
       const muted = this.audio.toggleMute();
       document.getElementById('btn-mute').textContent = muted ? '🔇' : '🔊';
+    });
+
+    /* ステータス画面 */
+    document.getElementById('btn-stats').addEventListener('click', () => {
+      this.audio.init();
+      this.audio.playClick();
+      this.showStatsScreen();
+    });
+
+    document.getElementById('btn-back-title-stats').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.showScreen('title');
+    });
+
+    document.getElementById('btn-stats-reset').addEventListener('click', () => {
+      this.audio.playClick();
+      if (confirm('プレイデータをすべてリセットしますか？')) {
+        this.stats.reset();
+        this.showStatsScreen();
+      }
+    });
+
+    document.getElementById('stats-tabs').addEventListener('click', (e) => {
+      const tab = e.target.closest('.stats-tab');
+      if (!tab) return;
+      this.audio.playClick();
+      this.activeStatsHeroineId = tab.dataset.heroineId;
+      this.showStatsScreen();
     });
 
     /* ヒロイン選択画面 */
@@ -254,5 +284,22 @@ class GameEngine {
     this.audio.playEnding(endingData.type);
     this.ui.renderResult(endingData);
     this.ui.showScreen('result');
+
+    /* 統計を記録する */
+    this.stats.recordGameResult(
+      this.heroineManager.selectedHeroine.id,
+      endingData.type,
+      this.heroineManager.quizResults
+    );
+  }
+
+  /* ステータス画面を表示する */
+  showStatsScreen() {
+    const heroines = this.heroineManager.heroines;
+    const heroine = heroines.find(h => h.id === this.activeStatsHeroineId) || heroines[0];
+    this.ui.renderStatsTabs(heroines, heroine.id);
+    this.ui.renderStatsContent(heroine, this.stats);
+    this.ui.renderGlobalCategoryStats(this.stats);
+    this.ui.showScreen('stats');
   }
 }
