@@ -28,6 +28,7 @@ class HeroineManager {
   constructor() {
     this.heroines = [];
     this.quizzes = {};
+    this.quizzesHard = {};
     this.selectedHeroine = null;
     this.affinity = INITIAL_AFFINITY;
     this.currentQuizIndex = 0;
@@ -36,14 +37,16 @@ class HeroineManager {
     this.quizResults = [];
   }
 
-  /* ヒロインデータを読み込む */
+  /* ヒロインデータとクイズデータを読み込む */
   async loadData() {
-    const [heroinesRes, quizzesRes] = await Promise.all([
+    const [heroinesRes, quizzesRes, quizzesHardRes] = await Promise.all([
       fetch('assets/data/heroines.json'),
-      fetch('assets/data/quizzes.json')
+      fetch('assets/data/quizzes.json'),
+      fetch('assets/data/quizzes-hard.json')
     ]);
     this.heroines = await heroinesRes.json();
     this.quizzes = await quizzesRes.json();
+    this.quizzesHard = await quizzesHardRes.json();
   }
 
   /* ヒロインを選択してゲーム状態をリセットする */
@@ -59,7 +62,10 @@ class HeroineManager {
 
   /* クイズセットをシャッフルして指定数を取得する */
   generateQuizSet(heroineId) {
-    const allQuizzes = [...this.quizzes[heroineId]];
+    const source = this.isSecondPlay
+      ? this.quizzesHard[heroineId]
+      : this.quizzes[heroineId];
+    const allQuizzes = [...source];
     return this.shuffle(allQuizzes).slice(0, QUIZ_COUNT);
   }
 

@@ -471,6 +471,33 @@ body {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
+.difficulty-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.difficulty-badge.easy {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.4);
+}
+
+.difficulty-badge.hard {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.4);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 1px 4px rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 1px 8px rgba(239, 68, 68, 0.7); }
+}
+
 .affinity-hearts {
   display: flex;
   align-items: center;
@@ -1113,6 +1140,11 @@ body {
 
   .heroine-name-label {
     font-size: 12px;
+  }
+
+  .difficulty-badge {
+    font-size: 9px;
+    padding: 1px 6px;
   }
 
   .affinity-bar-container {

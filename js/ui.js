@@ -125,7 +125,7 @@ class UiManager {
   }
 
   /* クイズ画面を描画する（VN風レイアウト） */
-  renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity }) {
+  renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity, isSecondPlay }) {
     /* 背景をキャラ別に変更 */
     const quizBg = document.getElementById('quiz-bg');
     quizBg.className = `quiz-bg ${heroine.colorName}`;
@@ -134,6 +134,11 @@ class UiManager {
     const nameLabel = document.getElementById('quiz-heroine-name');
     nameLabel.textContent = heroine.shortName;
     nameLabel.style.color = heroine.color;
+
+    /* 難易度バッジ */
+    const diffBadge = document.getElementById('quiz-difficulty-badge');
+    diffBadge.textContent = isSecondPlay ? 'HARD' : 'EASY';
+    diffBadge.className = `difficulty-badge ${isSecondPlay ? 'hard' : 'easy'}`;
 
     /* ネームプレート */
     const namePlate = document.getElementById('vn-name-plate');

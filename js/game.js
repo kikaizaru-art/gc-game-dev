@@ -193,7 +193,8 @@ class GameEngine {
       heroine,
       questionNumber: this.heroineManager.currentQuizIndex + 1,
       totalQuestions: QUIZ_COUNT,
-      affinity: this.heroineManager.affinity
+      affinity: this.heroineManager.affinity,
+      isSecondPlay: this.heroineManager.isSecondPlay
     });
 
     this.ui.hideFeedback();
