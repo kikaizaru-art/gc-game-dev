@@ -14,4 +14,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   const gameEngine = new GameEngine(heroineManager, uiManager, audioManager, statsManager);
 
   await gameEngine.init();
+
+  /* デバッグパネル初期化（debug.js が読み込まれている場合のみ） */
+  if (typeof DebugPanel !== 'undefined') {
+    new DebugPanel(statsManager, heroineManager, gameEngine);
+  }
 });
