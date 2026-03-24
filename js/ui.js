@@ -47,7 +47,6 @@ class UiManager {
     this.screens = {
       title: document.getElementById('screen-title'),
       mypage: document.getElementById('screen-mypage'),
-      favSelect: document.getElementById('screen-fav-select'),
       select: document.getElementById('screen-select'),
       stageSelect: document.getElementById('screen-stage-select'),
       story: document.getElementById('screen-story'),
@@ -123,37 +122,6 @@ class UiManager {
     speechEl.style.animation = '';
   }
 
-  /* お気に入り選択カードを生成する */
-  renderFavoriteCards(heroines, currentFavoriteId, statsManager) {
-    const container = document.getElementById('fav-heroine-cards');
-    container.innerHTML = heroines.map(h => {
-      const isFavorite = h.id === currentFavoriteId;
-      /* 美咲は常に選択可、他はステージ1ハッピーエンド達成済みのみ */
-      const isSelectable = h.id === 'misaki' || (statsManager && statsManager.hasHappyEnd(h.id));
-      const cardClass = isFavorite ? 'favorite-current' : !isSelectable ? 'locked' : '';
-      const badge = isFavorite
-        ? '<span class="card-completion-badge fav-badge">お気に入り</span>'
-        : '';
-      const lockLabel = !isSelectable
-        ? '<div class="heroine-card-lock-label">🔒 STAGE1 ハッピーエンドで解放</div>'
-        : '';
-      return `
-        <div class="heroine-card ${cardClass}" data-heroine-id="${h.id}" data-color="${h.colorName}">
-          <div class="heroine-card-image">
-            ${badge}
-            <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
-          </div>
-          <div class="heroine-card-info">
-            <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
-            <div class="heroine-card-personality">${h.personality}</div>
-            <div class="heroine-card-likes">${h.description}</div>
-            ${lockLabel}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */
   renderHeroineCards(heroines, statsManager, quizCountByHeroine) {
     const container = document.getElementById('heroine-cards');
@@ -182,10 +150,14 @@ class UiManager {
       const totalQuizCount = Object.values(quizCounts).reduce((sum, n) => sum + n, 0);
       const hasStage3Happy = statsManager && statsManager.hasStage3HappyEnd(h.id);
       const hasAllCleared = statsManager && statsManager.hasAllQuizzesCleared(h.id, totalQuizCount);
+      const isPartner = statsManager && statsManager.isPartner(h.id);
+      const hasAnyPartner = statsManager && statsManager.hasPartner();
 
-      /* 完了バッジ：パーフェクト > クリア > 通常進捗 */
+      /* 完了バッジ：パートナー > パーフェクト > クリア > 通常進捗 */
       let completionBadge = '';
-      if (hasStage3Happy && hasAllCleared) {
+      if (isPartner) {
+        completionBadge = '<span class="card-completion-badge partner">💍 パートナー</span>';
+      } else if (hasStage3Happy && hasAllCleared) {
         completionBadge = '<span class="card-completion-badge perfect">💎 パーフェクト</span>';
       } else if (hasStage3Happy) {
         completionBadge = '<span class="card-completion-badge clear">✨ クリア</span>';
@@ -194,7 +166,9 @@ class UiManager {
       let stageBadge;
       if (progress) {
         let badgeClass;
-        if (progress.stage === 3) {
+        if (progress.stage === 4) {
+          badgeClass = progress.ending === 'happy' ? 'master' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        } else if (progress.stage === 3) {
           badgeClass = progress.ending === 'happy' ? 'hard' : progress.ending === 'normal' ? 'cleared' : 'bad';
         } else if (progress.stage === 2) {
           badgeClass = progress.ending === 'happy' ? 'normal-badge' : progress.ending === 'normal' ? 'cleared' : 'bad';
@@ -205,6 +179,13 @@ class UiManager {
       } else {
         stageBadge = '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
       }
+
+      /* パートナー選択ボタン：ステージ3ハッピーエンド済み＆パートナー未設定のキャラに表示 */
+      let partnerBtn = '';
+      if (hasStage3Happy && !hasAnyPartner) {
+        partnerBtn = `<button class="btn btn-partner-select" data-heroine-id="${h.id}">💍 パートナーにする</button>`;
+      }
+
       return `
         <div class="heroine-card" data-heroine-id="${h.id}" data-color="${h.colorName}">
           <div class="heroine-card-image">
@@ -216,6 +197,7 @@ class UiManager {
             <div class="heroine-card-personality">${h.personality}</div>
             <div class="heroine-card-likes">${h.description}</div>
             ${stageBadge}
+            ${partnerBtn}
           </div>
         </div>
       `;
@@ -1105,10 +1087,6 @@ class UiManager {
     /* キラキラ演出 */
     overlay.querySelectorAll('.sparkle').forEach(s => s.remove());
     this.spawnSparkles(overlay, 20);
-    /* 次のステージボタンを表示する */
-    const btnNextStage = document.getElementById('btn-next-stage');
-    btnNextStage.style.display = '';
-    btnNextStage.textContent = '次のステージへ（STAGE 4）';
   }
 
   /* パートナー確定演出を非表示にする */
