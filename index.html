@@ -56,6 +56,10 @@
         <div class="mypage-buttons">
           <button id="btn-mypage-play" class="btn btn-primary btn-glow">あそぶ</button>
           <div class="mypage-btn-row">
+            <button id="btn-mypage-timeattack" class="btn btn-accent btn-mypage-sub">タイムアタック</button>
+            <button id="btn-mypage-endurance" class="btn btn-accent btn-mypage-sub">耐久クイズ</button>
+          </div>
+          <div class="mypage-btn-row">
             <button id="btn-mypage-favorite" class="btn btn-secondary btn-mypage-sub">お気に入り</button>
             <button id="btn-mypage-stats" class="btn btn-secondary btn-mypage-sub">ステータス</button>
           </div>
@@ -297,6 +301,143 @@
         <button id="btn-restore-purchases" class="btn btn-secondary shop-restore-btn">購入を復元</button>
       </div>
       <button id="btn-back-title-shop" class="btn btn-secondary">戻る</button>
+    </div>
+
+    <!-- タイムアタック：カテゴリ選択画面 -->
+    <div id="screen-ta-category" class="screen">
+      <div class="subgame-bg"></div>
+      <h2 class="screen-heading">タイムアタック</h2>
+      <p class="subgame-desc">10問のクイズをどれだけ速く・正確に解けるか挑戦！</p>
+      <div id="ta-category-list" class="subgame-category-list">
+        <!-- JSで動的生成 -->
+      </div>
+      <button id="btn-back-mypage-ta" class="btn btn-secondary">戻る</button>
+    </div>
+
+    <!-- タイムアタック：クイズ画面 -->
+    <div id="screen-ta-quiz" class="screen">
+      <div class="quiz-bg" id="ta-quiz-bg"></div>
+      <div id="ta-quiz-chara-container" class="quiz-chara-container">
+        <img id="ta-quiz-chara-img" class="quiz-chara-img" src="" alt="">
+      </div>
+      <div id="ta-quiz-feedback" class="quiz-feedback hidden">
+        <p id="ta-feedback-text"></p>
+      </div>
+      <div class="quiz-status-bar">
+        <div class="quiz-heroine-info">
+          <span id="ta-category-label" class="heroine-name-label"></span>
+          <span class="difficulty-badge hard">TIME ATTACK</span>
+        </div>
+        <div class="quiz-right-info">
+          <div class="ta-timer-display">
+            <span class="ta-timer-icon">⏱</span>
+            <span id="ta-elapsed-time" class="ta-elapsed-time">0.0s</span>
+          </div>
+          <div id="ta-score-dots" class="quiz-score-dots"></div>
+        </div>
+      </div>
+      <div class="vn-dialog-area">
+        <div class="vn-dialog-box">
+          <div id="ta-name-plate" class="vn-name-plate"></div>
+          <p id="ta-quiz-question" class="vn-dialog-text"></p>
+        </div>
+        <div id="ta-quiz-choices" class="quiz-choices"></div>
+        <button id="btn-ta-quit" class="subgame-quit-btn">やめる</button>
+      </div>
+    </div>
+
+    <!-- タイムアタック：結果画面 -->
+    <div id="screen-ta-result" class="screen">
+      <div class="result-bg happy"></div>
+      <div class="subgame-result-content">
+        <h2 class="subgame-result-title">タイムアタック 結果</h2>
+        <div class="ta-result-stats">
+          <div class="ta-result-main">
+            <div class="ta-result-card">
+              <span class="ta-result-label">タイム</span>
+              <span id="ta-result-time" class="ta-result-value time">0.0s</span>
+            </div>
+            <div class="ta-result-card">
+              <span class="ta-result-label">正解数</span>
+              <span id="ta-result-correct" class="ta-result-value correct">0 / 10</span>
+            </div>
+          </div>
+          <div id="ta-result-record" class="ta-result-record" style="display:none;">
+            <span class="record-badge">NEW RECORD!</span>
+          </div>
+          <div id="ta-result-category" class="ta-result-category"></div>
+        </div>
+        <div class="result-buttons">
+          <button id="btn-ta-retry" class="btn btn-primary">もう一度</button>
+          <button id="btn-ta-back" class="btn btn-secondary">戻る</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 耐久クイズ：開始画面 -->
+    <div id="screen-endurance-start" class="screen">
+      <div class="subgame-bg"></div>
+      <h2 class="screen-heading">耐久クイズ</h2>
+      <p class="subgame-desc">ミスするまでクイズに答え続けよう！何問連続で正解できるかな？</p>
+      <div class="endurance-start-area">
+        <button id="btn-endurance-go" class="btn btn-primary btn-glow btn-large">スタート</button>
+      </div>
+      <button id="btn-back-mypage-endurance" class="btn btn-secondary">戻る</button>
+    </div>
+
+    <!-- 耐久クイズ：クイズ画面 -->
+    <div id="screen-endurance-quiz" class="screen">
+      <div class="quiz-bg" id="endurance-quiz-bg"></div>
+      <div id="endurance-quiz-chara-container" class="quiz-chara-container">
+        <img id="endurance-quiz-chara-img" class="quiz-chara-img" src="" alt="">
+      </div>
+      <div id="endurance-quiz-feedback" class="quiz-feedback hidden">
+        <p id="endurance-feedback-text"></p>
+      </div>
+      <div class="quiz-status-bar">
+        <div class="quiz-heroine-info">
+          <span class="difficulty-badge normal">ENDURANCE</span>
+        </div>
+        <div class="quiz-right-info">
+          <div class="endurance-streak-display">
+            <span class="endurance-streak-icon">🔥</span>
+            <span id="endurance-streak" class="endurance-streak-value">0</span>
+            <span class="endurance-streak-label">連続正解</span>
+          </div>
+        </div>
+      </div>
+      <div class="vn-dialog-area">
+        <div class="vn-dialog-box">
+          <div id="endurance-name-plate" class="vn-name-plate"></div>
+          <p id="endurance-quiz-question" class="vn-dialog-text"></p>
+        </div>
+        <div id="endurance-quiz-choices" class="quiz-choices"></div>
+        <button id="btn-endurance-quit" class="subgame-quit-btn">やめる</button>
+      </div>
+    </div>
+
+    <!-- 耐久クイズ：結果画面 -->
+    <div id="screen-endurance-result" class="screen">
+      <div class="result-bg normal"></div>
+      <div class="subgame-result-content">
+        <h2 class="subgame-result-title">耐久クイズ 結果</h2>
+        <div class="endurance-result-stats">
+          <div class="endurance-result-main">
+            <div class="ta-result-card">
+              <span class="ta-result-label">連続正解数</span>
+              <span id="endurance-result-streak" class="ta-result-value correct">0</span>
+            </div>
+          </div>
+          <div id="endurance-result-record" class="ta-result-record" style="display:none;">
+            <span class="record-badge">NEW RECORD!</span>
+          </div>
+          <p id="endurance-result-miss" class="endurance-result-miss"></p>
+        </div>
+        <div class="result-buttons">
+          <button id="btn-endurance-retry" class="btn btn-primary">もう一度</button>
+          <button id="btn-endurance-back" class="btn btn-secondary">戻る</button>
+        </div>
+      </div>
     </div>
 
     <!-- 広告オーバーレイ（モック） -->

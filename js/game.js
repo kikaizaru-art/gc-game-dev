@@ -77,6 +77,98 @@ class GameEngine {
       this.showMyPage();
     });
 
+    /* マイページ → タイムアタック */
+    document.getElementById('btn-mypage-timeattack').addEventListener('click', () => {
+      this.audio.playClick();
+      if (this.getAllClearedQuestionTexts().size === 0) {
+        alert('まずは「あそぶ」でクイズに正解しよう！\nクリア済みの問題がサブゲームに登場します。');
+        return;
+      }
+      this.showTimeAttackCategorySelect();
+    });
+
+    document.getElementById('btn-back-mypage-ta').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
+    /* タイムアタック：カテゴリ選択 */
+    document.getElementById('ta-category-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.subgame-category-btn');
+      if (!btn) return;
+      this.audio.playClick();
+      this.startTimeAttack(btn.dataset.category);
+    });
+
+    /* タイムアタック：途中で戻る */
+    document.getElementById('btn-ta-quit').addEventListener('click', () => {
+      this.audio.playClick();
+      if (confirm('タイムアタックを中断しますか？')) {
+        this.cleanupTimeAttack();
+        this.showTimeAttackCategorySelect();
+      }
+    });
+
+    /* タイムアタック：結果画面ボタン */
+    document.getElementById('btn-ta-retry').addEventListener('click', () => {
+      this.audio.playClick();
+      if (this.taState) {
+        this.startTimeAttack(this.taState.category);
+      }
+    });
+
+    document.getElementById('btn-ta-back').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showTimeAttackCategorySelect();
+    });
+
+    /* マイページ → 耐久クイズ */
+    document.getElementById('btn-mypage-endurance').addEventListener('click', () => {
+      this.audio.playClick();
+      if (this.getAllClearedQuestionTexts().size === 0) {
+        alert('まずは「あそぶ」でクイズに正解しよう！\nクリア済みの問題がサブゲームに登場します。');
+        return;
+      }
+      /* ベスト記録を開始画面に表示 */
+      const best = this.stats.getEnduranceBest();
+      const descEl = document.querySelector('#screen-endurance-start .subgame-desc');
+      if (best > 0) {
+        descEl.textContent = `ミスするまでクイズに答え続けよう！ ベスト記録: ${best}問連続正解`;
+      } else {
+        descEl.textContent = 'ミスするまでクイズに答え続けよう！何問連続で正解できるかな？';
+      }
+      this.ui.showScreen('enduranceStart');
+    });
+
+    document.getElementById('btn-back-mypage-endurance').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
+    document.getElementById('btn-endurance-go').addEventListener('click', () => {
+      this.audio.playClick();
+      this.startEndurance();
+    });
+
+    /* 耐久クイズ：途中で戻る */
+    document.getElementById('btn-endurance-quit').addEventListener('click', () => {
+      this.audio.playClick();
+      if (confirm('耐久クイズを中断しますか？')) {
+        this.showEnduranceResult(null);
+      }
+    });
+
+    /* 耐久クイズ：結果画面ボタン */
+    document.getElementById('btn-endurance-retry').addEventListener('click', () => {
+      this.audio.playClick();
+      this.startEndurance();
+    });
+
+    document.getElementById('btn-endurance-back').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
     /* マイページ → オプション */
     document.getElementById('btn-mypage-options').addEventListener('click', () => {
       this.audio.playClick();
@@ -277,10 +369,24 @@ class GameEngine {
 
     /* キーボード操作 */
     document.addEventListener('keydown', (e) => {
-      if (!this.isAnswering) return;
       const keyMap = { '1': 0, '2': 1, '3': 2 };
-      if (keyMap[e.key] !== undefined) {
-        this.handleAnswer(keyMap[e.key]);
+      if (keyMap[e.key] === undefined) return;
+      const idx = keyMap[e.key];
+
+      /* 通常クイズ */
+      if (this.isAnswering) {
+        this.handleAnswer(idx);
+        return;
+      }
+      /* タイムアタック */
+      if (this.taState && this.taState.isAnswering) {
+        this.handleTaAnswer(idx);
+        return;
+      }
+      /* 耐久クイズ */
+      if (this.enduranceState && this.enduranceState.isAnswering) {
+        this.handleEnduranceAnswer(idx);
+        return;
       }
     });
   }
@@ -740,6 +846,291 @@ class GameEngine {
       || this.heroineManager.heroines[0];
     this.ui.renderMyPage(heroine);
     this.ui.showScreen('mypage');
+  }
+
+  /* ===========================
+     タイムアタック
+     =========================== */
+
+  /* 全ヒロインのクリア済み問題テキストを集約して返す */
+  getAllClearedQuestionTexts() {
+    const cleared = new Set();
+    ['misaki', 'rin', 'hinata'].forEach(id => {
+      const heroineCleared = this.stats.getClearedQuestions(id);
+      heroineCleared.forEach(q => cleared.add(q));
+    });
+    return cleared;
+  }
+
+  /* タイムアタック用の全カテゴリ一覧を取得する（クリア済み問題があるカテゴリのみ） */
+  getAllCategories() {
+    const cleared = this.getAllClearedQuestionTexts();
+    const categories = new Set();
+    const hm = this.heroineManager;
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+      Object.values(source).forEach(quizArray => {
+        quizArray.forEach(q => {
+          if (q.category && cleared.has(q.question)) {
+            categories.add(q.category);
+          }
+        });
+      });
+    });
+    return [...categories];
+  }
+
+  /* タイムアタック用に指定カテゴリのクリア済みクイズをシャッフルして取得する */
+  getQuizzesByCategory(category) {
+    const cleared = this.getAllClearedQuestionTexts();
+    const hm = this.heroineManager;
+    const all = [];
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+      Object.values(source).forEach(quizArray => {
+        quizArray.forEach(q => {
+          if (q.category === category && cleared.has(q.question)) {
+            all.push(q);
+          }
+        });
+      });
+    });
+    /* シャッフル */
+    for (let i = all.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [all[i], all[j]] = [all[j], all[i]];
+    }
+    return all;
+  }
+
+  /* タイムアタックのタイマーを停止してクリーンアップする */
+  cleanupTimeAttack() {
+    if (this.taState && this.taState.elapsedTimerId) {
+      clearInterval(this.taState.elapsedTimerId);
+      this.taState.elapsedTimerId = null;
+    }
+    this.taState = null;
+  }
+
+  /* タイムアタックのカテゴリ選択画面を表示する */
+  showTimeAttackCategorySelect() {
+    const categories = this.getAllCategories();
+    const records = this.stats.getTimeAttackRecords();
+    /* カテゴリ別のクリア済み問題数を計算する */
+    const categoryCounts = {};
+    categories.forEach(cat => {
+      categoryCounts[cat] = this.getQuizzesByCategory(cat).length;
+    });
+    this.ui.renderTaCategoryList(categories, records, categoryCounts);
+    this.ui.showScreen('taCategory');
+  }
+
+  /* タイムアタックを開始する */
+  startTimeAttack(category) {
+    const TA_QUIZ_COUNT = 10;
+    const quizPool = this.getQuizzesByCategory(category);
+    this.taState = {
+      category,
+      quizzes: quizPool.slice(0, TA_QUIZ_COUNT),
+      currentIndex: 0,
+      correctCount: 0,
+      startTime: null,
+      elapsedTimerId: null,
+      isAnswering: false
+    };
+    /* キャラ画像をお気に入りヒロインに設定 */
+    const heroine = this.heroineManager.heroines.find(h => h.id === this.favoriteHeroineId)
+      || this.heroineManager.heroines[0];
+    const charaImg = document.getElementById('ta-quiz-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    this.ui.renderTaScoreDots(this.taState.quizzes.length);
+    this.ui.showScreen('taQuiz');
+    this.showTaCurrentQuiz();
+  }
+
+  /* タイムアタック：現在のクイズを表示する */
+  showTaCurrentQuiz() {
+    const st = this.taState;
+    const quiz = st.quizzes[st.currentIndex];
+    const { shuffledChoices, correctIndex } = this.shuffleChoices(quiz);
+    st.currentCorrectIndex = correctIndex;
+    st.isAnswering = true;
+
+    this.ui.hideTaFeedback();
+    this.ui.renderTaQuiz(
+      { ...quiz, choices: shuffledChoices },
+      st.category,
+      st.currentIndex + 1,
+      st.quizzes.length
+    );
+
+    /* 最初の問題でタイマー開始 */
+    if (st.currentIndex === 0) {
+      st.startTime = performance.now();
+      st.elapsedTimerId = setInterval(() => {
+        const elapsed = performance.now() - st.startTime;
+        this.ui.updateTaTimer(elapsed);
+      }, TIMER_INTERVAL_MS);
+    }
+
+    /* ドットのハイライト */
+    const dots = document.getElementById('ta-score-dots').querySelectorAll('.score-dot');
+    dots.forEach(d => d.classList.remove('current'));
+    if (dots[st.currentIndex]) dots[st.currentIndex].classList.add('current');
+
+    /* 選択肢のクリックイベント */
+    const choiceBtns = document.getElementById('ta-quiz-choices').querySelectorAll('.choice-btn');
+    choiceBtns.forEach((btn, index) => {
+      btn.addEventListener('click', () => this.handleTaAnswer(index));
+    });
+  }
+
+  /* タイムアタック：回答を処理する */
+  handleTaAnswer(choiceIndex) {
+    const st = this.taState;
+    if (!st.isAnswering) return;
+    st.isAnswering = false;
+
+    const isCorrect = choiceIndex === st.currentCorrectIndex;
+    if (isCorrect) st.correctCount++;
+
+    this.audio[isCorrect ? 'playCorrect' : 'playWrong']();
+    this.ui.showTaAnswerResult(choiceIndex, st.currentCorrectIndex, isCorrect);
+    this.ui.updateTaScoreDot(st.currentIndex, isCorrect);
+
+    const TA_FEEDBACK_MS = 800;
+    setTimeout(() => {
+      st.currentIndex++;
+      if (st.currentIndex >= st.quizzes.length) {
+        this.showTaResult();
+      } else {
+        this.showTaCurrentQuiz();
+      }
+    }, TA_FEEDBACK_MS);
+  }
+
+  /* タイムアタック：結果画面を表示する */
+  showTaResult() {
+    const st = this.taState;
+    if (st.elapsedTimerId) {
+      clearInterval(st.elapsedTimerId);
+      st.elapsedTimerId = null;
+    }
+    const elapsedMs = performance.now() - st.startTime;
+    const isNewRecord = this.stats.recordTimeAttackResult(
+      st.category, elapsedMs, st.correctCount, st.quizzes.length
+    );
+    this.ui.renderTaResult(elapsedMs, st.correctCount, st.quizzes.length, st.category, isNewRecord);
+    this.audio.playEnding(st.correctCount >= 8 ? 'happy' : 'normal');
+    this.ui.showScreen('taResult');
+  }
+
+  /* ===========================
+     耐久クイズ
+     =========================== */
+
+  /* 耐久クイズ用にクリア済みクイズをシャッフルして取得する */
+  getAllQuizzesShuffled() {
+    const cleared = this.getAllClearedQuestionTexts();
+    const hm = this.heroineManager;
+    const all = [];
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+      Object.values(source).forEach(quizArray => {
+        quizArray.forEach(q => {
+          if (cleared.has(q.question)) all.push(q);
+        });
+      });
+    });
+    /* シャッフル */
+    for (let i = all.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [all[i], all[j]] = [all[j], all[i]];
+    }
+    return all;
+  }
+
+  /* 耐久クイズを開始する */
+  startEndurance() {
+    this.enduranceState = {
+      quizPool: this.getAllQuizzesShuffled(),
+      currentIndex: 0,
+      streak: 0,
+      isAnswering: false,
+      currentCorrectIndex: null
+    };
+
+    /* キャラ画像をお気に入りヒロインに設定 */
+    const heroine = this.heroineManager.heroines.find(h => h.id === this.favoriteHeroineId)
+      || this.heroineManager.heroines[0];
+    const charaImg = document.getElementById('endurance-quiz-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    this.ui.showScreen('enduranceQuiz');
+    this.showEnduranceCurrentQuiz();
+  }
+
+  /* 耐久クイズ：現在のクイズを表示する */
+  showEnduranceCurrentQuiz() {
+    const st = this.enduranceState;
+    /* プールが尽きたら再シャッフル */
+    if (st.currentIndex >= st.quizPool.length) {
+      st.quizPool = this.getAllQuizzesShuffled();
+      st.currentIndex = 0;
+    }
+
+    const quiz = st.quizPool[st.currentIndex];
+    const { shuffledChoices, correctIndex } = this.shuffleChoices(quiz);
+    st.currentCorrectIndex = correctIndex;
+    st.isAnswering = true;
+
+    this.ui.hideEnduranceFeedback();
+    this.ui.renderEnduranceQuiz(
+      { ...quiz, choices: shuffledChoices },
+      st.streak
+    );
+
+    /* 選択肢のクリックイベント */
+    const choiceBtns = document.getElementById('endurance-quiz-choices').querySelectorAll('.choice-btn');
+    choiceBtns.forEach((btn, index) => {
+      btn.addEventListener('click', () => this.handleEnduranceAnswer(index));
+    });
+  }
+
+  /* 耐久クイズ：回答を処理する */
+  handleEnduranceAnswer(choiceIndex) {
+    const st = this.enduranceState;
+    if (!st.isAnswering) return;
+    st.isAnswering = false;
+
+    const isCorrect = choiceIndex === st.currentCorrectIndex;
+    this.audio[isCorrect ? 'playCorrect' : 'playWrong']();
+    this.ui.showEnduranceAnswerResult(choiceIndex, st.currentCorrectIndex, isCorrect);
+
+    if (isCorrect) {
+      st.streak++;
+      st.currentIndex++;
+      const ENDURANCE_FEEDBACK_MS = 600;
+      setTimeout(() => {
+        this.showEnduranceCurrentQuiz();
+      }, ENDURANCE_FEEDBACK_MS);
+    } else {
+      /* ゲームオーバー */
+      const missedQuestion = st.quizPool[st.currentIndex].question;
+      const ENDURANCE_GAMEOVER_MS = 1500;
+      setTimeout(() => {
+        this.showEnduranceResult(missedQuestion);
+      }, ENDURANCE_GAMEOVER_MS);
+    }
+  }
+
+  /* 耐久クイズ：結果画面を表示する */
+  showEnduranceResult(missedQuestion) {
+    const st = this.enduranceState;
+    const isNewRecord = this.stats.recordEnduranceResult(st.streak);
+    this.ui.renderEnduranceResult(st.streak, missedQuestion, isNewRecord);
+    this.audio.playEnding(st.streak >= 10 ? 'happy' : 'normal');
+    this.ui.showScreen('enduranceResult');
   }
 
   /* ステータス画面を表示する */

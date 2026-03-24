@@ -2828,3 +2828,298 @@ body {
   color: rgba(255, 255, 255, 0.4);
   margin-top: 8px;
 }
+
+/* ============================
+   サブゲーム共通
+   ============================ */
+#screen-ta-category,
+#screen-endurance-start,
+#screen-ta-result,
+#screen-endurance-result {
+  justify-content: flex-start;
+  padding-top: 28px;
+  background: linear-gradient(180deg, #1a1535 0%, #0f0a18 100%);
+}
+
+/* サブゲームクイズ画面の共通レイアウト（通常クイズ画面と同じ配置） */
+#screen-ta-quiz,
+#screen-endurance-quiz {
+  padding: 0;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.subgame-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.subgame-desc {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  margin: 8px 24px 16px;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.subgame-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 24px;
+  overflow-y: auto;
+  max-height: 400px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 16px;
+}
+
+.subgame-category-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #fff;
+  font-family: var(--font-main);
+  font-size: 14px;
+}
+
+.subgame-category-btn:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+  transform: translateY(-1px);
+}
+
+.subgame-category-btn.disabled,
+.subgame-category-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.subgame-category-name {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.subgame-category-count {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 8px;
+}
+
+.subgame-category-record {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.subgame-empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  padding: 24px;
+}
+
+/* タイムアタック：タイマー表示 */
+.ta-timer-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+.ta-timer-icon {
+  font-size: 14px;
+}
+
+.ta-elapsed-time {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f59e0b;
+  min-width: 50px;
+  text-align: right;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+/* 耐久クイズ：連続正解表示 */
+.endurance-streak-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.endurance-streak-icon {
+  font-size: 16px;
+}
+
+.endurance-streak-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: #f59e0b;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+  min-width: 30px;
+  text-align: center;
+}
+
+.endurance-streak-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 耐久クイズ：開始画面 */
+.endurance-start-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-large {
+  font-size: 20px;
+  padding: 16px 48px;
+  letter-spacing: 3px;
+}
+
+/* サブゲーム結果画面 */
+.subgame-result-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+}
+
+.subgame-result-title {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 3px;
+  margin-bottom: 24px;
+  text-shadow: 0 0 12px rgba(236, 72, 153, 0.3);
+}
+
+.ta-result-stats,
+.endurance-result-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.ta-result-main,
+.endurance-result-main {
+  display: flex;
+  gap: 24px;
+}
+
+.ta-result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px 24px;
+  min-width: 120px;
+}
+
+.ta-result-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.ta-result-value {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.ta-result-value.time {
+  color: #f59e0b;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.ta-result-value.correct {
+  color: #10b981;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.ta-result-record {
+  text-align: center;
+}
+
+.record-badge {
+  display: inline-block;
+  padding: 6px 20px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: #fff;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 2px;
+  border-radius: 20px;
+  animation: recordPulse 1s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+@keyframes recordPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(245, 158, 11, 0.7); }
+}
+
+.ta-result-category {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 1px;
+}
+
+.endurance-result-miss {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  max-width: 90%;
+  line-height: 1.5;
+}
+
+/* サブゲーム：クイズ中の戻るボタン（選択肢の下に配置） */
+.subgame-quit-btn {
+  display: block;
+  margin: 10px auto 4px;
+  background: rgba(107, 114, 128, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 28px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  transition: all 0.2s ease;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.subgame-quit-btn:hover {
+  background: rgba(107, 114, 128, 0.7);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}

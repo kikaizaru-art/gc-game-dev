@@ -227,6 +227,41 @@ class StatsManager {
     return cleared;
   }
 
+  /* タイムアタックの記録を取得する */
+  getTimeAttackRecords() {
+    return this.stats.timeAttack || {};
+  }
+
+  /* タイムアタックの結果を記録する（ベスト更新時のみ保存） */
+  recordTimeAttackResult(category, timeMs, correct, total) {
+    if (!this.stats.timeAttack) this.stats.timeAttack = {};
+    const prev = this.stats.timeAttack[category];
+    const isNewRecord = !prev
+      || correct > prev.correct
+      || (correct === prev.correct && timeMs < prev.time);
+    if (isNewRecord) {
+      this.stats.timeAttack[category] = { time: timeMs / 1000, correct, total };
+      this.save();
+    }
+    return isNewRecord;
+  }
+
+  /* 耐久クイズのベスト記録を取得する */
+  getEnduranceBest() {
+    return this.stats.enduranceBest || 0;
+  }
+
+  /* 耐久クイズの結果を記録する（ベスト更新時のみ保存） */
+  recordEnduranceResult(streak) {
+    if (!this.stats.enduranceBest) this.stats.enduranceBest = 0;
+    const isNewRecord = streak > this.stats.enduranceBest;
+    if (isNewRecord) {
+      this.stats.enduranceBest = streak;
+      this.save();
+    }
+    return isNewRecord;
+  }
+
   /* 統計データをリセットする */
   reset() {
     this.stats = this.createEmpty();
