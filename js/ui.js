@@ -8,6 +8,37 @@ const CHARA_IMAGES = {
   hinata: 'assets/images/hinata.png'
 };
 
+/* マイページ訪問時のキャラ別セリフ */
+const MYPAGE_GREETINGS = {
+  misaki: [
+    'やっほー！ 会いたかったよ～♪',
+    '今日も一緒に遊ぼっ！',
+    'ねえねえ、クイズやろうよ！',
+    'あたしのこと、もっと知りたくない？',
+    'おかえり！ 待ってたんだよ♪',
+    '今日もいい天気だね！ テンション上がるー！',
+    'チョコ食べる？ あ、ちょっと溶けちゃった…えへへ'
+  ],
+  rin: [
+    '…来たのね。待ってたわ。',
+    '今日も勉強、頑張りましょう。',
+    'あなた、最近少し成長したわね。',
+    '…べ、別に待ってたわけじゃないから。',
+    'クイズの準備はできてる？',
+    '紅茶、淹れておいたわ。…気が向いただけよ。',
+    '静かに本を読みたいの。…隣にいるのは許可するけど。'
+  ],
+  hinata: [
+    'あっ、来てくれたんですね…！ うれしいです♪',
+    '今日はどんなお話しましょうか？',
+    'えへへ…会えてうれしいです。',
+    'お絵描きの続き、見てくれますか？',
+    'あの…一緒にいると、落ち着きます。',
+    '新しいスケッチ描いたんです。見てください！',
+    'ひなたぼっこ日和ですね…ふふ。'
+  ]
+};
+
 /**
  * 画面描画と遷移を管理するクラス
  */
@@ -69,6 +100,27 @@ class UiManager {
     const nameEl = document.getElementById('mypage-chara-name');
     nameEl.textContent = heroine.shortName;
     nameEl.style.color = heroine.color;
+
+    /* キャラのセリフを表示する */
+    this.showMypageGreeting(heroine);
+  }
+
+  /* マイページでキャラのセリフをランダム表示する */
+  showMypageGreeting(heroine) {
+    const speechEl = document.getElementById('mypage-chara-speech');
+    const greetings = MYPAGE_GREETINGS[heroine.id] || [];
+    if (greetings.length === 0) {
+      speechEl.classList.add('hidden');
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * greetings.length);
+    speechEl.textContent = greetings[randomIndex];
+    speechEl.style.borderColor = heroine.color + '4D';
+    speechEl.classList.remove('hidden');
+    /* アニメーションをリセットして再生する */
+    speechEl.style.animation = 'none';
+    speechEl.offsetHeight;
+    speechEl.style.animation = '';
   }
 
   /* お気に入り選択カードを生成する */

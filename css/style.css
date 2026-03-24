@@ -365,6 +365,71 @@ body {
   text-shadow: 0 0 12px currentColor;
 }
 
+.mypage-top-bar {
+  position: absolute;
+  top: 48px;
+  right: 16px;
+  z-index: 2;
+}
+
+.btn-favorite-top {
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(236, 72, 153, 0.25);
+  border: 1px solid rgba(236, 72, 153, 0.5);
+  color: #ffc0dd;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  letter-spacing: 1px;
+}
+
+.btn-favorite-top:hover {
+  background: rgba(236, 72, 153, 0.45);
+  transform: scale(1.05);
+}
+
+.mypage-chara-speech {
+  margin-top: 12px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 280px;
+  text-align: center;
+  position: relative;
+  animation: speechFadeIn 0.5s ease;
+}
+
+.mypage-chara-speech::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid rgba(255, 255, 255, 0.2);
+}
+
+.mypage-chara-speech.hidden {
+  display: none;
+}
+
+@keyframes speechFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .mypage-buttons {
   width: 100%;
   text-align: center;
