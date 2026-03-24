@@ -96,6 +96,15 @@ class GameEngine {
       this.startTimeAttack(btn.dataset.category);
     });
 
+    /* タイムアタック：途中で戻る */
+    document.getElementById('btn-ta-quit').addEventListener('click', () => {
+      this.audio.playClick();
+      if (confirm('タイムアタックを中断しますか？')) {
+        this.cleanupTimeAttack();
+        this.showTimeAttackCategorySelect();
+      }
+    });
+
     /* タイムアタック：結果画面ボタン */
     document.getElementById('btn-ta-retry').addEventListener('click', () => {
       this.audio.playClick();
@@ -131,6 +140,14 @@ class GameEngine {
     document.getElementById('btn-endurance-go').addEventListener('click', () => {
       this.audio.playClick();
       this.startEndurance();
+    });
+
+    /* 耐久クイズ：途中で戻る */
+    document.getElementById('btn-endurance-quit').addEventListener('click', () => {
+      this.audio.playClick();
+      if (confirm('耐久クイズを中断しますか？')) {
+        this.showEnduranceResult(null);
+      }
     });
 
     /* 耐久クイズ：結果画面ボタン */
@@ -858,6 +875,15 @@ class GameEngine {
       [all[i], all[j]] = [all[j], all[i]];
     }
     return all;
+  }
+
+  /* タイムアタックのタイマーを停止してクリーンアップする */
+  cleanupTimeAttack() {
+    if (this.taState && this.taState.elapsedTimerId) {
+      clearInterval(this.taState.elapsedTimerId);
+      this.taState.elapsedTimerId = null;
+    }
+    this.taState = null;
   }
 
   /* タイムアタックのカテゴリ選択画面を表示する */
