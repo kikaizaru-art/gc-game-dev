@@ -34,6 +34,22 @@ class UiManager {
     };
   }
 
+  /* データ読み込みエラーを画面に表示する */
+  showLoadError(message) {
+    const container = document.getElementById('game-container');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'screen active';
+    errorDiv.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;';
+    errorDiv.innerHTML = `
+      <h2 style="color:#e74c3c;margin-bottom:1rem;">読み込みエラー</h2>
+      <p style="margin-bottom:1.5rem;">${message}</p>
+      <button class="btn btn-primary" onclick="location.reload()">再読み込み</button>
+    `;
+    /* 全画面を非表示にしてエラーを表示する */
+    Object.values(this.screens).forEach(s => s.classList.remove('active'));
+    container.appendChild(errorDiv);
+  }
+
   /* 画面を切り替える */
   showScreen(screenName) {
     Object.values(this.screens).forEach(screen => {
@@ -827,15 +843,15 @@ class UiManager {
       container.innerHTML = '<p class="subgame-empty">クリア済みの問題がありません</p>';
       return;
     }
-    const TA_REQUIRED_COUNT = 10;
+    const TA_MIN_REQUIRED = 3;
     container.innerHTML = categories.map(cat => {
       const record = records[cat];
       const count = (categoryCounts && categoryCounts[cat]) || 0;
-      const isPlayable = count >= TA_REQUIRED_COUNT;
+      const isPlayable = count >= TA_MIN_REQUIRED;
       const quizCountText = `${count}問`;
       const recordText = record
         ? `ベスト: ${record.time.toFixed(1)}s / ${record.correct}問正解`
-        : isPlayable ? 'まだ記録なし' : `あと${TA_REQUIRED_COUNT - count}問クリアが必要`;
+        : isPlayable ? 'まだ記録なし' : `あと${TA_MIN_REQUIRED - count}問クリアが必要`;
       const disabledClass = isPlayable ? '' : 'disabled';
       return `
         <button class="subgame-category-btn ${disabledClass}" data-category="${cat}" ${isPlayable ? '' : 'disabled'}>

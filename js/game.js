@@ -22,7 +22,12 @@ class GameEngine {
 
   /* ゲーム初期化 */
   async init() {
-    await this.heroineManager.loadData();
+    try {
+      await this.heroineManager.loadData();
+    } catch (err) {
+      this.ui.showLoadError(err.message);
+      return;
+    }
     this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
     this.bindEvents();
     this.ui.updateStaminaGauge(this.stamina.getStamina(), this.stamina.getNextRecoveryMs());
@@ -35,7 +40,6 @@ class GameEngine {
       this.ui.updateStaminaGauge(this.stamina.getStamina(), this.stamina.getNextRecoveryMs());
     }, 1000);
     this.ui.showScreen('title');
-    console.log('ハートクイズ - 初期化完了');
   }
 
   /* イベントリスナーを登録する */
@@ -925,11 +929,12 @@ class GameEngine {
 
   /* タイムアタックを開始する */
   startTimeAttack(category) {
-    const TA_QUIZ_COUNT = 10;
+    const TA_MAX_QUIZ_COUNT = 10;
     const quizPool = this.getQuizzesByCategory(category);
+    const quizCount = Math.min(TA_MAX_QUIZ_COUNT, quizPool.length);
     this.taState = {
       category,
-      quizzes: quizPool.slice(0, TA_QUIZ_COUNT),
+      quizzes: quizPool.slice(0, quizCount),
       currentIndex: 0,
       correctCount: 0,
       startTime: null,
