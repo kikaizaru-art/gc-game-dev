@@ -821,16 +821,22 @@ class UiManager {
   }
 
   /* タイムアタック：カテゴリ選択画面を描画する */
-  renderTaCategoryList(categories, records) {
+  renderTaCategoryList(categories, records, categoryCounts) {
     const container = document.getElementById('ta-category-list');
+    if (categories.length === 0) {
+      container.innerHTML = '<p class="subgame-empty">クリア済みの問題がありません</p>';
+      return;
+    }
     container.innerHTML = categories.map(cat => {
       const record = records[cat];
+      const count = (categoryCounts && categoryCounts[cat]) || 0;
+      const quizCountText = `${Math.min(count, 10)}問`;
       const recordText = record
         ? `ベスト: ${record.time.toFixed(1)}s / ${record.correct}問正解`
         : 'まだ記録なし';
       return `
         <button class="subgame-category-btn" data-category="${cat}">
-          <span class="subgame-category-name">${cat}</span>
+          <span class="subgame-category-name">${cat}<span class="subgame-category-count">${quizCountText}</span></span>
           <span class="subgame-category-record">${recordText}</span>
         </button>
       `;

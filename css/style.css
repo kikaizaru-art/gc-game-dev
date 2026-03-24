@@ -2907,9 +2907,23 @@ body {
   letter-spacing: 1px;
 }
 
+.subgame-category-count {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 8px;
+}
+
 .subgame-category-record {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.45);
+}
+
+.subgame-empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  padding: 24px;
 }
 
 /* タイムアタック：タイマー表示 */
@@ -3084,7 +3098,7 @@ body {
 .subgame-quit-btn {
   position: absolute;
   top: 8px;
-  right: 8px;
+  left: 8px;
   z-index: 20;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.2);

@@ -80,6 +80,10 @@ class GameEngine {
     /* マイページ → タイムアタック */
     document.getElementById('btn-mypage-timeattack').addEventListener('click', () => {
       this.audio.playClick();
+      if (this.getAllClearedQuestionTexts().size === 0) {
+        alert('まずは「あそぶ」でクイズに正解しよう！\nクリア済みの問題がサブゲームに登場します。');
+        return;
+      }
       this.showTimeAttackCategorySelect();
     });
 
@@ -121,6 +125,10 @@ class GameEngine {
     /* マイページ → 耐久クイズ */
     document.getElementById('btn-mypage-endurance').addEventListener('click', () => {
       this.audio.playClick();
+      if (this.getAllClearedQuestionTexts().size === 0) {
+        alert('まずは「あそぶ」でクイズに正解しよう！\nクリア済みの問題がサブゲームに登場します。');
+        return;
+      }
       /* ベスト記録を開始画面に表示 */
       const best = this.stats.getEnduranceBest();
       const descEl = document.querySelector('#screen-endurance-start .subgame-desc');
@@ -844,28 +852,44 @@ class GameEngine {
      タイムアタック
      =========================== */
 
-  /* タイムアタック用の全カテゴリ一覧を取得する */
+  /* 全ヒロインのクリア済み問題テキストを集約して返す */
+  getAllClearedQuestionTexts() {
+    const cleared = new Set();
+    ['misaki', 'rin', 'hinata'].forEach(id => {
+      const heroineCleared = this.stats.getClearedQuestions(id);
+      heroineCleared.forEach(q => cleared.add(q));
+    });
+    return cleared;
+  }
+
+  /* タイムアタック用の全カテゴリ一覧を取得する（クリア済み問題があるカテゴリのみ） */
   getAllCategories() {
+    const cleared = this.getAllClearedQuestionTexts();
     const categories = new Set();
     const hm = this.heroineManager;
     [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
-          if (q.category) categories.add(q.category);
+          if (q.category && cleared.has(q.question)) {
+            categories.add(q.category);
+          }
         });
       });
     });
     return [...categories];
   }
 
-  /* タイムアタック用に指定カテゴリのクイズをシャッフルして取得する */
+  /* タイムアタック用に指定カテゴリのクリア済みクイズをシャッフルして取得する */
   getQuizzesByCategory(category) {
+    const cleared = this.getAllClearedQuestionTexts();
     const hm = this.heroineManager;
     const all = [];
     [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
-          if (q.category === category) all.push(q);
+          if (q.category === category && cleared.has(q.question)) {
+            all.push(q);
+          }
         });
       });
     });
@@ -890,7 +914,12 @@ class GameEngine {
   showTimeAttackCategorySelect() {
     const categories = this.getAllCategories();
     const records = this.stats.getTimeAttackRecords();
-    this.ui.renderTaCategoryList(categories, records);
+    /* カテゴリ別のクリア済み問題数を計算する */
+    const categoryCounts = {};
+    categories.forEach(cat => {
+      categoryCounts[cat] = this.getQuizzesByCategory(cat).length;
+    });
+    this.ui.renderTaCategoryList(categories, records, categoryCounts);
     this.ui.showScreen('taCategory');
   }
 
@@ -1000,13 +1029,16 @@ class GameEngine {
      耐久クイズ
      =========================== */
 
-  /* 耐久クイズ用に全クイズをシャッフルして取得する */
+  /* 耐久クイズ用にクリア済みクイズをシャッフルして取得する */
   getAllQuizzesShuffled() {
+    const cleared = this.getAllClearedQuestionTexts();
     const hm = this.heroineManager;
     const all = [];
     [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
       Object.values(source).forEach(quizArray => {
-        quizArray.forEach(q => all.push(q));
+        quizArray.forEach(q => {
+          if (cleared.has(q.question)) all.push(q);
+        });
       });
     });
     /* シャッフル */
