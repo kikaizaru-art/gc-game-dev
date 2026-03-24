@@ -233,7 +233,19 @@ class UiManager {
 
     const hasHappy = statsManager.hasHappyEnd(heroine.id);
     const hasStage2Happy = statsManager.hasStage2HappyEnd(heroine.id);
+    const hasStage3Happy = statsManager.hasStage3HappyEnd(heroine.id);
+    const isPartner = statsManager.isPartner(heroine.id);
+    const hasAnyPartner = statsManager.hasPartner();
     const container = document.getElementById('stage-select-cards');
+
+    /* ステージ4の解放条件：このヒロインがパートナーであること */
+    const stage4Unlocked = isPartner && hasStage3Happy;
+    /* 他のキャラとパートナーの場合はロック理由を変える */
+    const stage4LockReason = !hasStage3Happy
+      ? '🔒 STAGE 3 ハッピーエンドで解放'
+      : (hasAnyPartner && !isPartner)
+        ? '🔒 他のキャラがパートナーです'
+        : '🔒 パートナーになると解放';
 
     container.innerHTML = `
       <div class="stage-card" data-stage="1">
@@ -253,6 +265,12 @@ class UiManager {
         <div class="stage-card-difficulty">HARD</div>
         <div class="stage-card-desc">${hasStage2Happy ? `${heroine.shortName}との最後の試練` : '???'}</div>
         ${hasStage2Happy ? '' : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
+      </div>
+      <div class="stage-card ${stage4Unlocked ? '' : 'locked'}" data-stage="4">
+        <div class="stage-card-badge master">STAGE 4</div>
+        <div class="stage-card-difficulty">MASTER</div>
+        <div class="stage-card-desc">${stage4Unlocked ? `${heroine.shortName}との永遠の絆` : '???'}</div>
+        ${stage4Unlocked ? '<div class="stage-card-note">💍 パートナー限定ステージ</div>' : `<div class="stage-card-lock">${stage4LockReason}</div>`}
       </div>
     `;
   }
@@ -641,7 +659,7 @@ class UiManager {
   }
 
   /* 結果画面を描画する（VN風エンディング） */
-  renderResult(endingData) {
+  renderResult(endingData, statsManager) {
     /* 背景をエンディング種類別に変更 */
     const resultBg = document.getElementById('result-bg');
     resultBg.className = `result-bg ${endingData.type}`;
@@ -682,10 +700,14 @@ class UiManager {
     }
 
     /* 次のステージボタンの表示制御 */
-    const MAX_STAGE = 3;
+    const MAX_STAGE = 4;
     const btnNextStage = document.getElementById('btn-next-stage');
     const currentStage = endingData.currentStage || 1;
-    if (endingData.type === 'happy' && currentStage < MAX_STAGE) {
+    const heroineId = endingData.heroine.id;
+    /* ステージ3→4は、パートナーになった場合のみ（パートナー選択後に表示更新される） */
+    const canAdvance = endingData.type === 'happy' && currentStage < MAX_STAGE
+      && (currentStage < 3 || (statsManager && statsManager.isPartner(heroineId)));
+    if (canAdvance) {
       btnNextStage.style.display = '';
       btnNextStage.textContent = `次のステージへ（STAGE ${currentStage + 1}）`;
     } else {
@@ -1051,5 +1073,46 @@ class UiManager {
     missEl.textContent = missedQuestion ? `不正解の問題: ${missedQuestion}` : '';
     const recordEl = document.getElementById('endurance-result-record');
     recordEl.style.display = isNewRecord ? '' : 'none';
+  }
+
+  /* パートナー選択プロンプトを表示する */
+  showPartnerPrompt(heroine) {
+    const overlay = document.getElementById('partner-prompt-overlay');
+    const nameEl = document.getElementById('partner-prompt-name');
+    const imgEl = document.getElementById('partner-prompt-img');
+    nameEl.textContent = heroine.shortName;
+    nameEl.style.color = heroine.color;
+    imgEl.src = CHARA_IMAGES[heroine.id];
+    imgEl.alt = heroine.shortName;
+    overlay.classList.remove('hidden');
+  }
+
+  /* パートナー選択プロンプトを非表示にする */
+  hidePartnerPrompt() {
+    document.getElementById('partner-prompt-overlay').classList.add('hidden');
+  }
+
+  /* パートナー確定演出を表示する */
+  showPartnerConfirmation(heroine) {
+    const overlay = document.getElementById('partner-confirm-overlay');
+    const nameEl = document.getElementById('partner-confirm-name');
+    const imgEl = document.getElementById('partner-confirm-img');
+    nameEl.textContent = heroine.shortName;
+    nameEl.style.color = heroine.color;
+    imgEl.src = CHARA_IMAGES[heroine.id];
+    imgEl.alt = heroine.shortName;
+    overlay.classList.remove('hidden');
+    /* キラキラ演出 */
+    overlay.querySelectorAll('.sparkle').forEach(s => s.remove());
+    this.spawnSparkles(overlay, 20);
+    /* 次のステージボタンを表示する */
+    const btnNextStage = document.getElementById('btn-next-stage');
+    btnNextStage.style.display = '';
+    btnNextStage.textContent = '次のステージへ（STAGE 4）';
+  }
+
+  /* パートナー確定演出を非表示にする */
+  hidePartnerConfirmation() {
+    document.getElementById('partner-confirm-overlay').classList.add('hidden');
   }
 }

@@ -352,6 +352,32 @@ class GameEngine {
       this.showMyPage();
     });
 
+    /* パートナー選択：はい */
+    document.getElementById('btn-partner-yes').addEventListener('click', () => {
+      this.audio.playClick();
+      if (this.pendingPartnerHeroineId && !this.stats.hasPartner()) {
+        this.stats.setPartner(this.pendingPartnerHeroineId);
+        this.audio.playPowerup();
+        this.ui.hidePartnerPrompt();
+        const heroine = this.heroineManager.heroines.find(h => h.id === this.pendingPartnerHeroineId);
+        this.ui.showPartnerConfirmation(heroine);
+      }
+    });
+
+    /* パートナー選択：いいえ */
+    document.getElementById('btn-partner-no').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.hidePartnerPrompt();
+      this.pendingPartnerHeroineId = null;
+    });
+
+    /* パートナー確定後の閉じるボタン */
+    document.getElementById('btn-partner-confirm-close').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.hidePartnerConfirmation();
+      this.pendingPartnerHeroineId = null;
+    });
+
     /* 広告視聴でスタミナ回復ボタン */
     document.getElementById('btn-ad-stamina').addEventListener('click', () => {
       this.audio.playClick();
@@ -422,9 +448,11 @@ class GameEngine {
     this.heroineManager.selectHeroine(heroineId, isSecondPlay, stage, this.getClearedQuestionsIfEnabled(heroineId));
     const heroine = this.heroineManager.selectedHeroine;
 
-    /* ストーリー分岐：ステージ3 → ステージ2 → ハッピーエンド済リプレイ → リトライ */
+    /* ストーリー分岐：ステージ4 → ステージ3 → ステージ2 → ハッピーエンド済リプレイ → リトライ */
     const hasHappy = this.stats.hasHappyEnd(heroineId);
-    if (stage === 3 && heroine.story3) {
+    if (stage === 4 && heroine.story4) {
+      this.storyLines = heroine.story4;
+    } else if (stage === 3 && heroine.story3) {
       this.storyLines = heroine.story3;
     } else if (stage === 2 && heroine.story2) {
       this.storyLines = heroine.story2;
@@ -690,7 +718,7 @@ class GameEngine {
     const endingData = this.heroineManager.getEndingData();
     this.audio.stopBgm();
     this.audio.playEnding(endingData.type);
-    this.ui.renderResult(endingData);
+    this.ui.renderResult(endingData, this.stats);
     this.ui.showScreen('result');
 
     /* 広告無しプラン購入済みならスタミナ全回復 */
@@ -709,6 +737,12 @@ class GameEngine {
       this.heroineManager.quizResults,
       currentStage
     );
+
+    /* ステージ3ハッピーエンドかつパートナー未設定なら、パートナー選択を表示する */
+    if (currentStage === 3 && endingData.type === 'happy' && !this.stats.hasPartner()) {
+      this.pendingPartnerHeroineId = this.heroineManager.selectedHeroine.id;
+      this.ui.showPartnerPrompt(this.heroineManager.selectedHeroine);
+    }
   }
 
   /* 広告ボタンの表示状態を更新する */
@@ -765,7 +799,7 @@ class GameEngine {
     heroineIds.forEach(id => {
       const catCounts = {};
       const seenQuestions = new Set();
-      [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+      [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
         if (source && source[id]) {
           source[id].forEach(q => {
             if (q.category && !seenQuestions.has(q.question)) {
@@ -871,7 +905,7 @@ class GameEngine {
     const cleared = this.getAllClearedQuestionTexts();
     const categories = new Set();
     const hm = this.heroineManager;
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
           if (q.category && cleared.has(q.question)) {
@@ -888,7 +922,7 @@ class GameEngine {
     const cleared = this.getAllClearedQuestionTexts();
     const hm = this.heroineManager;
     const all = [];
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
           if (q.category === category && cleared.has(q.question)) {
@@ -1039,7 +1073,7 @@ class GameEngine {
     const cleared = this.getAllClearedQuestionTexts();
     const hm = this.heroineManager;
     const all = [];
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
           if (cleared.has(q.question)) all.push(q);

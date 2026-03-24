@@ -222,6 +222,36 @@
       </div>
     </div>
 
+    <!-- パートナー選択オーバーレイ -->
+    <div id="partner-prompt-overlay" class="partner-overlay hidden">
+      <div class="partner-prompt-box">
+        <img id="partner-prompt-img" class="partner-prompt-img" src="" alt="">
+        <h2 class="partner-prompt-title">パートナーになりますか？</h2>
+        <p class="partner-prompt-desc">
+          <span id="partner-prompt-name" class="partner-prompt-name"></span>のパートナーになると、
+          特別なステージ4が解放されます。
+        </p>
+        <p class="partner-prompt-warning">※ パートナーは1人だけ。一度決めると変更できません。</p>
+        <div class="partner-prompt-buttons">
+          <button id="btn-partner-yes" class="btn btn-accent">はい、パートナーになる</button>
+          <button id="btn-partner-no" class="btn btn-secondary">まだ決めない</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- パートナー確定オーバーレイ -->
+    <div id="partner-confirm-overlay" class="partner-overlay hidden">
+      <div class="partner-confirm-box">
+        <img id="partner-confirm-img" class="partner-confirm-img" src="" alt="">
+        <h2 class="partner-confirm-title">パートナーになりました！</h2>
+        <p class="partner-confirm-desc">
+          <span id="partner-confirm-name" class="partner-confirm-name"></span>があなたのパートナーに！
+          特別なステージ4が解放されました。
+        </p>
+        <button id="btn-partner-confirm-close" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+
     <!-- オプション画面 -->
     <div id="screen-options" class="screen">
       <div class="options-bg"></div>

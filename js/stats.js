@@ -3,6 +3,7 @@
 
 /* localStorageのキー */
 const STATS_STORAGE_KEY = 'heartQuizStats';
+const PARTNER_STORAGE_KEY = 'heartQuizPartner';
 
 /**
  * プレイ統計を管理するクラス
@@ -27,9 +28,9 @@ class StatsManager {
   createEmpty() {
     return {
       heroines: {
-        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
-        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
-        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} }
+        misaki: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, stage4Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
+        rin: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, stage4Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} },
+        hinata: { clears: { happy: 0, normal: 0, bad: 0 }, stage2Clears: { happy: 0, normal: 0, bad: 0 }, stage3Clears: { happy: 0, normal: 0, bad: 0 }, stage4Clears: { happy: 0, normal: 0, bad: 0 }, categories: {} }
       },
       categories: {}
     };
@@ -56,9 +57,14 @@ class StatsManager {
     if (!heroineStats.stage3Clears) {
       heroineStats.stage3Clears = { happy: 0, normal: 0, bad: 0 };
     }
+    if (!heroineStats.stage4Clears) {
+      heroineStats.stage4Clears = { happy: 0, normal: 0, bad: 0 };
+    }
 
     /* クリア回数を加算 */
-    if (stage === 3) {
+    if (stage === 4) {
+      heroineStats.stage4Clears[endingType]++;
+    } else if (stage === 3) {
       heroineStats.stage3Clears[endingType]++;
     } else if (stage === 2) {
       heroineStats.stage2Clears[endingType]++;
@@ -124,6 +130,7 @@ class StatsManager {
     h.clears = { happy: 0, normal: 0, bad: 0 };
     h.stage2Clears = { happy: 0, normal: 0, bad: 0 };
     h.stage3Clears = { happy: 0, normal: 0, bad: 0 };
+    h.stage4Clears = { happy: 0, normal: 0, bad: 0 };
     h.categories = {};
     this.save();
   }
@@ -143,8 +150,14 @@ class StatsManager {
   getBestProgress(heroineId) {
     const h = this.stats.heroines[heroineId];
     if (!h) return null;
+    const s4 = h.stage4Clears || { happy: 0, normal: 0, bad: 0 };
     const s3 = h.stage3Clears || { happy: 0, normal: 0, bad: 0 };
     const s2 = h.stage2Clears || { happy: 0, normal: 0, bad: 0 };
+
+    /* ステージ4（MASTER）の最高エンディングを判定 */
+    if (s4.happy > 0) return { stage: 4, ending: 'happy', label: 'STAGE 4 MASTER - エターナル' };
+    if (s4.normal > 0) return { stage: 4, ending: 'normal', label: 'STAGE 4 MASTER - ノーマル' };
+    if (s4.bad > 0) return { stage: 4, ending: 'bad', label: 'STAGE 4 MASTER - バッド' };
 
     /* ステージ3（HARD）の最高エンディングを判定 */
     if (s3.happy > 0) return { stage: 3, ending: 'happy', label: 'STAGE 3 HARD - パーフェクト' };
@@ -260,6 +273,43 @@ class StatsManager {
       this.save();
     }
     return isNewRecord;
+  }
+
+  /* パートナーのヒロインIDを取得する（未設定ならnull） */
+  getPartner() {
+    try {
+      return localStorage.getItem(PARTNER_STORAGE_KEY) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /* パートナーを設定する（一度だけ、解消不可） */
+  setPartner(heroineId) {
+    if (this.getPartner()) return false;
+    try {
+      localStorage.setItem(PARTNER_STORAGE_KEY, heroineId);
+      return true;
+    } catch (e) {
+      console.warn('パートナー保存に失敗:', e);
+      return false;
+    }
+  }
+
+  /* パートナーが設定済みかを判定する */
+  hasPartner() {
+    return this.getPartner() !== null;
+  }
+
+  /* 指定ヒロインがパートナーかを判定する */
+  isPartner(heroineId) {
+    return this.getPartner() === heroineId;
+  }
+
+  /* ヒロインのステージ4ハッピーエンドクリア済みかを判定する */
+  hasStage4HappyEnd(heroineId) {
+    const s4 = this.stats.heroines[heroineId].stage4Clears;
+    return s4 && s4.happy >= 1;
   }
 
   /* 統計データをリセットする */
