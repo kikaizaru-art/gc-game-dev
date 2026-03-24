@@ -2896,10 +2896,16 @@ body {
   font-size: 14px;
 }
 
-.subgame-category-btn:hover {
+.subgame-category-btn:hover:not(:disabled) {
   background: rgba(245, 158, 11, 0.12);
   border-color: rgba(245, 158, 11, 0.3);
   transform: translateY(-1px);
+}
+
+.subgame-category-btn.disabled,
+.subgame-category-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .subgame-category-name {
@@ -3094,17 +3100,15 @@ body {
   line-height: 1.5;
 }
 
-/* サブゲーム：クイズ中の戻るボタン */
+/* サブゲーム：クイズ中の戻るボタン（選択肢の下に配置） */
 .subgame-quit-btn {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 20;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 11px;
-  padding: 4px 12px;
+  display: block;
+  margin: 8px auto 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  padding: 5px 20px;
   border-radius: 16px;
   cursor: pointer;
   font-family: var(--font-main);
@@ -3112,6 +3116,6 @@ body {
 }
 
 .subgame-quit-btn:hover {
-  background: rgba(0, 0, 0, 0.6);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
 }
