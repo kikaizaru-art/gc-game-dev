@@ -24,7 +24,13 @@ class UiManager {
       result: document.getElementById('screen-result'),
       options: document.getElementById('screen-options'),
       stats: document.getElementById('screen-stats'),
-      shop: document.getElementById('screen-shop')
+      shop: document.getElementById('screen-shop'),
+      taCategory: document.getElementById('screen-ta-category'),
+      taQuiz: document.getElementById('screen-ta-quiz'),
+      taResult: document.getElementById('screen-ta-result'),
+      enduranceStart: document.getElementById('screen-endurance-start'),
+      enduranceQuiz: document.getElementById('screen-endurance-quiz'),
+      enduranceResult: document.getElementById('screen-endurance-result')
     };
   }
 
@@ -34,7 +40,7 @@ class UiManager {
       screen.classList.remove('active');
     });
     this.screens[screenName].classList.add('active');
-    /* クイズ画面のみヘッダータイムゲージを表示 */
+    /* 通常クイズ画面のみヘッダータイムゲージを表示（サブゲームでは非表示） */
     this.showHeaderTimerGauge(screenName === 'quiz');
   }
 
@@ -812,5 +818,161 @@ class UiManager {
 
     /* 未確認クイズ優先 */
     document.getElementById('chk-prioritize-unconfirmed').checked = statsManager.getPrioritizeUnconfirmed();
+  }
+
+  /* タイムアタック：カテゴリ選択画面を描画する */
+  renderTaCategoryList(categories, records) {
+    const container = document.getElementById('ta-category-list');
+    container.innerHTML = categories.map(cat => {
+      const record = records[cat];
+      const recordText = record
+        ? `ベスト: ${record.time.toFixed(1)}s / ${record.correct}問正解`
+        : 'まだ記録なし';
+      return `
+        <button class="subgame-category-btn" data-category="${cat}">
+          <span class="subgame-category-name">${cat}</span>
+          <span class="subgame-category-record">${recordText}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  /* タイムアタック：クイズ画面を描画する */
+  renderTaQuiz(quiz, categoryName, questionNumber, totalQuestions) {
+    const bg = document.getElementById('ta-quiz-bg');
+    bg.className = 'quiz-bg pink';
+
+    const namePlate = document.getElementById('ta-name-plate');
+    namePlate.textContent = `Q${questionNumber}/${totalQuestions}`;
+    namePlate.style.color = '#ec4899';
+
+    document.getElementById('ta-category-label').textContent = categoryName;
+    document.getElementById('ta-quiz-question').textContent = quiz.question;
+
+    const choicesContainer = document.getElementById('ta-quiz-choices');
+    choicesContainer.innerHTML = quiz.choices.map((choice, i) => `
+      <button class="choice-btn animate-fade-in" style="animation-delay: ${i * 0.05}s">
+        <span class="choice-number">${i + 1}</span>${choice}
+      </button>
+    `).join('');
+  }
+
+  /* タイムアタック：経過時間を更新する */
+  updateTaTimer(elapsedMs) {
+    const el = document.getElementById('ta-elapsed-time');
+    el.textContent = `${(elapsedMs / 1000).toFixed(1)}s`;
+  }
+
+  /* タイムアタック：スコアドットを初期化する */
+  renderTaScoreDots(total) {
+    const container = document.getElementById('ta-score-dots');
+    container.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'score-dot';
+      dot.dataset.index = i;
+      container.appendChild(dot);
+    }
+  }
+
+  /* タイムアタック：スコアドットを更新する */
+  updateTaScoreDot(index, isCorrect) {
+    const dots = document.getElementById('ta-score-dots').querySelectorAll('.score-dot');
+    if (dots[index]) {
+      dots[index].classList.remove('current');
+      dots[index].classList.add(isCorrect ? 'correct' : 'wrong');
+    }
+    if (dots[index + 1]) {
+      dots[index + 1].classList.add('current');
+    }
+  }
+
+  /* タイムアタック：フィードバックを表示する */
+  showTaFeedback(isCorrect) {
+    const feedback = document.getElementById('ta-quiz-feedback');
+    const text = document.getElementById('ta-feedback-text');
+    feedback.classList.remove('hidden', 'correct', 'wrong');
+    feedback.classList.add(isCorrect ? 'correct' : 'wrong');
+    text.textContent = isCorrect ? '⭕' : '❌';
+  }
+
+  /* タイムアタック：フィードバックを非表示にする */
+  hideTaFeedback() {
+    document.getElementById('ta-quiz-feedback').classList.add('hidden');
+  }
+
+  /* タイムアタック：回答結果を表示する */
+  showTaAnswerResult(selectedIndex, correctIndex, isCorrect) {
+    const buttons = document.getElementById('ta-quiz-choices').querySelectorAll('.choice-btn');
+    buttons.forEach((btn, i) => {
+      btn.classList.add('disabled');
+      if (i === correctIndex) btn.classList.add('correct');
+      if (i === selectedIndex && !isCorrect) btn.classList.add('wrong');
+    });
+    this.showTaFeedback(isCorrect);
+  }
+
+  /* タイムアタック：結果画面を描画する */
+  renderTaResult(timeMs, correct, total, categoryName, isNewRecord) {
+    document.getElementById('ta-result-time').textContent = `${(timeMs / 1000).toFixed(1)}s`;
+    document.getElementById('ta-result-correct').textContent = `${correct} / ${total}`;
+    document.getElementById('ta-result-category').textContent = categoryName;
+    const recordEl = document.getElementById('ta-result-record');
+    recordEl.style.display = isNewRecord ? '' : 'none';
+  }
+
+  /* 耐久クイズ：クイズ画面を描画する */
+  renderEnduranceQuiz(quiz, streak) {
+    const colors = ['pink', 'blue', 'green'];
+    const bg = document.getElementById('endurance-quiz-bg');
+    bg.className = `quiz-bg ${colors[streak % colors.length]}`;
+
+    const namePlate = document.getElementById('endurance-name-plate');
+    namePlate.textContent = `Q${streak + 1}`;
+    namePlate.style.color = '#f59e0b';
+
+    document.getElementById('endurance-streak').textContent = streak;
+    document.getElementById('endurance-quiz-question').textContent = quiz.question;
+
+    const choicesContainer = document.getElementById('endurance-quiz-choices');
+    choicesContainer.innerHTML = quiz.choices.map((choice, i) => `
+      <button class="choice-btn animate-fade-in" style="animation-delay: ${i * 0.05}s">
+        <span class="choice-number">${i + 1}</span>${choice}
+      </button>
+    `).join('');
+  }
+
+  /* 耐久クイズ：フィードバックを表示する */
+  showEnduranceFeedback(isCorrect) {
+    const feedback = document.getElementById('endurance-quiz-feedback');
+    const text = document.getElementById('endurance-feedback-text');
+    feedback.classList.remove('hidden', 'correct', 'wrong');
+    feedback.classList.add(isCorrect ? 'correct' : 'wrong');
+    text.textContent = isCorrect ? '⭕' : '❌ ゲームオーバー';
+  }
+
+  /* 耐久クイズ：フィードバックを非表示にする */
+  hideEnduranceFeedback() {
+    document.getElementById('endurance-quiz-feedback').classList.add('hidden');
+  }
+
+  /* 耐久クイズ：回答結果を表示する */
+  showEnduranceAnswerResult(selectedIndex, correctIndex, isCorrect) {
+    const buttons = document.getElementById('endurance-quiz-choices').querySelectorAll('.choice-btn');
+    buttons.forEach((btn, i) => {
+      btn.classList.add('disabled');
+      if (i === correctIndex) btn.classList.add('correct');
+      if (i === selectedIndex && !isCorrect) btn.classList.add('wrong');
+    });
+    this.showEnduranceFeedback(isCorrect);
+  }
+
+  /* 耐久クイズ：結果画面を描画する */
+  renderEnduranceResult(streak, missedQuestion, isNewRecord) {
+    document.getElementById('endurance-result-streak').textContent = streak;
+    const missEl = document.getElementById('endurance-result-miss');
+    missEl.textContent = missedQuestion ? `不正解の問題: ${missedQuestion}` : '';
+    const recordEl = document.getElementById('endurance-result-record');
+    recordEl.style.display = isNewRecord ? '' : 'none';
   }
 }
