@@ -271,6 +271,8 @@ class GameEngine {
     });
 
     document.getElementById('heroine-cards').addEventListener('click', (e) => {
+      /* パートナー選択ボタンのクリックはカード遷移を無視する */
+      if (e.target.closest('.btn-partner-select')) return;
       const card = e.target.closest('.heroine-card');
       if (!card || card.classList.contains('locked')) return;
       this.audio.playClick();
