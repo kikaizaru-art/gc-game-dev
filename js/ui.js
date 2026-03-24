@@ -843,15 +843,15 @@ class UiManager {
       container.innerHTML = '<p class="subgame-empty">クリア済みの問題がありません</p>';
       return;
     }
-    const TA_MIN_REQUIRED = 3;
+    const TA_REQUIRED_COUNT = 10;
     container.innerHTML = categories.map(cat => {
       const record = records[cat];
       const count = (categoryCounts && categoryCounts[cat]) || 0;
-      const isPlayable = count >= TA_MIN_REQUIRED;
+      const isPlayable = count >= TA_REQUIRED_COUNT;
       const quizCountText = `${count}問`;
       const recordText = record
         ? `ベスト: ${record.time.toFixed(1)}s / ${record.correct}問正解`
-        : isPlayable ? 'まだ記録なし' : `あと${TA_MIN_REQUIRED - count}問クリアが必要`;
+        : isPlayable ? 'まだ記録なし' : `あと${TA_REQUIRED_COUNT - count}問クリアが必要`;
       const disabledClass = isPlayable ? '' : 'disabled';
       return `
         <button class="subgame-category-btn ${disabledClass}" data-category="${cat}" ${isPlayable ? '' : 'disabled'}>
