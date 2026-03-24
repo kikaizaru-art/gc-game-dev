@@ -34,6 +34,22 @@ class UiManager {
     };
   }
 
+  /* データ読み込みエラーを画面に表示する */
+  showLoadError(message) {
+    const container = document.getElementById('game-container');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'screen active';
+    errorDiv.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;';
+    errorDiv.innerHTML = `
+      <h2 style="color:#e74c3c;margin-bottom:1rem;">読み込みエラー</h2>
+      <p style="margin-bottom:1.5rem;">${message}</p>
+      <button class="btn btn-primary" onclick="location.reload()">再読み込み</button>
+    `;
+    /* 全画面を非表示にしてエラーを表示する */
+    Object.values(this.screens).forEach(s => s.classList.remove('active'));
+    container.appendChild(errorDiv);
+  }
+
   /* 画面を切り替える */
   showScreen(screenName) {
     Object.values(this.screens).forEach(screen => {

@@ -40,16 +40,37 @@ class HeroineManager {
 
   /* ヒロインデータとクイズデータを読み込む */
   async loadData() {
-    const [heroinesRes, quizzesRes, quizzesHardRes, quizzesExpertRes] = await Promise.all([
-      fetch('assets/data/heroines.json'),
-      fetch('assets/data/quizzes.json'),
-      fetch('assets/data/quizzes-hard.json'),
-      fetch('assets/data/quizzes-expert.json')
-    ]);
-    this.heroines = await heroinesRes.json();
-    this.quizzes = await quizzesRes.json();
-    this.quizzesHard = await quizzesHardRes.json();
-    this.quizzesExpert = await quizzesExpertRes.json();
+    const urls = [
+      'assets/data/heroines.json',
+      'assets/data/quizzes.json',
+      'assets/data/quizzes-hard.json',
+      'assets/data/quizzes-expert.json'
+    ];
+
+    let responses;
+    try {
+      responses = await Promise.all(urls.map(url => fetch(url)));
+    } catch (err) {
+      throw new Error(`データの取得に失敗しました: ${err.message}`);
+    }
+
+    /* HTTPエラーをチェックする */
+    responses.forEach((res, i) => {
+      if (!res.ok) {
+        throw new Error(`${urls[i]} の読み込みに失敗しました（${res.status}）`);
+      }
+    });
+
+    try {
+      const [heroinesData, quizzesData, quizzesHardData, quizzesExpertData] =
+        await Promise.all(responses.map(res => res.json()));
+      this.heroines = heroinesData;
+      this.quizzes = quizzesData;
+      this.quizzesHard = quizzesHardData;
+      this.quizzesExpert = quizzesExpertData;
+    } catch (err) {
+      throw new Error(`データのJSON解析に失敗しました: ${err.message}`);
+    }
   }
 
   /* ヒロインを選択してゲーム状態をリセットする */
