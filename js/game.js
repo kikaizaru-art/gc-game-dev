@@ -17,10 +17,7 @@ class GameEngine {
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
     this.activeStatsHeroineId = 'all';
-    this.favoriteHeroineId = this.loadFavoriteHeroine();
   }
-
-  /* ゲーム初期化 */
   async init() {
     try {
       await this.heroineManager.loadData();
@@ -59,26 +56,17 @@ class GameEngine {
       this.ui.showScreen('select');
     });
 
-    /* マイページ → お気に入り選択 */
-    document.getElementById('btn-mypage-favorite').addEventListener('click', () => {
+    /* ヒロイン選択画面でパートナーにするボタンをクリック */
+    document.getElementById('heroine-cards').addEventListener('click', (e) => {
+      const partnerBtn = e.target.closest('.btn-partner-select');
+      if (!partnerBtn) return;
+      e.stopPropagation();
       this.audio.playClick();
-      this.ui.renderFavoriteCards(this.heroineManager.heroines, this.favoriteHeroineId, this.stats);
-      this.ui.showScreen('favSelect');
-    });
-
-    document.getElementById('btn-back-mypage-fav').addEventListener('click', () => {
-      this.audio.playClick();
-      this.showMyPage();
-    });
-
-    /* お気に入り選択カードのクリック */
-    document.getElementById('fav-heroine-cards').addEventListener('click', (e) => {
-      const card = e.target.closest('.heroine-card');
-      if (!card || card.classList.contains('favorite-current') || card.classList.contains('locked')) return;
-      this.audio.playClick();
-      const heroineId = card.dataset.heroineId;
-      this.saveFavoriteHeroine(heroineId);
-      this.showMyPage();
+      const heroineId = partnerBtn.dataset.heroineId;
+      if (this.stats.hasPartner()) return;
+      this.pendingPartnerHeroineId = heroineId;
+      const heroine = this.heroineManager.heroines.find(h => h.id === heroineId);
+      this.ui.showPartnerPrompt(heroine);
     });
 
     /* マイページ → タイムアタック */
@@ -283,6 +271,8 @@ class GameEngine {
     });
 
     document.getElementById('heroine-cards').addEventListener('click', (e) => {
+      /* パートナー選択ボタンのクリックはカード遷移を無視する */
+      if (e.target.closest('.btn-partner-select')) return;
       const card = e.target.closest('.heroine-card');
       if (!card || card.classList.contains('locked')) return;
       this.audio.playClick();
@@ -350,6 +340,34 @@ class GameEngine {
       this.audio.playClick();
       this.audio.startBgm();
       this.showMyPage();
+    });
+
+    /* パートナー選択：はい */
+    document.getElementById('btn-partner-yes').addEventListener('click', () => {
+      this.audio.playClick();
+      if (this.pendingPartnerHeroineId && !this.stats.hasPartner()) {
+        this.stats.setPartner(this.pendingPartnerHeroineId);
+        this.audio.playPowerup();
+        this.ui.hidePartnerPrompt();
+        const heroine = this.heroineManager.heroines.find(h => h.id === this.pendingPartnerHeroineId);
+        this.ui.showPartnerConfirmation(heroine);
+      }
+    });
+
+    /* パートナー選択：いいえ */
+    document.getElementById('btn-partner-no').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.hidePartnerPrompt();
+      this.pendingPartnerHeroineId = null;
+    });
+
+    /* パートナー確定後の閉じるボタン */
+    document.getElementById('btn-partner-confirm-close').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.hidePartnerConfirmation();
+      /* ヒロイン選択カードを再描画してパートナー状態を反映する */
+      this.ui.renderHeroineCards(this.heroineManager.heroines, this.stats, this.getQuizCountByHeroine());
+      this.pendingPartnerHeroineId = null;
     });
 
     /* 広告視聴でスタミナ回復ボタン */
@@ -422,9 +440,11 @@ class GameEngine {
     this.heroineManager.selectHeroine(heroineId, isSecondPlay, stage, this.getClearedQuestionsIfEnabled(heroineId));
     const heroine = this.heroineManager.selectedHeroine;
 
-    /* ストーリー分岐：ステージ3 → ステージ2 → ハッピーエンド済リプレイ → リトライ */
+    /* ストーリー分岐：ステージ4 → ステージ3 → ステージ2 → ハッピーエンド済リプレイ → リトライ */
     const hasHappy = this.stats.hasHappyEnd(heroineId);
-    if (stage === 3 && heroine.story3) {
+    if (stage === 4 && heroine.story4) {
+      this.storyLines = heroine.story4;
+    } else if (stage === 3 && heroine.story3) {
       this.storyLines = heroine.story3;
     } else if (stage === 2 && heroine.story2) {
       this.storyLines = heroine.story2;
@@ -690,7 +710,7 @@ class GameEngine {
     const endingData = this.heroineManager.getEndingData();
     this.audio.stopBgm();
     this.audio.playEnding(endingData.type);
-    this.ui.renderResult(endingData);
+    this.ui.renderResult(endingData, this.stats);
     this.ui.showScreen('result');
 
     /* 広告無しプラン購入済みならスタミナ全回復 */
@@ -709,6 +729,7 @@ class GameEngine {
       this.heroineManager.quizResults,
       currentStage
     );
+
   }
 
   /* 広告ボタンの表示状態を更新する */
@@ -765,7 +786,7 @@ class GameEngine {
     heroineIds.forEach(id => {
       const catCounts = {};
       const seenQuestions = new Set();
-      [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+      [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
         if (source && source[id]) {
           source[id].forEach(q => {
             if (q.category && !seenQuestions.has(q.question)) {
@@ -825,28 +846,29 @@ class GameEngine {
     this.updateShopScreen();
   }
 
-  /* お気に入りヒロインをlocalStorageから読み込む */
-  loadFavoriteHeroine() {
-    try {
-      return localStorage.getItem('heartQuizFavoriteHeroine') || 'misaki';
-    } catch (e) {
-      return 'misaki';
-    }
-  }
-
-  /* お気に入りヒロインをlocalStorageに保存する */
-  saveFavoriteHeroine(heroineId) {
-    this.favoriteHeroineId = heroineId;
-    try {
-      localStorage.setItem('heartQuizFavoriteHeroine', heroineId);
-    } catch (e) {
-      console.warn('お気に入り保存に失敗:', e);
-    }
+  /* 最も進行が進んでいるヒロインのIDを取得する */
+  getMostProgressedHeroineId() {
+    const heroineIds = ['misaki', 'rin', 'hinata'];
+    let bestId = 'misaki';
+    let bestScore = -1;
+    heroineIds.forEach(id => {
+      const progress = this.stats.getBestProgress(id);
+      if (!progress) return;
+      /* stage * 10 + endingスコアで比較 */
+      const endingScore = progress.ending === 'happy' ? 3 : progress.ending === 'normal' ? 2 : 1;
+      const score = progress.stage * 10 + endingScore;
+      if (score > bestScore) {
+        bestScore = score;
+        bestId = id;
+      }
+    });
+    return bestId;
   }
 
   /* マイページを表示する */
   showMyPage() {
-    const heroine = this.heroineManager.heroines.find(h => h.id === this.favoriteHeroineId)
+    const heroineId = this.getMostProgressedHeroineId();
+    const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)
       || this.heroineManager.heroines[0];
     this.ui.renderMyPage(heroine);
     this.ui.showScreen('mypage');
@@ -871,7 +893,7 @@ class GameEngine {
     const cleared = this.getAllClearedQuestionTexts();
     const categories = new Set();
     const hm = this.heroineManager;
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
           if (q.category && cleared.has(q.question)) {
@@ -888,7 +910,7 @@ class GameEngine {
     const cleared = this.getAllClearedQuestionTexts();
     const hm = this.heroineManager;
     const all = [];
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
           if (q.category === category && cleared.has(q.question)) {
@@ -942,7 +964,7 @@ class GameEngine {
       isAnswering: false
     };
     /* キャラ画像をお気に入りヒロインに設定 */
-    const heroine = this.heroineManager.heroines.find(h => h.id === this.favoriteHeroineId)
+    const heroine = this.heroineManager.heroines.find(h => h.id === this.getMostProgressedHeroineId())
       || this.heroineManager.heroines[0];
     const charaImg = document.getElementById('ta-quiz-chara-img');
     charaImg.src = CHARA_IMAGES[heroine.id];
@@ -1039,7 +1061,7 @@ class GameEngine {
     const cleared = this.getAllClearedQuestionTexts();
     const hm = this.heroineManager;
     const all = [];
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
       Object.values(source).forEach(quizArray => {
         quizArray.forEach(q => {
           if (cleared.has(q.question)) all.push(q);
@@ -1065,7 +1087,7 @@ class GameEngine {
     };
 
     /* キャラ画像をお気に入りヒロインに設定 */
-    const heroine = this.heroineManager.heroines.find(h => h.id === this.favoriteHeroineId)
+    const heroine = this.heroineManager.heroines.find(h => h.id === this.getMostProgressedHeroineId())
       || this.heroineManager.heroines[0];
     const charaImg = document.getElementById('endurance-quiz-chara-img');
     charaImg.src = CHARA_IMAGES[heroine.id];

@@ -30,6 +30,7 @@ class HeroineManager {
     this.quizzes = {};
     this.quizzesHard = {};
     this.quizzesExpert = {};
+    this.quizzesMaster = {};
     this.selectedHeroine = null;
     this.affinity = INITIAL_AFFINITY;
     this.currentQuizIndex = 0;
@@ -44,7 +45,8 @@ class HeroineManager {
       'assets/data/heroines.json',
       'assets/data/quizzes.json',
       'assets/data/quizzes-hard.json',
-      'assets/data/quizzes-expert.json'
+      'assets/data/quizzes-expert.json',
+      'assets/data/quizzes-master.json'
     ];
 
     let responses;
@@ -62,12 +64,13 @@ class HeroineManager {
     });
 
     try {
-      const [heroinesData, quizzesData, quizzesHardData, quizzesExpertData] =
+      const [heroinesData, quizzesData, quizzesHardData, quizzesExpertData, quizzesMasterData] =
         await Promise.all(responses.map(res => res.json()));
       this.heroines = heroinesData;
       this.quizzes = quizzesData;
       this.quizzesHard = quizzesHardData;
       this.quizzesExpert = quizzesExpertData;
+      this.quizzesMaster = quizzesMasterData;
     } catch (err) {
       throw new Error(`データのJSON解析に失敗しました: ${err.message}`);
     }
@@ -91,7 +94,9 @@ class HeroineManager {
   /* クイズセットをシャッフルして指定数を取得する（未確認優先対応） */
   generateQuizSet(heroineId, clearedQuestions = null) {
     let source;
-    if (this.currentStage === 3) {
+    if (this.currentStage === 4) {
+      source = this.quizzesMaster[heroineId];
+    } else if (this.currentStage === 3) {
       source = this.quizzesExpert[heroineId];
     } else if (this.currentStage === 2) {
       source = this.quizzesHard[heroineId];
@@ -204,7 +209,9 @@ class HeroineManager {
   getEndingData() {
     const type = this.getEndingType();
     let endings;
-    if (this.currentStage === 3 && this.selectedHeroine.endings3) {
+    if (this.currentStage === 4 && this.selectedHeroine.endings4) {
+      endings = this.selectedHeroine.endings4;
+    } else if (this.currentStage === 3 && this.selectedHeroine.endings3) {
       endings = this.selectedHeroine.endings3;
     } else if (this.currentStage === 2 && this.selectedHeroine.endings2) {
       endings = this.selectedHeroine.endings2;

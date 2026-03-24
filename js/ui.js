@@ -47,7 +47,6 @@ class UiManager {
     this.screens = {
       title: document.getElementById('screen-title'),
       mypage: document.getElementById('screen-mypage'),
-      favSelect: document.getElementById('screen-fav-select'),
       select: document.getElementById('screen-select'),
       stageSelect: document.getElementById('screen-stage-select'),
       story: document.getElementById('screen-story'),
@@ -123,37 +122,6 @@ class UiManager {
     speechEl.style.animation = '';
   }
 
-  /* お気に入り選択カードを生成する */
-  renderFavoriteCards(heroines, currentFavoriteId, statsManager) {
-    const container = document.getElementById('fav-heroine-cards');
-    container.innerHTML = heroines.map(h => {
-      const isFavorite = h.id === currentFavoriteId;
-      /* 美咲は常に選択可、他はステージ1ハッピーエンド達成済みのみ */
-      const isSelectable = h.id === 'misaki' || (statsManager && statsManager.hasHappyEnd(h.id));
-      const cardClass = isFavorite ? 'favorite-current' : !isSelectable ? 'locked' : '';
-      const badge = isFavorite
-        ? '<span class="card-completion-badge fav-badge">お気に入り</span>'
-        : '';
-      const lockLabel = !isSelectable
-        ? '<div class="heroine-card-lock-label">🔒 STAGE1 ハッピーエンドで解放</div>'
-        : '';
-      return `
-        <div class="heroine-card ${cardClass}" data-heroine-id="${h.id}" data-color="${h.colorName}">
-          <div class="heroine-card-image">
-            ${badge}
-            <img src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
-          </div>
-          <div class="heroine-card-info">
-            <div class="heroine-card-name" style="color: ${h.color};">${h.shortName}</div>
-            <div class="heroine-card-personality">${h.personality}</div>
-            <div class="heroine-card-likes">${h.description}</div>
-            ${lockLabel}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
   /* ヒロイン選択カードを生成する（バストアップ画像付き） */
   renderHeroineCards(heroines, statsManager, quizCountByHeroine) {
     const container = document.getElementById('heroine-cards');
@@ -182,10 +150,14 @@ class UiManager {
       const totalQuizCount = Object.values(quizCounts).reduce((sum, n) => sum + n, 0);
       const hasStage3Happy = statsManager && statsManager.hasStage3HappyEnd(h.id);
       const hasAllCleared = statsManager && statsManager.hasAllQuizzesCleared(h.id, totalQuizCount);
+      const isPartner = statsManager && statsManager.isPartner(h.id);
+      const hasAnyPartner = statsManager && statsManager.hasPartner();
 
-      /* 完了バッジ：パーフェクト > クリア > 通常進捗 */
+      /* 完了バッジ：パートナー > パーフェクト > クリア > 通常進捗 */
       let completionBadge = '';
-      if (hasStage3Happy && hasAllCleared) {
+      if (isPartner) {
+        completionBadge = '<span class="card-completion-badge partner">💍 パートナー</span>';
+      } else if (hasStage3Happy && hasAllCleared) {
         completionBadge = '<span class="card-completion-badge perfect">💎 パーフェクト</span>';
       } else if (hasStage3Happy) {
         completionBadge = '<span class="card-completion-badge clear">✨ クリア</span>';
@@ -194,7 +166,9 @@ class UiManager {
       let stageBadge;
       if (progress) {
         let badgeClass;
-        if (progress.stage === 3) {
+        if (progress.stage === 4) {
+          badgeClass = progress.ending === 'happy' ? 'master' : progress.ending === 'normal' ? 'cleared' : 'bad';
+        } else if (progress.stage === 3) {
           badgeClass = progress.ending === 'happy' ? 'hard' : progress.ending === 'normal' ? 'cleared' : 'bad';
         } else if (progress.stage === 2) {
           badgeClass = progress.ending === 'happy' ? 'normal-badge' : progress.ending === 'normal' ? 'cleared' : 'bad';
@@ -205,6 +179,13 @@ class UiManager {
       } else {
         stageBadge = '<span class="card-stage-badge easy">STAGE 1 - EASY</span>';
       }
+
+      /* パートナー選択ボタン：ステージ3ハッピーエンド済み＆パートナー未設定のキャラに表示 */
+      let partnerBtn = '';
+      if (hasStage3Happy && !hasAnyPartner) {
+        partnerBtn = `<button class="btn btn-partner-select" data-heroine-id="${h.id}">💍 パートナーにする</button>`;
+      }
+
       return `
         <div class="heroine-card" data-heroine-id="${h.id}" data-color="${h.colorName}">
           <div class="heroine-card-image">
@@ -216,6 +197,7 @@ class UiManager {
             <div class="heroine-card-personality">${h.personality}</div>
             <div class="heroine-card-likes">${h.description}</div>
             ${stageBadge}
+            ${partnerBtn}
           </div>
         </div>
       `;
@@ -233,7 +215,19 @@ class UiManager {
 
     const hasHappy = statsManager.hasHappyEnd(heroine.id);
     const hasStage2Happy = statsManager.hasStage2HappyEnd(heroine.id);
+    const hasStage3Happy = statsManager.hasStage3HappyEnd(heroine.id);
+    const isPartner = statsManager.isPartner(heroine.id);
+    const hasAnyPartner = statsManager.hasPartner();
     const container = document.getElementById('stage-select-cards');
+
+    /* ステージ4の解放条件：このヒロインがパートナーであること */
+    const stage4Unlocked = isPartner && hasStage3Happy;
+    /* 他のキャラとパートナーの場合はロック理由を変える */
+    const stage4LockReason = !hasStage3Happy
+      ? '🔒 STAGE 3 ハッピーエンドで解放'
+      : (hasAnyPartner && !isPartner)
+        ? '🔒 他のキャラがパートナーです'
+        : '🔒 パートナーになると解放';
 
     container.innerHTML = `
       <div class="stage-card" data-stage="1">
@@ -253,6 +247,12 @@ class UiManager {
         <div class="stage-card-difficulty">HARD</div>
         <div class="stage-card-desc">${hasStage2Happy ? `${heroine.shortName}との最後の試練` : '???'}</div>
         ${hasStage2Happy ? '' : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
+      </div>
+      <div class="stage-card ${stage4Unlocked ? '' : 'locked'}" data-stage="4">
+        <div class="stage-card-badge master">STAGE 4</div>
+        <div class="stage-card-difficulty">MASTER</div>
+        <div class="stage-card-desc">${stage4Unlocked ? `${heroine.shortName}との永遠の絆` : '???'}</div>
+        ${stage4Unlocked ? '<div class="stage-card-note">💍 パートナー限定ステージ</div>' : `<div class="stage-card-lock">${stage4LockReason}</div>`}
       </div>
     `;
   }
@@ -641,7 +641,7 @@ class UiManager {
   }
 
   /* 結果画面を描画する（VN風エンディング） */
-  renderResult(endingData) {
+  renderResult(endingData, statsManager) {
     /* 背景をエンディング種類別に変更 */
     const resultBg = document.getElementById('result-bg');
     resultBg.className = `result-bg ${endingData.type}`;
@@ -682,10 +682,14 @@ class UiManager {
     }
 
     /* 次のステージボタンの表示制御 */
-    const MAX_STAGE = 3;
+    const MAX_STAGE = 4;
     const btnNextStage = document.getElementById('btn-next-stage');
     const currentStage = endingData.currentStage || 1;
-    if (endingData.type === 'happy' && currentStage < MAX_STAGE) {
+    const heroineId = endingData.heroine.id;
+    /* ステージ3→4は、パートナーになった場合のみ（パートナー選択後に表示更新される） */
+    const canAdvance = endingData.type === 'happy' && currentStage < MAX_STAGE
+      && (currentStage < 3 || (statsManager && statsManager.isPartner(heroineId)));
+    if (canAdvance) {
       btnNextStage.style.display = '';
       btnNextStage.textContent = `次のステージへ（STAGE ${currentStage + 1}）`;
     } else {
@@ -1051,5 +1055,42 @@ class UiManager {
     missEl.textContent = missedQuestion ? `不正解の問題: ${missedQuestion}` : '';
     const recordEl = document.getElementById('endurance-result-record');
     recordEl.style.display = isNewRecord ? '' : 'none';
+  }
+
+  /* パートナー選択プロンプトを表示する */
+  showPartnerPrompt(heroine) {
+    const overlay = document.getElementById('partner-prompt-overlay');
+    const nameEl = document.getElementById('partner-prompt-name');
+    const imgEl = document.getElementById('partner-prompt-img');
+    nameEl.textContent = heroine.shortName;
+    nameEl.style.color = heroine.color;
+    imgEl.src = CHARA_IMAGES[heroine.id];
+    imgEl.alt = heroine.shortName;
+    overlay.classList.remove('hidden');
+  }
+
+  /* パートナー選択プロンプトを非表示にする */
+  hidePartnerPrompt() {
+    document.getElementById('partner-prompt-overlay').classList.add('hidden');
+  }
+
+  /* パートナー確定演出を表示する */
+  showPartnerConfirmation(heroine) {
+    const overlay = document.getElementById('partner-confirm-overlay');
+    const nameEl = document.getElementById('partner-confirm-name');
+    const imgEl = document.getElementById('partner-confirm-img');
+    nameEl.textContent = heroine.shortName;
+    nameEl.style.color = heroine.color;
+    imgEl.src = CHARA_IMAGES[heroine.id];
+    imgEl.alt = heroine.shortName;
+    overlay.classList.remove('hidden');
+    /* キラキラ演出 */
+    overlay.querySelectorAll('.sparkle').forEach(s => s.remove());
+    this.spawnSparkles(overlay, 20);
+  }
+
+  /* パートナー確定演出を非表示にする */
+  hidePartnerConfirmation() {
+    document.getElementById('partner-confirm-overlay').classList.add('hidden');
   }
 }
