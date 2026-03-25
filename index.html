@@ -63,10 +63,13 @@
           </div>
           <div class="mypage-btn-row">
             <button id="btn-mypage-exchange" class="btn btn-accent btn-mypage-sub">交換所</button>
-            <button id="btn-mypage-stats" class="btn btn-secondary btn-mypage-sub">ステータス</button>
+            <button id="btn-mypage-dressup" class="btn btn-accent btn-mypage-sub">着替え</button>
           </div>
           <div class="mypage-btn-row">
+            <button id="btn-mypage-stats" class="btn btn-secondary btn-mypage-sub">ステータス</button>
             <button id="btn-mypage-shop" class="btn btn-secondary btn-mypage-sub">ショップ</button>
+          </div>
+          <div class="mypage-btn-row">
             <button id="btn-mypage-options" class="btn btn-secondary btn-mypage-sub">オプション</button>
           </div>
         </div>
@@ -466,18 +469,33 @@
     <div id="screen-exchange" class="screen">
       <div class="exchange-bg"></div>
       <h2 class="screen-heading">交換所</h2>
+      <p class="exchange-subtitle">ポイントで服と交換しよう</p>
       <div class="exchange-points-bar">
         <span class="exchange-points-icon">💎</span>
         <span class="exchange-points-label">ポイント:</span>
         <span id="exchange-points-value" class="exchange-points-value">0</span>
       </div>
-      <div class="exchange-tabs" id="exchange-tabs">
-        <!-- JSで動的生成 -->
-      </div>
       <div class="exchange-items-list" id="exchange-items-list">
         <!-- JSで動的生成 -->
       </div>
       <button id="btn-back-mypage-exchange" class="btn btn-secondary">戻る</button>
+    </div>
+
+    <!-- 着替え画面 -->
+    <div id="screen-dressup" class="screen">
+      <div class="dressup-bg"></div>
+      <h2 class="screen-heading">着替え</h2>
+      <div class="dressup-preview-area">
+        <div class="dressup-chara-container">
+          <img id="dressup-chara-img" class="dressup-chara-img" src="assets/images/misaki.png" alt="">
+          <div id="dressup-outfit-overlay" class="dressup-overlay"></div>
+        </div>
+        <div id="dressup-current-label" class="dressup-current-label">デフォルト</div>
+      </div>
+      <div class="dressup-items-list" id="dressup-items-list">
+        <!-- JSで動的生成 -->
+      </div>
+      <button id="btn-back-mypage-dressup" class="btn btn-secondary">戻る</button>
     </div>
 
     <!-- 広告オーバーレイ（モック） -->

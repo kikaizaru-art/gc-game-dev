@@ -3289,6 +3289,15 @@ body {
   z-index: 0;
 }
 
+.exchange-subtitle {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  font-size: 12px;
+  color: #a78bfa;
+  margin-bottom: 8px;
+}
+
 .exchange-points-bar {
   position: relative;
   z-index: 2;
@@ -3319,39 +3328,6 @@ body {
   font-weight: 900;
   color: #e9d5ff;
   text-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
-}
-
-.exchange-tabs {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 16px;
-  margin-bottom: 12px;
-}
-
-.exchange-tab {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  color: #a78bfa;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-family: var(--font-main);
-}
-
-.exchange-tab:hover {
-  background: rgba(168, 85, 247, 0.2);
-}
-
-.exchange-tab.active {
-  background: rgba(168, 85, 247, 0.3);
-  border-color: rgba(168, 85, 247, 0.6);
-  color: #e9d5ff;
 }
 
 .exchange-items-list {
@@ -3387,12 +3363,6 @@ body {
   background: rgba(16, 185, 129, 0.06);
 }
 
-.exchange-item.equipped {
-  border-color: rgba(251, 191, 36, 0.5);
-  background: rgba(251, 191, 36, 0.08);
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.1);
-}
-
 .exchange-item-icon {
   font-size: 32px;
   flex-shrink: 0;
@@ -3414,10 +3384,6 @@ body {
 
 .exchange-item.owned .exchange-item-name {
   color: #6ee7b7;
-}
-
-.exchange-item.equipped .exchange-item-name {
-  color: #fcd34d;
 }
 
 .exchange-item-desc {
@@ -3478,44 +3444,8 @@ body {
   opacity: 0.6;
 }
 
-.btn-exchange-equip {
-  font-size: 11px;
-  padding: 6px 16px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 700;
-  font-family: var(--font-main);
-  transition: transform 0.2s;
-  white-space: nowrap;
-}
-
-.btn-exchange-equip:hover {
-  transform: scale(1.05);
-}
-
-.btn-exchange-unequip {
-  font-size: 11px;
-  padding: 6px 16px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 700;
-  font-family: var(--font-main);
-  transition: transform 0.2s;
-  white-space: nowrap;
-}
-
-.btn-exchange-unequip:hover {
-  transform: scale(1.05);
-}
-
 .exchange-owned-badge {
-  font-size: 10px;
+  font-size: 11px;
   color: #6ee7b7;
   font-weight: 700;
 }
@@ -3575,6 +3505,142 @@ body {
 }
 
 /* ============================
+   着替えページ
+   ============================ */
+#screen-dressup {
+  justify-content: flex-start;
+  padding-top: 28px;
+  padding-bottom: 16px;
+  background: linear-gradient(180deg, #1a1535 0%, #251040 50%, #1a0f25 100%);
+}
+
+.dressup-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.dressup-preview-area {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.dressup-chara-container {
+  position: relative;
+}
+
+.dressup-chara-img {
+  height: 220px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(236, 72, 153, 0.3));
+  transition: transform 0.4s ease;
+}
+
+.dressup-current-label {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbbf24;
+  text-align: center;
+  min-height: 20px;
+}
+
+.dressup-items-list {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.dressup-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(236, 72, 153, 0.2);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+}
+
+.dressup-item:hover {
+  border-color: rgba(236, 72, 153, 0.5);
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.12);
+}
+
+.dressup-item.active {
+  border-color: rgba(251, 191, 36, 0.6);
+  background: rgba(251, 191, 36, 0.1);
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.15);
+}
+
+.dressup-item.default-item {
+  border-color: rgba(156, 163, 175, 0.3);
+}
+
+.dressup-item.default-item.active {
+  border-color: rgba(251, 191, 36, 0.6);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.dressup-item-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  width: 38px;
+  text-align: center;
+}
+
+.dressup-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dressup-item-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f9a8d4;
+}
+
+.dressup-item.active .dressup-item-name {
+  color: #fcd34d;
+}
+
+.dressup-item-desc {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.dressup-item-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.dressup-empty-msg {
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  padding: 20px;
+  line-height: 1.8;
+}
+
+/* ============================
    着せ替えオーバーレイ
    ============================ */
 .dressup-overlay {
@@ -3589,113 +3655,68 @@ body {
 
 .dressup-decoration {
   position: absolute;
-  font-size: 28px;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
-  animation: dressupFloat 3s ease-in-out infinite;
 }
 
-/* 各アイテムの位置 */
-.dressup-ribbon {
-  top: 2%;
-  right: 22%;
-  font-size: 32px;
-}
-
-.dressup-flower-crown {
-  top: -2%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 36px;
-}
-
-.dressup-tiara {
-  top: -4%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 34px;
-}
-
-.dressup-heart-earrings {
-  top: 22%;
-  left: 12%;
-  font-size: 20px;
-}
-
-.dressup-star-brooch {
-  top: 42%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 26px;
-}
-
-.dressup-butterfly-pin {
-  top: 6%;
-  left: 18%;
-  font-size: 26px;
-}
-
-.dressup-cat-ears {
-  top: -6%;
+/* 服アイテムのオーバーレイ表示 */
+.outfit-school-uniform {
+  bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
   font-size: 40px;
 }
 
-.dressup-magic-wand {
-  top: 50%;
-  right: 5%;
-  font-size: 34px;
-  transform: rotate(-30deg);
-  animation-name: dressupWand;
-}
-
-.dressup-angel-wings {
-  top: 20%;
+.outfit-casual-onepiece {
+  bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 48px;
-  opacity: 0.7;
-  z-index: -1;
+  font-size: 40px;
 }
 
-.dressup-sparkle-frame {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  font-size: 0;
+.outfit-gothic-dress {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
 }
 
-.dressup-sparkle-frame::before,
-.dressup-sparkle-frame::after {
-  content: '✨';
-  position: absolute;
-  font-size: 20px;
-  animation: dressupSparkle 2s ease-in-out infinite;
+.outfit-kimono {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
 }
 
-.dressup-sparkle-frame::before {
-  top: 5%;
-  left: 8%;
+.outfit-idol-costume {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
 }
 
-.dressup-sparkle-frame::after {
-  bottom: 15%;
-  right: 8%;
-  animation-delay: 1s;
+.outfit-maid {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
 }
 
-@keyframes dressupFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+.outfit-sports {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
 }
 
-@keyframes dressupWand {
-  0%, 100% { transform: rotate(-30deg) translateY(0); }
-  50% { transform: rotate(-25deg) translateY(-4px); }
+.outfit-princess {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 44px;
+  animation: outfitSparkle 2s ease-in-out infinite;
 }
 
-@keyframes dressupSparkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.7); }
+@keyframes outfitSparkle {
+  0%, 100% { filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)); }
+  50% { filter: drop-shadow(0 2px 12px rgba(251, 191, 36, 0.6)); }
 }

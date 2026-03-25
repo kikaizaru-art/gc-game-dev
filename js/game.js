@@ -18,7 +18,6 @@ class GameEngine {
     this.timeRemaining = QUIZ_TIME_LIMIT;
     this.isAnswering = false;
     this.activeStatsHeroineId = 'all';
-    this.exchangeCategory = 'すべて';
   }
   async init() {
     try {
@@ -207,31 +206,32 @@ class GameEngine {
       this.showMyPage();
     });
 
-    /* 交換所：カテゴリタブ切り替え */
-    document.getElementById('exchange-tabs').addEventListener('click', (e) => {
-      const tab = e.target.closest('.exchange-tab');
-      if (!tab) return;
-      this.audio.playClick();
-      this.exchangeCategory = tab.dataset.category;
-      this.ui.renderExchangeScreen(this.exchange, this.exchangeCategory);
-    });
-
-    /* 交換所：アイテム交換・装備・解除 */
+    /* 交換所：アイテム交換のみ */
     document.getElementById('exchange-items-list').addEventListener('click', (e) => {
       const buyBtn = e.target.closest('.btn-exchange-buy');
-      const equipBtn = e.target.closest('.btn-exchange-equip');
-      const unequipBtn = e.target.closest('.btn-exchange-unequip');
+      if (!buyBtn) return;
+      this.audio.playClick();
+      this.handleExchangePurchase(buyBtn.dataset.itemId);
+    });
 
-      if (buyBtn) {
-        this.audio.playClick();
-        this.handleExchangePurchase(buyBtn.dataset.itemId);
-      } else if (equipBtn) {
-        this.audio.playClick();
-        this.handleExchangeEquip(equipBtn.dataset.itemId);
-      } else if (unequipBtn) {
-        this.audio.playClick();
-        this.handleExchangeUnequip(unequipBtn.dataset.itemId);
-      }
+    /* マイページ → 着替え */
+    document.getElementById('btn-mypage-dressup').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showDressupScreen();
+    });
+
+    document.getElementById('btn-back-mypage-dressup').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
+    /* 着替え：服を選択 */
+    document.getElementById('dressup-items-list').addEventListener('click', (e) => {
+      const item = e.target.closest('.dressup-item');
+      if (!item) return;
+      this.audio.playClick();
+      const itemId = item.dataset.itemId;
+      this.handleDressupSelect(itemId);
     });
 
     /* BGM音量スライダー */
@@ -921,7 +921,7 @@ class GameEngine {
     /* ポイント表示と着せ替えオーバーレイを更新する */
     if (this.exchange) {
       this.ui.updateMypagePoints(this.exchange.getPoints());
-      this.ui.updateDressupOverlay(this.exchange.getEquippedItems());
+      this.ui.updateDressupOverlay(this.exchange.getEquippedItem());
     }
     this.ui.showScreen('mypage');
   }
@@ -1229,7 +1229,7 @@ class GameEngine {
   /* 交換所画面を表示する */
   showExchangeScreen() {
     if (!this.exchange) return;
-    this.ui.renderExchangeScreen(this.exchange, this.exchangeCategory);
+    this.ui.renderExchangeScreen(this.exchange);
     this.ui.showScreen('exchange');
   }
 
@@ -1239,26 +1239,40 @@ class GameEngine {
     const result = this.exchange.purchaseItem(itemId);
     if (result.success) {
       this.audio.playPowerup();
-      this.ui.renderExchangeScreen(this.exchange, this.exchangeCategory);
+      this.ui.renderExchangeScreen(this.exchange);
     } else {
       alert(result.reason);
     }
   }
 
-  /* アイテム装備処理 */
-  handleExchangeEquip(itemId) {
+  /* ===========================
+     着替えページ
+     =========================== */
+
+  /* 着替え画面を表示する */
+  showDressupScreen() {
     if (!this.exchange) return;
-    this.exchange.equipItem(itemId);
-    this.audio.playClick();
-    this.ui.renderExchangeScreen(this.exchange, this.exchangeCategory);
+    const heroineId = this.getMostProgressedHeroineId();
+    const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)
+      || this.heroineManager.heroines[0];
+    this.ui.renderDressupScreen(this.exchange, heroine);
+    this.ui.showScreen('dressup');
   }
 
-  /* アイテム装備解除処理 */
-  handleExchangeUnequip(itemId) {
+  /* 着替え：服を選択する */
+  handleDressupSelect(itemId) {
     if (!this.exchange) return;
-    this.exchange.unequipItem(itemId);
-    this.audio.playClick();
-    this.ui.renderExchangeScreen(this.exchange, this.exchangeCategory);
+    if (itemId === '') {
+      /* デフォルトに戻す */
+      this.exchange.unequipItem();
+    } else {
+      this.exchange.equipItem(itemId);
+    }
+    this.audio.playPowerup();
+    const heroineId = this.getMostProgressedHeroineId();
+    const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)
+      || this.heroineManager.heroines[0];
+    this.ui.renderDressupScreen(this.exchange, heroine);
   }
 
   /* ステータス画面を表示する */

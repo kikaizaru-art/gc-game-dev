@@ -13,97 +13,71 @@ const POINTS_PERFECT_BONUS = 200;
 const POINTS_TIME_ATTACK = 30;
 const POINTS_ENDURANCE_PER_STREAK = 5;
 
-/* 着せ替えアイテム定義 */
+/* 着せ替えアイテム定義（服のみ） */
 const EXCHANGE_ITEMS = [
   {
-    id: 'ribbon',
-    name: 'リボン',
-    icon: '🎀',
-    category: '髪飾り',
+    id: 'school_uniform',
+    name: 'セーラー服',
+    icon: '🎒',
     price: 50,
-    description: 'かわいいリボンの髪飾り',
-    cssClass: 'dressup-ribbon'
+    description: '清楚なセーラー服。学園の定番スタイル',
+    cssClass: 'outfit-school-uniform'
   },
   {
-    id: 'flower_crown',
-    name: '花かんむり',
-    icon: '🌸',
-    category: '髪飾り',
+    id: 'casual_onepiece',
+    name: 'カジュアルワンピ',
+    icon: '👗',
     price: 100,
-    description: '春の花をあしらったかんむり',
-    cssClass: 'dressup-flower-crown'
+    description: 'ふんわり可愛いカジュアルワンピース',
+    cssClass: 'outfit-casual-onepiece'
   },
   {
-    id: 'tiara',
-    name: 'ティアラ',
-    icon: '👑',
-    category: '髪飾り',
-    price: 200,
-    description: 'キラキラ輝くお姫様のティアラ',
-    cssClass: 'dressup-tiara'
-  },
-  {
-    id: 'heart_earrings',
-    name: 'ハートピアス',
-    icon: '💖',
-    category: 'アクセサリー',
-    price: 80,
-    description: 'ハート型のかわいいピアス',
-    cssClass: 'dressup-heart-earrings'
-  },
-  {
-    id: 'star_brooch',
-    name: '星のブローチ',
-    icon: '⭐',
-    category: 'アクセサリー',
-    price: 120,
-    description: '星が輝くおしゃれなブローチ',
-    cssClass: 'dressup-star-brooch'
-  },
-  {
-    id: 'butterfly_pin',
-    name: '蝶のヘアピン',
-    icon: '🦋',
-    category: 'アクセサリー',
+    id: 'gothic_dress',
+    name: 'ゴシックドレス',
+    icon: '🖤',
     price: 150,
-    description: '優雅な蝶モチーフのヘアピン',
-    cssClass: 'dressup-butterfly-pin'
+    description: 'ダークでクールなゴシックドレス',
+    cssClass: 'outfit-gothic-dress'
   },
   {
-    id: 'cat_ears',
-    name: 'ねこ耳',
-    icon: '🐱',
-    category: '髪飾り',
-    price: 180,
-    description: 'もふもふのねこ耳カチューシャ',
-    cssClass: 'dressup-cat-ears'
+    id: 'kimono',
+    name: '着物',
+    icon: '👘',
+    price: 200,
+    description: '華やかな和装スタイル',
+    cssClass: 'outfit-kimono'
   },
   {
-    id: 'magic_wand',
-    name: '魔法のステッキ',
-    icon: '🪄',
-    category: 'アクセサリー',
+    id: 'idol_costume',
+    name: 'アイドル衣装',
+    icon: '🎤',
     price: 250,
-    description: '魔法少女のステッキ',
-    cssClass: 'dressup-magic-wand'
+    description: 'キラキラ輝くステージ衣装',
+    cssClass: 'outfit-idol-costume'
   },
   {
-    id: 'angel_wings',
-    name: '天使の羽',
-    icon: '🪽',
-    category: 'スペシャル',
+    id: 'maid_outfit',
+    name: 'メイド服',
+    icon: '🫖',
+    price: 180,
+    description: 'フリルたっぷりのメイド服',
+    cssClass: 'outfit-maid'
+  },
+  {
+    id: 'sports_wear',
+    name: 'スポーツウェア',
+    icon: '🏃',
+    price: 120,
+    description: '元気いっぱいスポーティースタイル',
+    cssClass: 'outfit-sports'
+  },
+  {
+    id: 'princess_dress',
+    name: 'プリンセスドレス',
+    icon: '👑',
     price: 500,
-    description: 'ふわふわの天使の羽',
-    cssClass: 'dressup-angel-wings'
-  },
-  {
-    id: 'sparkle_frame',
-    name: 'キラキラフレーム',
-    icon: '✨',
-    category: 'スペシャル',
-    price: 300,
-    description: 'キャラを彩るキラキラ装飾',
-    cssClass: 'dressup-sparkle-frame'
+    description: '豪華絢爛なお姫様ドレス',
+    cssClass: 'outfit-princess'
   }
 ];
 
@@ -132,7 +106,7 @@ class ExchangeManager {
       points: 0,
       totalEarned: 0,
       ownedItems: [],
-      equippedItems: []
+      equippedItem: null
     };
   }
 
@@ -208,33 +182,40 @@ class ExchangeManager {
     return { success: true };
   }
 
-  /* アイテムを装備する */
+  /* 服を着替える（1着のみ装備可能） */
   equipItem(itemId) {
     if (!this.ownsItem(itemId)) return false;
-    if (!this.data.equippedItems.includes(itemId)) {
-      this.data.equippedItems.push(itemId);
-      this.save();
-    }
-    return true;
-  }
-
-  /* アイテムの装備を外す */
-  unequipItem(itemId) {
-    const idx = this.data.equippedItems.indexOf(itemId);
-    if (idx === -1) return false;
-    this.data.equippedItems.splice(idx, 1);
+    this.data.equippedItem = itemId;
     this.save();
     return true;
   }
 
-  /* アイテムが装備中か判定する */
-  isEquipped(itemId) {
-    return this.data.equippedItems.includes(itemId);
+  /* 服を脱ぐ（デフォルトに戻す） */
+  unequipItem() {
+    this.data.equippedItem = null;
+    this.save();
+    return true;
   }
 
-  /* 装備中のアイテム一覧を取得する */
-  getEquippedItems() {
-    return this.data.equippedItems
+  /* 装備中の服のIDを取得する */
+  getEquippedItemId() {
+    return this.data.equippedItem || null;
+  }
+
+  /* 装備中の服のアイテム情報を取得する */
+  getEquippedItem() {
+    if (!this.data.equippedItem) return null;
+    return EXCHANGE_ITEMS.find(i => i.id === this.data.equippedItem) || null;
+  }
+
+  /* アイテムが装備中か判定する */
+  isEquipped(itemId) {
+    return this.data.equippedItem === itemId;
+  }
+
+  /* 所持アイテム一覧を取得する */
+  getOwnedItems() {
+    return this.data.ownedItems
       .map(id => EXCHANGE_ITEMS.find(i => i.id === id))
       .filter(Boolean);
   }
@@ -242,13 +223,6 @@ class ExchangeManager {
   /* 全アイテム定義を取得する */
   getAllItems() {
     return EXCHANGE_ITEMS;
-  }
-
-  /* カテゴリ一覧を取得する */
-  getCategories() {
-    const cats = new Set();
-    EXCHANGE_ITEMS.forEach(item => cats.add(item.category));
-    return [...cats];
   }
 
   /* データをリセットする */
