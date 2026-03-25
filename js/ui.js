@@ -60,7 +60,8 @@ class UiManager {
       taResult: document.getElementById('screen-ta-result'),
       enduranceStart: document.getElementById('screen-endurance-start'),
       enduranceQuiz: document.getElementById('screen-endurance-quiz'),
-      enduranceResult: document.getElementById('screen-endurance-result')
+      enduranceResult: document.getElementById('screen-endurance-result'),
+      exchange: document.getElementById('screen-exchange')
     };
   }
 
@@ -1092,5 +1093,110 @@ class UiManager {
   /* パートナー確定演出を非表示にする */
   hidePartnerConfirmation() {
     document.getElementById('partner-confirm-overlay').classList.add('hidden');
+  }
+
+  /* ===========================
+     ポイント交換所
+     =========================== */
+
+  /* 交換所画面を描画する */
+  renderExchangeScreen(exchangeManager, activeCategory) {
+    const pointsEl = document.getElementById('exchange-points-value');
+    pointsEl.textContent = exchangeManager.getPoints().toLocaleString();
+
+    /* カテゴリタブを生成する */
+    const tabsEl = document.getElementById('exchange-tabs');
+    const categories = ['すべて', ...exchangeManager.getCategories()];
+    const currentCat = activeCategory || 'すべて';
+    tabsEl.innerHTML = categories.map(cat => {
+      const isActive = cat === currentCat ? ' active' : '';
+      return `<button class="exchange-tab${isActive}" data-category="${cat}">${cat}</button>`;
+    }).join('');
+
+    /* アイテム一覧を生成する */
+    const listEl = document.getElementById('exchange-items-list');
+    let items = exchangeManager.getAllItems();
+    if (currentCat !== 'すべて') {
+      items = items.filter(item => item.category === currentCat);
+    }
+
+    listEl.innerHTML = items.map(item => {
+      const owned = exchangeManager.ownsItem(item.id);
+      const equipped = exchangeManager.isEquipped(item.id);
+      const canAfford = exchangeManager.getPoints() >= item.price;
+      let stateClass = '';
+      if (equipped) stateClass = ' equipped';
+      else if (owned) stateClass = ' owned';
+
+      let actionHtml = '';
+      if (equipped) {
+        actionHtml = `<button class="btn-exchange-unequip" data-item-id="${item.id}">はずす</button>`;
+      } else if (owned) {
+        actionHtml = `<button class="btn-exchange-equip" data-item-id="${item.id}">つける</button>`;
+      } else {
+        const priceClass = canAfford ? '' : ' not-enough';
+        actionHtml = `
+          <span class="exchange-item-price${priceClass}">
+            <span class="price-icon">💎</span>${item.price}
+          </span>
+          <button class="btn-exchange-buy" data-item-id="${item.id}" ${canAfford ? '' : 'disabled'}>交換する</button>
+        `;
+      }
+
+      return `
+        <div class="exchange-item${stateClass}" data-item-id="${item.id}">
+          <div class="exchange-item-icon">${item.icon}</div>
+          <div class="exchange-item-info">
+            <div class="exchange-item-name">${item.name}</div>
+            <div class="exchange-item-desc">${item.description}</div>
+          </div>
+          <div class="exchange-item-action">
+            ${actionHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* マイページにポイント表示を更新する */
+  updateMypagePoints(points) {
+    let el = document.getElementById('mypage-points-display');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'mypage-points-display';
+      el.className = 'mypage-points-display';
+      const mypage = document.getElementById('screen-mypage');
+      const content = mypage.querySelector('.mypage-content');
+      content.appendChild(el);
+    }
+    el.innerHTML = `
+      <span class="points-icon">💎</span>
+      <span class="points-value">${points.toLocaleString()}</span>
+    `;
+  }
+
+  /* 着せ替えオーバーレイを更新する */
+  updateDressupOverlay(equippedItems) {
+    const overlay = document.getElementById('mypage-dressup-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = '';
+    equippedItems.forEach(item => {
+      const deco = document.createElement('div');
+      deco.className = `dressup-decoration ${item.cssClass}`;
+      deco.textContent = item.icon;
+      overlay.appendChild(deco);
+    });
+  }
+
+  /* ポイント獲得ポップアップを表示する */
+  showPointsEarnedPopup(points, containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+    const popup = document.createElement('div');
+    popup.className = 'points-earned-popup';
+    popup.textContent = `+${points} pt`;
+    container.style.position = 'relative';
+    container.appendChild(popup);
+    setTimeout(() => popup.remove(), 1600);
   }
 }

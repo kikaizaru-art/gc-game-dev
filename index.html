@@ -50,6 +50,7 @@
         <div class="mypage-chara-area">
           <div class="mypage-chara-container">
             <img id="mypage-chara-img" class="mypage-chara-img" src="assets/images/misaki.png" alt="美咲">
+            <div id="mypage-dressup-overlay" class="dressup-overlay"></div>
           </div>
           <div id="mypage-chara-name" class="mypage-chara-name" style="color: #FF6B9D;">美咲</div>
           <div id="mypage-chara-speech" class="mypage-chara-speech hidden"></div>
@@ -61,10 +62,11 @@
             <button id="btn-mypage-endurance" class="btn btn-accent btn-mypage-sub">耐久クイズ</button>
           </div>
           <div class="mypage-btn-row">
+            <button id="btn-mypage-exchange" class="btn btn-accent btn-mypage-sub">交換所</button>
             <button id="btn-mypage-stats" class="btn btn-secondary btn-mypage-sub">ステータス</button>
-            <button id="btn-mypage-shop" class="btn btn-secondary btn-mypage-sub">ショップ</button>
           </div>
           <div class="mypage-btn-row">
+            <button id="btn-mypage-shop" class="btn btn-secondary btn-mypage-sub">ショップ</button>
             <button id="btn-mypage-options" class="btn btn-secondary btn-mypage-sub">オプション</button>
           </div>
         </div>
@@ -460,6 +462,24 @@
       </div>
     </div>
 
+    <!-- ポイント交換所画面 -->
+    <div id="screen-exchange" class="screen">
+      <div class="exchange-bg"></div>
+      <h2 class="screen-heading">交換所</h2>
+      <div class="exchange-points-bar">
+        <span class="exchange-points-icon">💎</span>
+        <span class="exchange-points-label">ポイント:</span>
+        <span id="exchange-points-value" class="exchange-points-value">0</span>
+      </div>
+      <div class="exchange-tabs" id="exchange-tabs">
+        <!-- JSで動的生成 -->
+      </div>
+      <div class="exchange-items-list" id="exchange-items-list">
+        <!-- JSで動的生成 -->
+      </div>
+      <button id="btn-back-mypage-exchange" class="btn btn-secondary">戻る</button>
+    </div>
+
     <!-- 広告オーバーレイ（モック） -->
     <div id="ad-overlay" class="ad-overlay hidden">
       <div class="ad-modal">
@@ -480,6 +500,7 @@
   <script src="js/stamina.js"></script>
   <script src="js/shop.js"></script>
   <script src="js/ad.js"></script>
+  <script src="js/exchange.js"></script>
   <script src="js/player.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/game.js"></script>
