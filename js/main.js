@@ -14,7 +14,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   const audioManager = new AudioManager();
   const shopManager = new ShopManager();
   const adManager = new AdManager();
-  const gameEngine = new GameEngine(heroineManager, uiManager, audioManager, statsManager, staminaManager, adManager, shopManager);
+  const exchangeManager = new ExchangeManager();
+  const gameEngine = new GameEngine(heroineManager, uiManager, audioManager, statsManager, staminaManager, adManager, shopManager, exchangeManager);
 
   await gameEngine.init();
 

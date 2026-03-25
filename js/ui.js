@@ -60,7 +60,9 @@ class UiManager {
       taResult: document.getElementById('screen-ta-result'),
       enduranceStart: document.getElementById('screen-endurance-start'),
       enduranceQuiz: document.getElementById('screen-endurance-quiz'),
-      enduranceResult: document.getElementById('screen-endurance-result')
+      enduranceResult: document.getElementById('screen-endurance-result'),
+      exchange: document.getElementById('screen-exchange'),
+      dressup: document.getElementById('screen-dressup')
     };
   }
 
@@ -1092,5 +1094,161 @@ class UiManager {
   /* パートナー確定演出を非表示にする */
   hidePartnerConfirmation() {
     document.getElementById('partner-confirm-overlay').classList.add('hidden');
+  }
+
+  /* ===========================
+     ポイント交換所
+     =========================== */
+
+  /* 交換所画面を描画する（交換のみ、装備機能なし） */
+  renderExchangeScreen(exchangeManager) {
+    const pointsEl = document.getElementById('exchange-points-value');
+    pointsEl.textContent = exchangeManager.getPoints().toLocaleString();
+
+    /* アイテム一覧を生成する */
+    const listEl = document.getElementById('exchange-items-list');
+    const items = exchangeManager.getAllItems();
+
+    listEl.innerHTML = items.map(item => {
+      const owned = exchangeManager.ownsItem(item.id);
+      const canAfford = exchangeManager.getPoints() >= item.price;
+      const stateClass = owned ? ' owned' : '';
+
+      let actionHtml = '';
+      if (owned) {
+        actionHtml = '<span class="exchange-owned-badge">所持中</span>';
+      } else {
+        const priceClass = canAfford ? '' : ' not-enough';
+        actionHtml = `
+          <span class="exchange-item-price${priceClass}">
+            <span class="price-icon">💎</span>${item.price}
+          </span>
+          <button class="btn-exchange-buy" data-item-id="${item.id}" ${canAfford ? '' : 'disabled'}>交換する</button>
+        `;
+      }
+
+      return `
+        <div class="exchange-item${stateClass}" data-item-id="${item.id}">
+          <div class="exchange-item-icon">${item.icon}</div>
+          <div class="exchange-item-info">
+            <div class="exchange-item-name">${item.name}</div>
+            <div class="exchange-item-desc">${item.description}</div>
+          </div>
+          <div class="exchange-item-action">
+            ${actionHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* ===========================
+     着替えページ
+     =========================== */
+
+  /* 着替え画面を描画する */
+  renderDressupScreen(exchangeManager, heroine) {
+    /* キャラ画像を設定する */
+    const charaImg = document.getElementById('dressup-chara-img');
+    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.alt = heroine.shortName;
+
+    /* 現在装備中の服名を表示する */
+    const labelEl = document.getElementById('dressup-current-label');
+    const equippedItem = exchangeManager.getEquippedItem();
+    labelEl.textContent = equippedItem
+      ? `${equippedItem.icon} ${equippedItem.name}`
+      : 'デフォルト';
+
+    /* プレビューオーバーレイを更新する */
+    this.updateOutfitOverlay('dressup-outfit-overlay', equippedItem);
+
+    /* 所持アイテム一覧を生成する */
+    const listEl = document.getElementById('dressup-items-list');
+    const ownedItems = exchangeManager.getOwnedItems();
+    const equippedId = exchangeManager.getEquippedItemId();
+
+    let html = '';
+
+    /* デフォルト（服なし）の選択肢 */
+    const defaultActive = !equippedId ? ' active' : '';
+    html += `
+      <div class="dressup-item default-item${defaultActive}" data-item-id="">
+        <div class="dressup-item-icon">👕</div>
+        <div class="dressup-item-info">
+          <div class="dressup-item-name">デフォルト</div>
+          <div class="dressup-item-desc">通常の服装に戻す</div>
+        </div>
+        ${!equippedId ? '<span class="dressup-item-badge">着用中</span>' : ''}
+      </div>
+    `;
+
+    if (ownedItems.length === 0) {
+      html += '<p class="dressup-empty-msg">まだ服を持っていません。<br>交換所でポイントと交換しよう！</p>';
+    } else {
+      ownedItems.forEach(item => {
+        const isActive = item.id === equippedId ? ' active' : '';
+        const badge = item.id === equippedId ? '<span class="dressup-item-badge">着用中</span>' : '';
+        html += `
+          <div class="dressup-item${isActive}" data-item-id="${item.id}">
+            <div class="dressup-item-icon">${item.icon}</div>
+            <div class="dressup-item-info">
+              <div class="dressup-item-name">${item.name}</div>
+              <div class="dressup-item-desc">${item.description}</div>
+            </div>
+            ${badge}
+          </div>
+        `;
+      });
+    }
+
+    listEl.innerHTML = html;
+  }
+
+  /* 服オーバーレイを更新する（指定IDの要素に適用） */
+  updateOutfitOverlay(overlayId, equippedItem) {
+    const overlay = document.getElementById(overlayId);
+    if (!overlay) return;
+    overlay.innerHTML = '';
+    if (equippedItem) {
+      const deco = document.createElement('div');
+      deco.className = `dressup-decoration ${equippedItem.cssClass}`;
+      deco.textContent = equippedItem.icon;
+      overlay.appendChild(deco);
+    }
+  }
+
+  /* マイページにポイント表示を更新する */
+  updateMypagePoints(points) {
+    let el = document.getElementById('mypage-points-display');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'mypage-points-display';
+      el.className = 'mypage-points-display';
+      const mypage = document.getElementById('screen-mypage');
+      const content = mypage.querySelector('.mypage-content');
+      content.appendChild(el);
+    }
+    el.innerHTML = `
+      <span class="points-icon">💎</span>
+      <span class="points-value">${points.toLocaleString()}</span>
+    `;
+  }
+
+  /* マイページの着せ替えオーバーレイを更新する */
+  updateDressupOverlay(equippedItem) {
+    this.updateOutfitOverlay('mypage-dressup-overlay', equippedItem);
+  }
+
+  /* ポイント獲得ポップアップを表示する */
+  showPointsEarnedPopup(points, containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+    const popup = document.createElement('div');
+    popup.className = 'points-earned-popup';
+    popup.textContent = `+${points} pt`;
+    container.style.position = 'relative';
+    container.appendChild(popup);
+    setTimeout(() => popup.remove(), 1600);
   }
 }
