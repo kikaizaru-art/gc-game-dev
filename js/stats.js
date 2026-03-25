@@ -296,6 +296,26 @@ class StatsManager {
     }
   }
 
+  /* パートナーを解除する（デバッグ用） */
+  clearPartner() {
+    try {
+      localStorage.removeItem(PARTNER_STORAGE_KEY);
+    } catch (e) {
+      console.warn('パートナー解除に失敗:', e);
+    }
+  }
+
+  /* パートナーを強制設定する（デバッグ用、既存パートナーを上書き） */
+  forceSetPartner(heroineId) {
+    try {
+      localStorage.setItem(PARTNER_STORAGE_KEY, heroineId);
+      return true;
+    } catch (e) {
+      console.warn('パートナー強制設定に失敗:', e);
+      return false;
+    }
+  }
+
   /* パートナーが設定済みかを判定する */
   hasPartner() {
     return this.getPartner() !== null;

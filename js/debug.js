@@ -1,6 +1,13 @@
 // デバッグモード - 公開時は index.html から <script src="js/debug.js"> を削除するだけで無効化
 'use strict';
 
+/* ヒロイン名マッピング */
+const DEBUG_HEROINE_NAMES = {
+  misaki: '美咲',
+  rin: '凛',
+  hinata: 'ひなた'
+};
+
 /**
  * デバッグパネルを管理するクラス
  */
@@ -40,12 +47,15 @@ class DebugPanel {
             <button class="debug-btn" data-action="happy" data-heroine="misaki" data-stage="1">美咲 S1 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="misaki" data-stage="2">美咲 S2 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="misaki" data-stage="3">美咲 S3 Happy</button>
+            <button class="debug-btn" data-action="happy" data-heroine="misaki" data-stage="4">美咲 S4 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="rin" data-stage="1">凛 S1 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="rin" data-stage="2">凛 S2 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="rin" data-stage="3">凛 S3 Happy</button>
+            <button class="debug-btn" data-action="happy" data-heroine="rin" data-stage="4">凛 S4 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="hinata" data-stage="1">ひなた S1 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="hinata" data-stage="2">ひなた S2 Happy</button>
             <button class="debug-btn" data-action="happy" data-heroine="hinata" data-stage="3">ひなた S3 Happy</button>
+            <button class="debug-btn" data-action="happy" data-heroine="hinata" data-stage="4">ひなた S4 Happy</button>
           </div>
         </div>
         <div class="debug-section">
@@ -57,11 +67,43 @@ class DebugPanel {
           </div>
         </div>
         <div class="debug-section">
+          <div class="debug-section-title">パートナー管理</div>
+          <div class="debug-grid">
+            <button class="debug-btn debug-btn-warn" data-action="set-partner" data-heroine="misaki">美咲をパートナーに</button>
+            <button class="debug-btn debug-btn-warn" data-action="set-partner" data-heroine="rin">凛をパートナーに</button>
+            <button class="debug-btn debug-btn-warn" data-action="set-partner" data-heroine="hinata">ひなたをパートナーに</button>
+            <button class="debug-btn debug-btn-danger" data-action="clear-partner">パートナー解除</button>
+          </div>
+        </div>
+        <div class="debug-section">
+          <div class="debug-section-title">スタミナ操作</div>
+          <div class="debug-grid">
+            <button class="debug-btn debug-btn-accent" data-action="stamina-full">全回復（3/3）</button>
+            <button class="debug-btn debug-btn-danger" data-action="stamina-empty">0にする（0/3）</button>
+            <button class="debug-btn" data-action="stamina-set" data-value="1">1にする</button>
+            <button class="debug-btn" data-action="stamina-set" data-value="2">2にする</button>
+          </div>
+        </div>
+        <div class="debug-section">
+          <div class="debug-section-title">課金・広告</div>
+          <div class="debug-grid">
+            <button class="debug-btn debug-btn-warn" data-action="toggle-adfree">広告無しプラン切替</button>
+          </div>
+        </div>
+        <div class="debug-section">
+          <div class="debug-section-title">個別リセット</div>
+          <div class="debug-grid">
+            <button class="debug-btn debug-btn-danger" data-action="reset-heroine" data-heroine="misaki">美咲リセット</button>
+            <button class="debug-btn debug-btn-danger" data-action="reset-heroine" data-heroine="rin">凛リセット</button>
+            <button class="debug-btn debug-btn-danger" data-action="reset-heroine" data-heroine="hinata">ひなたリセット</button>
+            <button class="debug-btn debug-btn-danger" data-action="reset-records">TA・耐久記録リセット</button>
+          </div>
+        </div>
+        <div class="debug-section">
           <div class="debug-section-title">一括操作</div>
           <div class="debug-grid">
             <button class="debug-btn debug-btn-warn" data-action="unlock-all">全キャラ解放（美咲S1 Happy）</button>
             <button class="debug-btn debug-btn-warn" data-action="complete-all">全キャラ完全クリア</button>
-            <button class="debug-btn debug-btn-accent" data-action="stamina-full">スタミナ全回復</button>
             <button class="debug-btn debug-btn-danger" data-action="reset">全データリセット</button>
           </div>
         </div>
@@ -162,8 +204,42 @@ class DebugPanel {
         overflow-y: auto;
         margin: 0;
       }
+      .debug-toast {
+        position: fixed;
+        bottom: 52px;
+        left: 56px;
+        z-index: 10002;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background: rgba(168, 85, 247, 0.9);
+        color: #fff;
+        font-size: 11px;
+        font-family: 'Zen Maru Gothic', sans-serif;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .debug-toast.show { opacity: 1; }
     `;
     document.head.appendChild(style);
+
+    /* トースト通知要素 */
+    const toast = document.createElement('div');
+    toast.id = 'debug-toast';
+    toast.className = 'debug-toast';
+    document.body.appendChild(toast);
+  }
+
+  /* トースト通知を表示する */
+  showToast(message) {
+    const toast = document.getElementById('debug-toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 1500);
   }
 
   /* イベントリスナーを登録する */
@@ -187,21 +263,56 @@ class DebugPanel {
       switch (action) {
         case 'happy':
           this.setHappyEnd(heroineId, stage);
+          this.showToast(`${DEBUG_HEROINE_NAMES[heroineId]} S${stage} Happy 設定`);
           break;
         case 'allquiz':
           this.setAllQuizzesCleared(heroineId);
+          this.showToast(`${DEBUG_HEROINE_NAMES[heroineId]} 全問正解済み`);
           break;
-        case 'unlock-all':
-          this.setHappyEnd('misaki', 1);
+        case 'set-partner':
+          this.stats.forceSetPartner(heroineId);
+          this.showToast(`パートナー → ${DEBUG_HEROINE_NAMES[heroineId]}`);
           break;
-        case 'complete-all':
-          this.completeAll();
+        case 'clear-partner':
+          this.stats.clearPartner();
+          this.showToast('パートナー解除');
           break;
         case 'stamina-full':
           this.game.stamina.recover(STAMINA_MAX);
+          this.showToast('スタミナ全回復');
+          break;
+        case 'stamina-empty':
+          this.setStamina(0);
+          this.showToast('スタミナ 0');
+          break;
+        case 'stamina-set':
+          this.setStamina(parseInt(btn.dataset.value, 10));
+          this.showToast(`スタミナ ${btn.dataset.value}`);
+          break;
+        case 'toggle-adfree':
+          this.toggleAdFree();
+          break;
+        case 'reset-heroine':
+          this.stats.resetHeroine(heroineId);
+          this.showToast(`${DEBUG_HEROINE_NAMES[heroineId]} リセット`);
+          break;
+        case 'reset-records':
+          this.resetRecords();
+          this.showToast('TA・耐久記録リセット');
+          break;
+        case 'unlock-all':
+          this.setHappyEnd('misaki', 1);
+          this.showToast('全キャラ解放');
+          break;
+        case 'complete-all':
+          this.completeAll();
+          this.showToast('全キャラ完全クリア');
           break;
         case 'reset':
           this.stats.reset();
+          this.stats.clearPartner();
+          this.resetShopData();
+          this.showToast('全データリセット');
           break;
       }
 
@@ -232,6 +343,14 @@ class DebugPanel {
       if (!h.stage3Clears) h.stage3Clears = { happy: 0, normal: 0, bad: 0 };
       if (h.stage3Clears.happy < 1) h.stage3Clears.happy = 1;
     }
+    if (stage >= 4) {
+      /* S4にはパートナーが必要なので自動設定 */
+      if (!this.stats.isPartner(heroineId)) {
+        this.stats.forceSetPartner(heroineId);
+      }
+      if (!h.stage4Clears) h.stage4Clears = { happy: 0, normal: 0, bad: 0 };
+      if (h.stage4Clears.happy < 1) h.stage4Clears.happy = 1;
+    }
     this.stats.save();
   }
 
@@ -243,7 +362,7 @@ class DebugPanel {
     if (!h.categories) h.categories = {};
 
     /* 全ステージの全問題を正解済みに設定 */
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert].forEach(source => {
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
       if (!source || !source[heroineId]) return;
       source[heroineId].forEach(q => {
         const cat = q.category || '不明';
@@ -256,6 +375,52 @@ class DebugPanel {
       });
     });
     this.stats.save();
+  }
+
+  /* スタミナを指定値に設定する */
+  setStamina(value) {
+    const stamina = this.game.stamina;
+    stamina.stamina = Math.max(0, Math.min(STAMINA_MAX, value));
+    if (value <= 0) {
+      stamina.lastUsedAt = new Date();
+    } else if (value >= STAMINA_MAX) {
+      stamina.lastUsedAt = null;
+    }
+    stamina.save();
+    if (stamina.onChangeCallback) {
+      stamina.onChangeCallback(stamina.stamina);
+    }
+  }
+
+  /* 広告無しプランの購入状態を切り替える */
+  toggleAdFree() {
+    const shop = this.game.shop;
+    if (shop.isAdFree()) {
+      delete shop.purchases[PRODUCT_ID_AD_FREE];
+      shop.save();
+      this.showToast('広告無しプラン → 未購入');
+    } else {
+      shop.purchases[PRODUCT_ID_AD_FREE] = {
+        purchasedAt: new Date().toISOString(),
+        verified: true
+      };
+      shop.save();
+      this.showToast('広告無しプラン → 購入済み');
+    }
+  }
+
+  /* タイムアタック・耐久クイズの記録をリセットする */
+  resetRecords() {
+    delete this.stats.stats.timeAttack;
+    delete this.stats.stats.enduranceBest;
+    this.stats.save();
+  }
+
+  /* ショップデータをリセットする */
+  resetShopData() {
+    const shop = this.game.shop;
+    shop.purchases = {};
+    shop.save();
   }
 
   /* 全キャラを完全クリア状態にする */
@@ -283,10 +448,17 @@ class DebugPanel {
     const heroineIds = ['misaki', 'rin', 'hinata'];
     const lines = [];
 
+    /* パートナー情報 */
+    const partner = this.stats.getPartner();
+    const partnerLabel = partner ? `💍 ${DEBUG_HEROINE_NAMES[partner]}` : 'なし';
+    lines.push(`[パートナー] ${partnerLabel}`);
+    lines.push('');
+
     heroineIds.forEach(id => {
       const h = this.stats.stats.heroines[id];
       const unlocked = this.stats.isHeroineUnlocked(id);
       const s3Happy = this.stats.hasStage3HappyEnd(id);
+      const isPartner = this.stats.isPartner(id);
 
       /* クリア済みクイズ数を集計 */
       let clearedQ = 0;
@@ -300,15 +472,26 @@ class DebugPanel {
       const quizCounts = this.game.getQuizCountByHeroine()[id] || {};
       const totalQ = Object.values(quizCounts).reduce((s, n) => s + n, 0);
 
-      lines.push(`[${id}] ${unlocked ? '🔓' : '🔒'}`);
+      lines.push(`[${DEBUG_HEROINE_NAMES[id]}] ${unlocked ? '🔓' : '🔒'}${isPartner ? ' 💍' : ''}`);
       lines.push(`  S1: H${h.clears.happy} N${h.clears.normal} B${h.clears.bad}`);
       lines.push(`  S2: H${(h.stage2Clears||{}).happy||0} N${(h.stage2Clears||{}).normal||0} B${(h.stage2Clears||{}).bad||0}`);
       lines.push(`  S3: H${(h.stage3Clears||{}).happy||0} N${(h.stage3Clears||{}).normal||0} B${(h.stage3Clears||{}).bad||0}`);
+      lines.push(`  S4: H${(h.stage4Clears||{}).happy||0} N${(h.stage4Clears||{}).normal||0} B${(h.stage4Clears||{}).bad||0}`);
       lines.push(`  クイズ: ${clearedQ}/${totalQ} ${s3Happy ? (clearedQ >= totalQ ? '💎パーフェクト' : '✨クリア') : ''}`);
     });
 
     lines.push('');
     lines.push(`[スタミナ] ${this.game.stamina.getStamina()} / ${STAMINA_MAX}`);
+
+    /* 課金状態 */
+    const adFree = this.game.shop.isAdFree();
+    lines.push(`[広告無し] ${adFree ? '購入済み' : '未購入'}`);
+
+    /* タイムアタック・耐久記録 */
+    const taRecords = this.stats.getTimeAttackRecords();
+    const taCount = Object.keys(taRecords).length;
+    const endBest = this.stats.getEnduranceBest();
+    lines.push(`[TA記録] ${taCount}件 [耐久ベスト] ${endBest}問`);
 
     el.textContent = lines.join('\n');
   }
