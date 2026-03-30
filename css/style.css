@@ -419,12 +419,34 @@ body {
   gap: 12px;
   justify-content: center;
   margin-top: 10px;
+  margin-bottom: 6px;
+  position: relative;
 }
 
 .btn-mypage-sub {
   font-size: 13px;
   padding: 8px 18px;
   min-width: 100px;
+}
+
+/* ロックされたボタン */
+.btn-locked {
+  opacity: 0.45;
+  position: relative;
+  pointer-events: auto;
+  filter: grayscale(0.6);
+}
+
+.btn-locked::after {
+  content: '🔒 ' attr(data-lock-hint);
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #aaa;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* ============================
