@@ -73,6 +73,10 @@ class GameEngine {
     /* マイページ → タイムアタック */
     document.getElementById('btn-mypage-timeattack').addEventListener('click', () => {
       this.audio.playClick();
+      if (!this.stats.hasAnyStage2Clear()) {
+        alert('ステージ2をクリアすると解放されます！');
+        return;
+      }
       if (this.getAllClearedQuestionTexts().size === 0) {
         alert('まずは「あそぶ」でクイズに正解しよう！\nクリア済みの問題がサブゲームに登場します。');
         return;
@@ -118,6 +122,10 @@ class GameEngine {
     /* マイページ → 耐久クイズ */
     document.getElementById('btn-mypage-endurance').addEventListener('click', () => {
       this.audio.playClick();
+      if (!this.stats.hasAnyStage2Clear()) {
+        alert('ステージ2をクリアすると解放されます！');
+        return;
+      }
       if (this.getAllClearedQuestionTexts().size === 0) {
         alert('まずは「あそぶ」でクイズに正解しよう！\nクリア済みの問題がサブゲームに登場します。');
         return;
@@ -195,9 +203,13 @@ class GameEngine {
       this.handleRestorePurchases();
     });
 
-    /* マイページ → 交換所 */
+    /* マイページ → 交換所（パートナー選択後に解放） */
     document.getElementById('btn-mypage-exchange').addEventListener('click', () => {
       this.audio.playClick();
+      if (!this.stats.hasPartner()) {
+        alert('パートナーを選択すると解放されます！');
+        return;
+      }
       this.showExchangeScreen();
     });
 
@@ -214,9 +226,13 @@ class GameEngine {
       this.handleExchangePurchase(buyBtn.dataset.itemId);
     });
 
-    /* マイページ → 着替え */
+    /* マイページ → 着替え（パートナー選択後に解放） */
     document.getElementById('btn-mypage-dressup').addEventListener('click', () => {
       this.audio.playClick();
+      if (!this.stats.hasPartner()) {
+        alert('パートナーを選択すると解放されます！');
+        return;
+      }
       this.showDressupScreen();
     });
 
@@ -770,8 +786,8 @@ class GameEngine {
       currentStage
     );
 
-    /* ポイントを付与する */
-    if (this.exchange) {
+    /* ポイントを付与する（パートナー選択後のみ有効） */
+    if (this.exchange && this.isPointsUnlocked()) {
       const correctCount = this.heroineManager.quizResults.filter(r => r.isCorrect).length;
       const totalCount = this.heroineManager.quizResults.length;
       const earned = this.exchange.awardQuizPoints(correctCount, totalCount, endingData.type);
@@ -918,12 +934,48 @@ class GameEngine {
     const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)
       || this.heroineManager.heroines[0];
     this.ui.renderMyPage(heroine);
-    /* ポイント表示と着せ替えオーバーレイを更新する */
-    if (this.exchange) {
+    /* ポイント表示と着せ替えオーバーレイを更新する（パートナー選択後のみ） */
+    if (this.exchange && this.isPointsUnlocked()) {
       this.ui.updateMypagePoints(this.exchange.getPoints());
       this.ui.updateDressupOverlay(this.exchange.getEquippedItem());
+    } else if (this.exchange) {
+      this.ui.hideMypagePoints();
     }
+    /* 段階的機能解放：ボタンのロック状態を更新する */
+    this.updateFeatureLocks();
     this.ui.showScreen('mypage');
+  }
+
+  /* 段階的機能解放のボタン状態を更新する */
+  updateFeatureLocks() {
+    const hasStage2 = this.stats.hasAnyStage2Clear();
+    const hasPartner = this.stats.hasPartner();
+    const btnTA = document.getElementById('btn-mypage-timeattack');
+    const btnEndurance = document.getElementById('btn-mypage-endurance');
+    const btnDressup = document.getElementById('btn-mypage-dressup');
+    const btnExchange = document.getElementById('btn-mypage-exchange');
+    /* タイムアタック・耐久クイズ：ステージ2クリア後に解放 */
+    this.setButtonLock(btnTA, !hasStage2, 'ステージ2クリアで解放');
+    this.setButtonLock(btnEndurance, !hasStage2, 'ステージ2クリアで解放');
+    /* 交換所・着替え：パートナー選択後に解放 */
+    this.setButtonLock(btnExchange, !hasPartner, 'パートナー選択で解放');
+    this.setButtonLock(btnDressup, !hasPartner, 'パートナー選択で解放');
+  }
+
+  /* ポイントシステムが解放済みか判定する（パートナー選択後） */
+  isPointsUnlocked() {
+    return this.stats.hasPartner();
+  }
+
+  /* ボタンのロック状態を切り替える */
+  setButtonLock(btn, locked, hint) {
+    if (locked) {
+      btn.classList.add('btn-locked');
+      btn.dataset.lockHint = hint;
+    } else {
+      btn.classList.remove('btn-locked');
+      delete btn.dataset.lockHint;
+    }
   }
 
   /* ===========================
@@ -1102,8 +1154,8 @@ class GameEngine {
     this.ui.renderTaResult(elapsedMs, st.correctCount, st.quizzes.length, st.category, isNewRecord);
     this.audio.playEnding(st.correctCount >= 8 ? 'happy' : 'normal');
     this.ui.showScreen('taResult');
-    /* ポイントを付与する */
-    if (this.exchange) {
+    /* ポイントを付与する（パートナー選択後のみ有効） */
+    if (this.exchange && this.isPointsUnlocked()) {
       const earned = this.exchange.awardTimeAttackPoints(st.correctCount);
       this.ui.showPointsEarnedPopup(earned, '#screen-ta-result .subgame-result-content');
     }
@@ -1215,8 +1267,8 @@ class GameEngine {
     this.ui.renderEnduranceResult(st.streak, missedQuestion, isNewRecord);
     this.audio.playEnding(st.streak >= 10 ? 'happy' : 'normal');
     this.ui.showScreen('enduranceResult');
-    /* ポイントを付与する */
-    if (this.exchange && st.streak > 0) {
+    /* ポイントを付与する（パートナー選択後のみ有効） */
+    if (this.exchange && this.isPointsUnlocked() && st.streak > 0) {
       const earned = this.exchange.awardEndurancePoints(st.streak);
       this.ui.showPointsEarnedPopup(earned, '#screen-endurance-result .subgame-result-content');
     }

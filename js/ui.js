@@ -1235,6 +1235,12 @@ class UiManager {
     `;
   }
 
+  /* マイページのポイント表示を非表示にする */
+  hideMypagePoints() {
+    const el = document.getElementById('mypage-points-display');
+    if (el) el.remove();
+  }
+
   /* マイページの着せ替えオーバーレイを更新する */
   updateDressupOverlay(equippedItem) {
     this.updateOutfitOverlay('mypage-dressup-overlay', equippedItem);

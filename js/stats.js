@@ -275,6 +275,15 @@ class StatsManager {
     return isNewRecord;
   }
 
+  /* いずれかのヒロインがステージ2をクリア済みか判定する（エンディング種別問わず） */
+  hasAnyStage2Clear() {
+    const heroineIds = ['misaki', 'rin', 'hinata'];
+    return heroineIds.some(id => {
+      const s2 = this.stats.heroines[id].stage2Clears;
+      return s2 && (s2.happy > 0 || s2.normal > 0 || s2.bad > 0);
+    });
+  }
+
   /* パートナーのヒロインIDを取得する（未設定ならnull） */
   getPartner() {
     try {
