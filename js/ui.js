@@ -91,6 +91,10 @@ class UiManager {
     this.screens[screenName].classList.add('active');
     /* 通常クイズ画面のみヘッダータイムゲージを表示（サブゲームでは非表示） */
     this.showHeaderTimerGauge(screenName === 'quiz');
+    /* プロローグ・ストーリー画面ではスタミナバーを非表示にする */
+    const staminaBar = document.getElementById('stamina-bar');
+    const hideStamina = screenName === 'prologue' || screenName === 'story';
+    staminaBar.style.display = hideStamina ? 'none' : '';
   }
 
   /* マイページを描画する */
