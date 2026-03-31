@@ -50,6 +50,7 @@ class UiManager {
       select: document.getElementById('screen-select'),
       stageSelect: document.getElementById('screen-stage-select'),
       story: document.getElementById('screen-story'),
+      prologue: document.getElementById('screen-prologue'),
       quiz: document.getElementById('screen-quiz'),
       result: document.getElementById('screen-result'),
       options: document.getElementById('screen-options'),
@@ -333,6 +334,59 @@ class UiManager {
   isTyping() {
     const textEl = document.getElementById('story-text');
     return textEl.classList.contains('typing');
+  }
+
+  /* プロローグ中のタイピング判定 */
+  isPrologueTyping() {
+    const textEl = document.getElementById('prologue-text');
+    return textEl.classList.contains('typing');
+  }
+
+  /* プロローグのタイピングをスキップする */
+  skipPrologueTyping() {
+    const textEl = document.getElementById('prologue-text');
+    const intervalId = parseInt(textEl.dataset.typeInterval, 10);
+    if (intervalId) {
+      clearInterval(intervalId);
+      textEl.textContent = textEl.dataset.fullText || '';
+      textEl.classList.remove('typing');
+      textEl.dataset.typeInterval = '';
+    }
+  }
+
+  /* プロローグのセリフを表示する（複数キャラ対応） */
+  showPrologueLine(line) {
+    const SPEAKER_MAP = {
+      misaki: { name: '美咲', color: '#FF6B9D', image: CHARA_IMAGES.misaki },
+      rin: { name: '凛', color: '#4A90D9', image: CHARA_IMAGES.rin },
+      hinata: { name: 'ひなた', color: '#7BC67E', image: CHARA_IMAGES.hinata }
+    };
+
+    const namePlate = document.getElementById('prologue-name-plate');
+    const textEl = document.getElementById('prologue-text');
+    const charaContainer = document.getElementById('prologue-chara-container');
+    const charaImg = document.getElementById('prologue-chara-img');
+    const bg = document.getElementById('prologue-bg');
+
+    if (line.speaker === 'narration') {
+      namePlate.classList.add('hidden');
+      charaContainer.classList.remove('visible');
+    } else {
+      const speaker = SPEAKER_MAP[line.speaker];
+      if (speaker) {
+        namePlate.classList.remove('hidden');
+        namePlate.textContent = speaker.name;
+        namePlate.style.color = speaker.color;
+        charaImg.src = speaker.image;
+        charaImg.alt = speaker.name;
+        charaContainer.classList.add('visible');
+        /* 話者に合わせて背景色を変更する */
+        bg.className = `story-bg ${line.speaker}`;
+      }
+    }
+
+    textEl.textContent = '';
+    return this.typeText(textEl, line.text);
   }
 
   /* クイズ画面を描画する（VN風レイアウト） */

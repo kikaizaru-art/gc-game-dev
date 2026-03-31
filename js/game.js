@@ -42,12 +42,21 @@ class GameEngine {
 
   /* イベントリスナーを登録する */
   bindEvents() {
-    /* タイトル画面 → マイページへ */
+    /* タイトル画面 → プロローグ or マイページへ */
     document.getElementById('btn-start').addEventListener('click', () => {
       this.audio.init();
       this.audio.playClick();
       this.audio.startBgm();
-      this.showMyPage();
+      if (!this.stats.isPrologueWatched()) {
+        this.startPrologue();
+      } else {
+        this.showMyPage();
+      }
+    });
+
+    /* プロローグ画面のクリックで次のセリフへ */
+    document.getElementById('screen-prologue').addEventListener('click', () => {
+      this.handlePrologueClick();
     });
 
     /* マイページ → あそぶ（ヒロイン選択へ） */
@@ -929,6 +938,54 @@ class GameEngine {
   }
 
   /* マイページを表示する */
+  /* プロローグを開始する（初回起動時のみ） */
+  async startPrologue() {
+    try {
+      const res = await fetch('assets/data/prologue.json');
+      if (!res.ok) throw new Error('プロローグデータの読み込みに失敗しました');
+      const data = await res.json();
+      this.prologueScenes = data.scenes;
+    } catch (err) {
+      /* 読み込み失敗時はマイページにフォールバック */
+      console.error(err);
+      this.stats.markPrologueWatched();
+      this.showMyPage();
+      return;
+    }
+    this.prologueIndex = 0;
+    this.ui.showScreen('prologue');
+    this.showNextPrologueLine();
+  }
+
+  /* プロローグの次のセリフを表示する */
+  async showNextPrologueLine() {
+    if (this.prologueIndex >= this.prologueScenes.length) {
+      /* プロローグ完了 → フラグ保存して美咲S1へ */
+      this.stats.markPrologueWatched();
+      this.prologueScenes = null;
+      this.heroineManager.selectHeroine('misaki', false, 1, this.getClearedQuestionsIfEnabled('misaki'));
+      this.ui.showScreen('quiz');
+      this.ui.renderScoreDots(QUIZ_COUNT);
+      this.ui.highlightCurrentDot(0);
+      this.showCurrentQuiz();
+      return;
+    }
+
+    const line = this.prologueScenes[this.prologueIndex];
+    this.prologueIndex++;
+    await this.ui.showPrologueLine(line);
+  }
+
+  /* プロローグ画面のクリック処理 */
+  handlePrologueClick() {
+    if (this.ui.isPrologueTyping()) {
+      this.ui.skipPrologueTyping();
+      return;
+    }
+    this.audio.playClick();
+    this.showNextPrologueLine();
+  }
+
   showMyPage() {
     const heroineId = this.getMostProgressedHeroineId();
     const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)

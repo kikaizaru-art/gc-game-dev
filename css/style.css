@@ -2253,6 +2253,13 @@ body {
   }
 }
 
+/* プロローグ画面（デフォルト背景） */
+.story-bg.prologue {
+  background-image: linear-gradient(180deg, rgba(255, 240, 245, 0.3) 0%, rgba(200, 180, 220, 0.3) 100%), url('../assets/images/bg-default.png');
+  background-size: cover;
+  background-position: center;
+}
+
 /* ============================
    オプション画面
    ============================ */
