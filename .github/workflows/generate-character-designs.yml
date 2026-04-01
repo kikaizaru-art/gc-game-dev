@@ -1,0 +1,60 @@
+# Gemini API でキャラクターデザイン別案を生成
+name: Generate Character Designs
+
+on:
+  workflow_dispatch:
+    inputs:
+      style:
+        description: 'デザインスタイル'
+        required: true
+        type: choice
+        options:
+          - all
+          - pop
+          - watercolor
+          - deformed
+      character:
+        description: '対象キャラクター'
+        required: true
+        type: choice
+        options:
+          - all
+          - misaki
+          - rin
+          - hinata
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate images
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node tools/generate-character-designs.js ${{ inputs.style }} ${{ inputs.character }}
+
+      - name: Check for changes
+        id: check
+        run: |
+          git diff --quiet assets/images/ && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/images/
+          git commit -m "[asset] Gemini APIでキャラクターデザイン別案を生成 (style: ${{ inputs.style }}, character: ${{ inputs.character }})"
+          git push
