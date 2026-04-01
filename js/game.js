@@ -510,20 +510,19 @@ class GameEngine {
     this.heroineManager.selectHeroine(heroineId, isSecondPlay, stage, this.getClearedQuestionsIfEnabled(heroineId));
     const heroine = this.heroineManager.selectedHeroine;
 
-    /* ストーリー分岐：ステージ4 → ステージ3 → ステージ2 → ハッピーエンド済リプレイ → リトライ */
-    const hasHappy = this.stats.hasHappyEnd(heroineId);
-    if (stage === 4 && heroine.story4) {
-      this.storyLines = heroine.story4;
-    } else if (stage === 3 && heroine.story3) {
-      this.storyLines = heroine.story3;
-    } else if (stage === 2 && heroine.story2) {
-      this.storyLines = heroine.story2;
-    } else if (hasHappy && heroine.storyReplay) {
-      this.storyLines = heroine.storyReplay;
-    } else if (heroine.storyRetry) {
-      this.storyLines = heroine.storyRetry;
+    /* ストーリー分岐：ハッピーエンド済→リプレイ、クリア済→リトライ、未プレイ→初回 */
+    const hasStageHappy = this.stats.hasStageHappyEnd(heroineId, stage);
+    const hasStageAny = this.stats.hasStageAnyEnd(heroineId, stage);
+    const storyKey = stage === 1 ? 'story' : `story${stage}`;
+
+    if (hasStageHappy) {
+      const replayKey = stage === 1 ? 'storyReplay' : `storyReplay${stage}`;
+      this.storyLines = heroine[replayKey] || heroine[storyKey] || [];
+    } else if (hasStageAny) {
+      const retryKey = stage === 1 ? 'storyRetry' : `storyRetry${stage}`;
+      this.storyLines = heroine[retryKey] || heroine[storyKey] || [];
     } else {
-      this.storyLines = heroine.story || [];
+      this.storyLines = heroine[storyKey] || [];
     }
     this.storyIndex = 0;
 
