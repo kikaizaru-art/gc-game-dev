@@ -404,6 +404,11 @@ class GameEngine {
     document.getElementById('btn-back-title-result').addEventListener('click', () => {
       this.audio.playClick();
       this.audio.startBgm();
+      /* 美咲S1ハッピーエンド後、キャラ解放シーンを1回だけ表示する */
+      if (this.shouldShowUnlockScene()) {
+        this.startUnlockScene();
+        return;
+      }
       this.showMyPage();
     });
 
@@ -983,7 +988,53 @@ class GameEngine {
       return;
     }
     this.audio.playClick();
+    /* キャラ解放シーン再生中はそちらを進める */
+    if (this.unlockScenes) {
+      this.showNextUnlockLine();
+      return;
+    }
     this.showNextPrologueLine();
+  }
+
+  /* キャラ解放シーンを表示すべきか判定する */
+  shouldShowUnlockScene() {
+    if (this.stats.isUnlockSceneWatched()) return false;
+    const heroineId = this.heroineManager.selectedHeroine?.id;
+    const currentStage = this.heroineManager.currentStage || 1;
+    const endingData = this.heroineManager.getEndingData();
+    return heroineId === 'misaki' && currentStage === 1 && endingData.type === 'happy';
+  }
+
+  /* キャラ解放シーンを開始する */
+  async startUnlockScene() {
+    try {
+      const res = await fetch('assets/data/prologue.json');
+      if (!res.ok) throw new Error('解放シーンデータの読み込みに失敗しました');
+      const data = await res.json();
+      this.unlockScenes = data.unlockScene;
+    } catch (err) {
+      console.error(err);
+      this.stats.markUnlockSceneWatched();
+      this.showMyPage();
+      return;
+    }
+    this.unlockSceneIndex = 0;
+    this.ui.showScreen('prologue');
+    this.showNextUnlockLine();
+  }
+
+  /* キャラ解放シーンの次のセリフを表示する */
+  async showNextUnlockLine() {
+    if (this.unlockSceneIndex >= this.unlockScenes.length) {
+      /* 解放シーン完了 → フラグ保存してマイページへ */
+      this.stats.markUnlockSceneWatched();
+      this.unlockScenes = null;
+      this.showMyPage();
+      return;
+    }
+    const line = this.unlockScenes[this.unlockSceneIndex];
+    this.unlockSceneIndex++;
+    await this.ui.showPrologueLine(line);
   }
 
   showMyPage() {
