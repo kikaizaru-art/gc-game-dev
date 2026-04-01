@@ -728,6 +728,32 @@ class GameEngine {
     }, FEEDBACK_DISPLAY_MS);
   }
 
+  /* デバッグ用：残りのクイズを全問正解でスキップする */
+  skipQuiz(endingType = 'happy') {
+    this.stopTimer();
+    this.isAnswering = false;
+
+    const hm = this.heroineManager;
+    /* 残りの問題を指定エンディングに合わせた親密度で処理 */
+    while (hm.currentQuizIndex < QUIZ_COUNT) {
+      const isCorrect = endingType !== 'bad';
+      hm.recordAnswer(isCorrect);
+      this.ui.updateScoreDot(hm.currentQuizIndex, isCorrect);
+      hm.nextQuiz();
+    }
+
+    /* エンディングタイプに合わせて親密度を調整 */
+    if (endingType === 'happy') {
+      hm.affinity = THRESHOLD_HAPPY;
+    } else if (endingType === 'bad') {
+      hm.affinity = THRESHOLD_BAD - 1;
+    } else {
+      hm.affinity = Math.floor((THRESHOLD_HAPPY + THRESHOLD_BAD) / 2);
+    }
+
+    this.showResult();
+  }
+
   /* 時間切れ処理 */
   handleTimeout() {
     if (!this.isAnswering) return;
