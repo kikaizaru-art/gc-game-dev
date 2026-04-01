@@ -100,6 +100,15 @@ class DebugPanel {
           </div>
         </div>
         <div class="debug-section">
+          <div class="debug-section-title">プロローグ・解放シーン</div>
+          <div class="debug-grid">
+            <button class="debug-btn debug-btn-accent" data-action="play-prologue">プロローグ再生</button>
+            <button class="debug-btn debug-btn-accent" data-action="play-unlock">解放シーン再生</button>
+            <button class="debug-btn debug-btn-danger" data-action="reset-prologue">プロローグフラグ解除</button>
+            <button class="debug-btn debug-btn-danger" data-action="reset-unlock">解放シーンフラグ解除</button>
+          </div>
+        </div>
+        <div class="debug-section">
           <div class="debug-section-title">一括操作</div>
           <div class="debug-grid">
             <button class="debug-btn debug-btn-warn" data-action="unlock-all">全キャラ解放（美咲S1 Happy）</button>
@@ -300,6 +309,24 @@ class DebugPanel {
           this.resetRecords();
           this.showToast('TA・耐久記録リセット');
           break;
+        case 'play-prologue':
+          this.game.startPrologue();
+          this.showToast('プロローグ再生');
+          break;
+        case 'play-unlock':
+          this.game.startUnlockScene();
+          this.showToast('解放シーン再生');
+          break;
+        case 'reset-prologue':
+          delete this.stats.stats.prologueWatched;
+          this.stats.save();
+          this.showToast('プロローグフラグ解除');
+          break;
+        case 'reset-unlock':
+          delete this.stats.stats.unlockSceneWatched;
+          this.stats.save();
+          this.showToast('解放シーンフラグ解除');
+          break;
         case 'unlock-all':
           this.setHappyEnd('misaki', 1);
           this.showToast('全キャラ解放');
@@ -480,6 +507,11 @@ class DebugPanel {
       lines.push(`  クイズ: ${clearedQ}/${totalQ} ${s3Happy ? (clearedQ >= totalQ ? '💎パーフェクト' : '✨クリア') : ''}`);
     });
 
+    lines.push('');
+    const prologueWatched = this.stats.isPrologueWatched();
+    const unlockWatched = this.stats.isUnlockSceneWatched();
+    lines.push(`[プロローグ] ${prologueWatched ? '視聴済み' : '未視聴'}`);
+    lines.push(`[解放シーン] ${unlockWatched ? '視聴済み' : '未視聴'}`);
     lines.push('');
     lines.push(`[スタミナ] ${this.game.stamina.getStamina()} / ${STAMINA_MAX}`);
 
