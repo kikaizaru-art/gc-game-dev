@@ -42,6 +42,14 @@ class DebugPanel {
       </div>
       <div class="debug-body">
         <div class="debug-section">
+          <div class="debug-section-title">クイズスキップ（プレイ中に使用）</div>
+          <div class="debug-grid">
+            <button class="debug-btn debug-btn-accent" data-action="skip-quiz" data-ending="happy">⏭ Happy でスキップ</button>
+            <button class="debug-btn debug-btn-warn" data-action="skip-quiz" data-ending="normal">⏭ Normal でスキップ</button>
+            <button class="debug-btn debug-btn-danger" data-action="skip-quiz" data-ending="bad">⏭ Bad でスキップ</button>
+          </div>
+        </div>
+        <div class="debug-section">
           <div class="debug-section-title">クリア状態を設定</div>
           <div class="debug-grid">
             <button class="debug-btn" data-action="happy" data-heroine="misaki" data-stage="1">美咲 S1 Happy</button>
@@ -270,6 +278,9 @@ class DebugPanel {
       const stage = parseInt(btn.dataset.stage, 10);
 
       switch (action) {
+        case 'skip-quiz':
+          this.skipQuiz(btn.dataset.ending);
+          return;
         case 'happy':
           this.setHappyEnd(heroineId, stage);
           this.showToast(`${DEBUG_HEROINE_NAMES[heroineId]} S${stage} Happy 設定`);
@@ -456,6 +467,17 @@ class DebugPanel {
       this.setHappyEnd(id, 3);
       this.setAllQuizzesCleared(id);
     });
+  }
+
+  /* クイズをスキップして結果画面へ進む */
+  skipQuiz(endingType) {
+    if (!this.game.heroineManager.selectedHeroine) {
+      this.showToast('クイズ中でないためスキップできません');
+      return;
+    }
+    this.game.skipQuiz(endingType);
+    this.showToast(`クイズスキップ → ${endingType} エンド`);
+    this.toggle();
   }
 
   /* UIを再描画する */
