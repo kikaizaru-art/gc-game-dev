@@ -47,6 +47,17 @@ class StatsManager {
     this.save();
   }
 
+  /* キャラ解放シーン視聴済みかを判定する */
+  isUnlockSceneWatched() {
+    return !!this.stats.unlockSceneWatched;
+  }
+
+  /* キャラ解放シーン視聴済みフラグを保存する */
+  markUnlockSceneWatched() {
+    this.stats.unlockSceneWatched = true;
+    this.save();
+  }
+
   /* localStorageに保存する */
   save() {
     try {
