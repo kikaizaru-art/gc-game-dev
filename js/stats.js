@@ -36,6 +36,17 @@ class StatsManager {
     };
   }
 
+  /* プロローグ視聴済みかを判定する */
+  isPrologueWatched() {
+    return !!this.stats.prologueWatched;
+  }
+
+  /* プロローグ視聴済みフラグを保存する */
+  markPrologueWatched() {
+    this.stats.prologueWatched = true;
+    this.save();
+  }
+
   /* localStorageに保存する */
   save() {
     try {
