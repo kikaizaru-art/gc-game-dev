@@ -205,6 +205,24 @@ class StatsManager {
     return s3 && s3.happy >= 1;
   }
 
+  /* 指定ステージのクリア回数を取得する */
+  getStageClears(heroineId, stage) {
+    const h = this.stats.heroines[heroineId];
+    if (stage === 1) return h.clears;
+    return h[`stage${stage}Clears`] || { happy: 0, normal: 0, bad: 0 };
+  }
+
+  /* 指定ステージのハッピーエンドクリア済みかを判定する */
+  hasStageHappyEnd(heroineId, stage) {
+    return this.getStageClears(heroineId, stage).happy >= 1;
+  }
+
+  /* 指定ステージを1回以上クリア済みかを判定する */
+  hasStageAnyEnd(heroineId, stage) {
+    const c = this.getStageClears(heroineId, stage);
+    return (c.happy + c.normal + c.bad) >= 1;
+  }
+
   /* ヒロインの全クイズクリア済みかを判定する */
   hasAllQuizzesCleared(heroineId, totalQuizCount) {
     const cats = this.getHeroineCategoryStats(heroineId);
