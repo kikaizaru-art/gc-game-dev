@@ -322,6 +322,216 @@
 | カラーパレット | パステル系・キャラごとのテーマカラー |
 | 統一プロンプト指示 | anime style, soft pastel colors, dating sim character |
 
+### キャラクターデザイン詳細設定
+
+#### 共通スタイル指示（全キャラ共通プレフィックス）
+```
+high quality anime style visual novel character art, Japanese high school setting,
+soft pastel color palette, detailed facial expressions, emotional depth,
+full body portrait, white background, dating sim aesthetic,
+delicate line art with soft shading, expressive eyes with light reflections
+```
+
+---
+
+#### 🌸 桜井 美咲（さくらい みさき）— 「空元気の太陽」
+
+**コンセプト**: 太陽のように明るく振る舞うが、笑顔の奥に影を宿す少女。デザインのポイントは「一見元気いっぱい、よく見ると無理している」ギャップ。
+
+**身体的特徴**:
+- 身長: やや低め（155cm程度）、小柄で活発な体型
+- 髪: ショートボブ、ピンクがかった明るい栗色、毛先が外ハネでふわっと跳ねている
+- 目: 大きな丸い瞳、アンバー（琥珀色）、キラキラしたハイライト多め
+- 肌: 健康的な色白、頬にほんのりピンク
+- 表情の癖: 口角を上げて笑うとき、目が笑っていない瞬間がある
+
+**服装**:
+- 制服: ブレザータイプ、リボン（ピンク）をゆるく結んでいる、スカートは膝上
+- 袖をまくっている（活発さの表現）
+- 胸元にお守りストラップ（家族の思い出の品 → ストーリーの伏線）
+- 靴: スニーカー風のローファー（走り回る性格）
+
+**カラーパレット**:
+- メイン: #FF6B9D（ピンク）、サブ: #FFB7D0（淡いピンク）
+- アクセント: #FFA040（オレンジ — 太陽のイメージ）
+- 影の色: #9E4565（深いローズ — 裏設定を暗示）
+
+**ステージ別表情・雰囲気ガイド**:
+
+| ステージ | 表情 | 雰囲気 | ビジュアルポイント |
+|---|---|---|---|
+| S1（表の顔） | 満面の笑顔、元気いっぱい | 明るく眩しい、向日葵のよう | 目にハイライトが多く、影がほぼない |
+| S2（亀裂） | 笑顔だが目が潤んでいる | 夕暮れの光、暖色だが寂しさ | 笑顔のまま涙が一筋、仮面のヒビのメタファー |
+| S3（秘密開示） | 仮面を外した素顔、泣き顔 | 体育館裏の薄暗い光 | 膝を抱えて座る、髪が顔にかかる、お守りを握りしめる |
+| S4（本当の自分） | 穏やかな微笑み、自然体 | 朝日のような温かい光 | 無理のない柔らかい笑顔、目にも自然な光 |
+
+**S1用プロンプト（デフォルト立ち絵）**:
+```
+high quality anime style visual novel character art, full body portrait, white background,
+cheerful energetic high school girl, 155cm, small and active build,
+short pink-tinted light brown bob haircut with outward-flipping ends, bouncy hair,
+large round amber eyes with many sparkle highlights,
+bright wide smile showing teeth, rosy cheeks, healthy fair skin,
+school blazer uniform with loose pink ribbon tie, sleeves rolled up,
+skirt above knee, sneaker-style loafers,
+small charm strap on chest pocket (family memento),
+pink color theme (#FF6B9D), orange accent,
+radiating sunshine energy, soft pastel colors, dating sim aesthetic
+```
+
+**S3用プロンプト（素顔）**:
+```
+high quality anime style visual novel character art, full body portrait,
+sad vulnerable high school girl sitting with knees hugged to chest,
+short pink-tinted light brown bob hair falling over face, disheveled,
+large amber eyes with tears, red-rimmed eyes, no fake smile,
+clutching a small charm strap tightly in both hands,
+school uniform slightly wrinkled, loose ribbon undone,
+behind gymnasium wall, dim warm sunset lighting,
+emotional scene, deep rose shadows (#9E4565),
+soft pastel colors with melancholic atmosphere, dating sim aesthetic
+```
+
+---
+
+#### 💎 藤原 凛（ふじわら りん）— 「氷の鎧」
+
+**コンセプト**: 知的でクールな美少女だが、その冷たさは「二度と傷つかないための防御壁」。デザインのポイントは「完璧に見える外見の中に、微かな脆さが透ける」こと。
+
+**身体的特徴**:
+- 身長: やや高め（163cm程度）、すらりとした体型
+- 髪: 腰まで届くロングストレート、深い藍色（ダークブルーブラック）、艶やかで整っている
+- 目: 切れ長で鋭い瞳、深い青（サファイアブルー）、ハイライトは控えめで冷たい光
+- 肌: 透き通るような白、血色が薄い
+- 表情の癖: 感情を見せまいとするとき、唇をきゅっと結ぶ。本を握る手に力が入る
+
+**服装**:
+- 制服: きっちりと着こなしたブレザー、ボタン全止め、リボン（青）を正しく結んでいる
+- スカートは膝丈（規則通り）
+- 左手首に細いシルバーのブレスレット（かつての親友とお揃いだった → 捨てられないでいる）
+- 常に文庫本を1冊持っている（心のバリケード）
+- 靴: 上品なローファー
+
+**カラーパレット**:
+- メイン: #4A90D9（青）、サブ: #C8DEFF（淡い水色）
+- アクセント: #8B6DBF（紫 — 夜空・星のイメージ）
+- 影の色: #2C4A6E（深い紺 — 閉ざされた心を暗示）
+
+**ステージ別表情・雰囲気ガイド**:
+
+| ステージ | 表情 | 雰囲気 | ビジュアルポイント |
+|---|---|---|---|
+| S1（表の顔） | 無表情、クールな目 | 冷たく透明な空気感 | 完璧な姿勢、隙のない佇まい、本を胸元に抱える |
+| S2（亀裂） | わずかに目を伏せる、動揺 | 雨上がりの曇り空 | 本を落としかける手、ブレスレットに無意識に触れる |
+| S3（秘密開示） | 泣きそうな顔を必死に堪える | 図書室の薄暗い光 | 本で顔を隠す、涙が本のページに落ちる |
+| S4（本当の自分） | はにかんだ微笑み、目が潤む | 星空のような透明感 | 初めて見せる柔らかい表情、本を閉じて胸に当てる |
+
+**S1用プロンプト（デフォルト立ち絵）**:
+```
+high quality anime style visual novel character art, full body portrait, white background,
+cool intellectual high school girl, 163cm, slender elegant build,
+very long straight dark blue-black hair reaching waist, silky and well-maintained,
+sharp narrow sapphire blue eyes with subtle cold highlights,
+calm composed expression with slightly pursed lips, pale translucent skin,
+perfectly neat school blazer uniform buttoned up, blue ribbon tie properly tied,
+knee-length skirt, elegant loafers,
+holding a paperback book against chest like a shield,
+thin silver bracelet on left wrist (former friend's matching pair),
+blue color theme (#4A90D9), purple accent,
+cold elegant atmosphere, soft pastel colors, dating sim aesthetic
+```
+
+**S3用プロンプト（素顔）**:
+```
+high quality anime style visual novel character art, full body portrait,
+vulnerable intellectual high school girl in dim library,
+very long straight dark blue-black hair slightly disheveled,
+sapphire blue eyes glistening with unshed tears, trying not to cry,
+hiding face behind an open book, tears dropping onto pages,
+school uniform still neat but posture crumbling,
+unconsciously touching silver bracelet on left wrist,
+surrounded by bookshelves in low warm light,
+deep navy shadows (#2C4A6E), emotional vulnerability breaking through ice,
+soft pastel colors with bittersweet atmosphere, dating sim aesthetic
+```
+
+---
+
+#### 🌿 天野 ひなた（あまの ひなた）— 「優しさという檻」
+
+**コンセプト**: 誰にでも優しい癒し系だが、その優しさは「そうしないと愛されない」という恐怖から来ている。デザインのポイントは「柔らかく見える外見に、窮屈さ・息苦しさが微かに潜む」こと。
+
+**身体的特徴**:
+- 身長: 平均的（158cm程度）、柔らかな丸みのある体型
+- 髪: ミディアムのゆるウェーブ、明るいハニーブラウン、花のヘアピンで留めている
+- 目: 垂れ目気味で穏やかな瞳、ヘーゼルグリーン、温かみのあるハイライト
+- 肌: 柔らかい色白、頬にナチュラルな血色
+- 表情の癖: 困ったように眉を下げて笑う。「大丈夫です」と言うとき手を胸の前で組む
+
+**服装**:
+- 制服: ブレザーをきちんと着ているが少しサイズが大きめ（自分を小さく見せる無意識の癖）
+- リボン（緑）を丁寧に結んでいる
+- エプロンを鞄に入れている（料理部 → 唯一「自分で決められる」場所）
+- 花柄のハンカチをポケットから覗かせている
+- 靴: 清潔感のあるストラップシューズ
+
+**カラーパレット**:
+- メイン: #7BC67E（緑）、サブ: #D4F0D5（淡いミントグリーン）
+- アクセント: #F0D060（イエロー — 花・温もりのイメージ）
+- 影の色: #3D6B40（深い緑 — 檻・束縛を暗示）
+
+**ステージ別表情・雰囲気ガイド**:
+
+| ステージ | 表情 | 雰囲気 | ビジュアルポイント |
+|---|---|---|---|
+| S1（表の顔） | 穏やかな微笑み、控えめ | 花畑のような温かさ | 花のヘアピン、じょうろを持つ、小動物が寄ってくるような雰囲気 |
+| S2（亀裂） | 笑顔だが目が泳いでいる | 曇りがちの花壇 | 手を胸の前で強く組む、エプロンの紐を無意識に握る |
+| S3（秘密開示） | 笑顔が崩れて泣き出す | 家庭科室、薄暗い | ヘアピンを外して握りしめる、「良い子」の仮面が割れる |
+| S4（本当の自分） | 初めて自分から笑う、明るい表情 | 花が咲き誇る中庭の光 | 自作の料理を差し出す、自信のある目 |
+
+**S1用プロンプト（デフォルト立ち絵）**:
+```
+high quality anime style visual novel character art, full body portrait, white background,
+gentle warm-hearted high school girl, 158cm, soft rounded build,
+medium length honey brown wavy hair with flower hairpin,
+gentle droopy hazel-green eyes with warm highlights,
+soft modest smile with slightly lowered eyebrows,
+fair skin with natural rosy cheeks,
+school blazer uniform slightly oversized, green ribbon tie neatly tied,
+floral handkerchief peeking from pocket,
+hands gently clasped in front of chest,
+green color theme (#7BC67E), yellow accent,
+warm gentle atmosphere like a flower garden, soft pastel colors, dating sim aesthetic
+```
+
+**S3用プロンプト（素顔）**:
+```
+high quality anime style visual novel character art, full body portrait,
+crying high school girl in dim home economics classroom,
+medium honey brown wavy hair with hairpin removed and clutched in hand,
+hazel-green eyes overflowing with tears, smile crumbling,
+expression of someone who can no longer pretend to be okay,
+school uniform with slightly oversized blazer seeming to swallow her,
+apron hanging loosely, flour-dusted hands trembling,
+dark green shadows (#3D6B40) suggesting feeling trapped,
+soft pastel colors with suffocating yet liberating atmosphere, dating sim aesthetic
+```
+
+---
+
+#### 🏫 背景素材プロンプト設定
+
+| 場面 | ファイル名 | プロンプト |
+|---|---|---|
+| 教室（デフォルト） | bg-default.png | `anime background art, Japanese high school classroom, warm afternoon sunlight streaming through windows, cherry blossom trees visible outside, desks and chairs, soft pastel colors, visual novel background, no characters` |
+| 屋上（美咲S2） | bg-rooftop.png | `anime background art, Japanese high school rooftop, chain-link fence, golden sunset sky, scattered clouds, melancholic warm atmosphere, visual novel background, no characters` |
+| 体育館裏（美咲S3） | bg-gymnasium.png | `anime background art, behind Japanese high school gymnasium, concrete wall, dim warm sunset lighting, long shadows, quiet isolated spot, visual novel background, no characters` |
+| 図書室（凛S1-S3） | bg-library.png | `anime background art, Japanese high school library, tall bookshelves, warm lamp light, dust particles in light beams, quiet contemplative atmosphere, visual novel background, no characters` |
+| 中庭花壇（ひなたS1） | bg-garden.png | `anime background art, Japanese high school courtyard garden, flower beds in bloom, watering can, warm gentle sunlight, peaceful atmosphere, visual novel background, no characters` |
+| 家庭科室（ひなたS3） | bg-cooking-room.png | `anime background art, Japanese high school home economics room, cooking stations, dim interior light, slightly messy counter with ingredients, visual novel background, no characters` |
+| 星空（凛S4） | bg-starry-sky.png | `anime background art, rooftop at night, beautiful starry sky, milky way visible, telescope on tripod, clear night atmosphere, romantic visual novel background, no characters` |
+| 朝の校門（S4共通） | bg-morning-gate.png | `anime background art, Japanese high school entrance gate, early morning golden sunlight, cherry blossom petals falling, fresh hopeful atmosphere, visual novel background, no characters` |
+
 ---
 
 ## 🖼️ 素材管理表
@@ -329,10 +539,10 @@
 ### 画像素材（Gemini API生成）
 | 素材名 | ファイル名 | サイズ | 生成プロンプト | ステータス |
 |---|---|---|---|---|
-| 美咲立ち絵 | misaki.png | 400×600 | anime style dating sim character, cheerful energetic high school girl, short bouncy pink-tinted hair, bright eyes, warm smile, pink theme (#FF6B9D), soft pastel colors | ✅ 生成・組込済 |
-| 凛立ち絵 | rin.png | 400×600 | anime style dating sim character, cool intellectual high school girl, long straight dark blue-black hair, sharp intelligent eyes, calm expression, blue theme (#4A90D9), soft pastel colors | ✅ 生成・組込済 |
-| ひなた立ち絵 | hinata.png | 400×600 | anime style dating sim character, gentle warm-hearted high school girl, medium wavy light brown hair, gentle eyes, warm smile, green theme (#7BC67E), soft pastel colors | ✅ 生成・組込済 |
-| 背景 | bg-default.png | 800×600 | anime background art, Japanese high school classroom, warm afternoon sunlight, cherry blossom trees, soft pastel colors, visual novel background | ✅ 生成・組込済 |
+| 美咲立ち絵 | misaki.png | 400×600 | （上記S1用プロンプト参照） | ✅ 生成・組込済（リニューアル予定） |
+| 凛立ち絵 | rin.png | 400×600 | （上記S1用プロンプト参照） | ✅ 生成・組込済（リニューアル予定） |
+| ひなた立ち絵 | hinata.png | 400×600 | （上記S1用プロンプト参照） | ✅ 生成・組込済（リニューアル予定） |
+| 背景 | bg-default.png | 800×600 | （上記背景プロンプト参照） | ✅ 生成・組込済 |
 
 ### 音声素材（Web Audio API生成）
 | 素材名 | 実装方式 | 用途 | ステータス |
@@ -417,6 +627,7 @@
 | 2026-03-25 | ポイント交換所＆着替えページ追加（服アイテム8種、ポイント獲得システム） | Claude |
 | 2026-03-30 | 段階的機能解放追加（交換所・着替え→パートナー後、サブゲーム→ステージ2クリア後、ポイント加算もパートナー後） | Claude |
 | 2026-03-31 | 「仮面の笑顔」ストーリーテーマ追加、プロローグシステム追加、キャラ解放シーン追加、全ストーリーテキスト刷新 | Claude |
+| 2026-04-02 | キャラクターデザイン詳細設定追加（身体的特徴・服装・カラーパレット・ステージ別表情・Gemini APIプロンプト・背景素材プロンプト） | Claude |
 
 ---
 
