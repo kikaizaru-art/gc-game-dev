@@ -554,7 +554,7 @@ class GameEngine {
     if (!isSecondPlay && heroine.storyRetry) {
       this.storyLines = heroine.storyRetry;
       this.storyIndex = 0;
-      this.ui.renderStoryScene(heroine);
+      this.ui.renderStoryScene(heroine, 1);
       this.ui.showScreen('story');
       this.showNextStoryLine();
     } else {
@@ -587,7 +587,7 @@ class GameEngine {
     }
     this.storyIndex = 0;
 
-    this.ui.renderStoryScene(heroine);
+    this.ui.renderStoryScene(heroine, stage);
     this.ui.showScreen('story');
     this.showNextStoryLine();
   }
@@ -599,7 +599,7 @@ class GameEngine {
     this.storyLines = heroine.story || [];
     this.storyIndex = 0;
 
-    this.ui.renderStoryScene(heroine);
+    this.ui.renderStoryScene(heroine, 1);
     this.ui.showScreen('story');
     this.showNextStoryLine();
   }
@@ -631,7 +631,7 @@ class GameEngine {
 
   /* ストーリー終了後にクイズを開始する */
   startQuizFromStory() {
-    this.ui.showScreen('quiz');
+    this.ui.transitionTo('quiz');
     this.ui.renderScoreDots(QUIZ_COUNT);
     this.ui.highlightCurrentDot(0);
     this.showCurrentQuiz();
@@ -867,7 +867,7 @@ class GameEngine {
     this.audio.stopBgm();
     this.audio.playEnding(endingData.type);
     this.ui.renderResult(endingData, this.stats);
-    this.ui.showScreen('result');
+    this.ui.transitionTo('result');
 
     /* 広告無しプラン購入済みならスタミナ全回復 */
     if (this.shop && this.shop.isAdFree()) {
@@ -1676,7 +1676,7 @@ class GameEngine {
 
     /* 結果画面を更新する */
     document.getElementById('practice-result-correct').textContent = `${st.correctCount} / ${PRACTICE_QUIZ_COUNT}`;
-    document.getElementById('practice-result-cp').textContent = `⭐ ${earnedCP}`;
+    document.getElementById('practice-result-cp').textContent = `${earnedCP}`;
     document.getElementById('practice-result-total-cp').textContent = this.stats.getCP();
 
     this.audio.playEnding(st.correctCount >= 4 ? 'happy' : 'normal');

@@ -8,6 +8,69 @@ const CHARA_IMAGES = {
   hinata: 'assets/images/hinata.png'
 };
 
+/* S3（素顔）キャラクター画像パス */
+const CHARA_IMAGES_S3 = {
+  misaki: 'assets/images/misaki-s3.png',
+  rin: 'assets/images/rin-s3.png',
+  hinata: 'assets/images/hinata-s3.png'
+};
+
+/* ステージ別キャラ画像を取得 */
+function getCharaImage(heroineId, stage) {
+  if (stage >= 3 && CHARA_IMAGES_S3[heroineId]) {
+    return CHARA_IMAGES_S3[heroineId];
+  }
+  return CHARA_IMAGES[heroineId];
+}
+
+/* ステージ別背景画像マッピング */
+const STAGE_BG_MAP = {
+  misaki: {
+    1: 'assets/images/bg-default.png',
+    2: 'assets/images/bg-rooftop.png',
+    3: 'assets/images/bg-gymnasium.png',
+    4: 'assets/images/bg-morning-gate.png'
+  },
+  rin: {
+    1: 'assets/images/bg-library.png',
+    2: 'assets/images/bg-library.png',
+    3: 'assets/images/bg-library.png',
+    4: 'assets/images/bg-starry-sky.png'
+  },
+  hinata: {
+    1: 'assets/images/bg-garden.png',
+    2: 'assets/images/bg-default.png',
+    3: 'assets/images/bg-cooking-room.png',
+    4: 'assets/images/bg-morning-gate.png'
+  }
+};
+
+/* ステージ別背景画像パスを取得 */
+function getStageBg(heroineId, stage) {
+  const map = STAGE_BG_MAP[heroineId];
+  if (map && map[stage]) return map[stage];
+  return 'assets/images/bg-default.png';
+}
+
+/* エンディングオーバーレイ画像マッピング */
+const ENDING_OVERLAY_MAP = {
+  happy: {
+    1: 'assets/images/ending-happy.png',
+    2: 'assets/images/ending-true.png',
+    3: 'assets/images/ending-perfect.png',
+    4: 'assets/images/ending-eternal.png'
+  },
+  normal: 'assets/images/ending-normal.png',
+  bad: 'assets/images/ending-bad.png'
+};
+
+/* ヒロイン別装飾画像マッピング */
+const CHARA_DECOS = {
+  misaki: 'assets/images/deco-misaki.png',
+  rin: 'assets/images/deco-rin.png',
+  hinata: 'assets/images/deco-hinata.png'
+};
+
 /* マイページ訪問時のキャラ別セリフ */
 const MYPAGE_GREETINGS = {
   misaki: [
@@ -168,7 +231,7 @@ class UiManager {
       if (isPartner) {
         completionBadge = '<span class="card-completion-badge partner">💍 パートナー</span>';
       } else if (hasStage3Happy && hasAllCleared) {
-        completionBadge = '<span class="card-completion-badge perfect">💎 パーフェクト</span>';
+        completionBadge = '<span class="card-completion-badge perfect"><img src="assets/images/icon-point.png" class="icon-img" alt=""> パーフェクト</span>';
       } else if (hasStage3Happy) {
         completionBadge = '<span class="card-completion-badge clear">✨ クリア</span>';
       }
@@ -244,11 +307,11 @@ class UiManager {
     const cpLabel = (stage) => {
       const cost = STAGE_CP_COST[stage];
       const canAfford = currentCP >= cost;
-      return `<div class="stage-card-cp ${canAfford ? 'affordable' : 'insufficient'}">⭐ ${cost} CP ${canAfford ? '✔' : '（不足）'}</div>`;
+      return `<div class="stage-card-cp ${canAfford ? 'affordable' : 'insufficient'}"><img src="assets/images/icon-star.png" class="icon-img" alt="CP"> ${cost} CP ${canAfford ? '✔' : '（不足）'}</div>`;
     };
 
     container.innerHTML = `
-      <div class="stage-select-cp-bar">⭐ 所持CP: <span class="cp-value">${currentCP}</span></div>
+      <div class="stage-select-cp-bar"><img src="assets/images/icon-star.png" class="icon-img" alt="CP"> 所持CP: <span class="cp-value">${currentCP}</span></div>
       <div class="stage-card" data-stage="1">
         <div class="stage-card-badge easy">STAGE 1</div>
         <div class="stage-card-difficulty">EASY</div>
@@ -278,16 +341,26 @@ class UiManager {
   }
 
   /* ストーリー画面を初期化する */
-  renderStoryScene(heroine) {
+  renderStoryScene(heroine, stage = 1) {
     const storyBg = document.getElementById('story-bg');
     storyBg.className = `story-bg ${heroine.colorName}`;
+    /* ステージ別背景画像を設定 */
+    const bgPath = getStageBg(heroine.id, stage);
+    storyBg.style.backgroundImage = `url('${bgPath}')`;
 
     const charaImg = document.getElementById('story-chara-img');
-    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.src = getCharaImage(heroine.id, stage);
     charaImg.alt = heroine.shortName;
 
     const charaContainer = document.getElementById('story-chara-container');
     charaContainer.classList.remove('visible');
+
+    /* ヒロイン装飾を設定 */
+    const deco = document.getElementById('story-deco');
+    if (deco && CHARA_DECOS[heroine.id]) {
+      deco.src = CHARA_DECOS[heroine.id];
+      deco.style.display = 'block';
+    }
   }
 
   /* ストーリーのセリフを表示する */
@@ -408,9 +481,11 @@ class UiManager {
 
   /* クイズ画面を描画する（VN風レイアウト） */
   renderQuiz({ quiz, heroine, questionNumber, totalQuestions, affinity, isSecondPlay, currentStage }) {
-    /* 背景をキャラ別に変更 */
+    /* 背景をキャラ・ステージ別に変更 */
     const quizBg = document.getElementById('quiz-bg');
     quizBg.className = `quiz-bg ${heroine.colorName}`;
+    const bgPath = getStageBg(heroine.id, currentStage || 1);
+    quizBg.style.backgroundImage = `url('${bgPath}')`;
 
     /* ヒロイン名 */
     const nameLabel = document.getElementById('quiz-heroine-name');
@@ -430,9 +505,9 @@ class UiManager {
     namePlate.textContent = heroine.shortName;
     namePlate.style.color = heroine.color;
 
-    /* バストアップ画像 */
+    /* バストアップ画像（ステージ3以降はS3画像） */
     const charaImg = document.getElementById('quiz-chara-img');
-    charaImg.src = CHARA_IMAGES[heroine.id];
+    charaImg.src = getCharaImage(heroine.id, currentStage || 1);
     charaImg.alt = heroine.shortName;
 
     /* キャラリアクションをリセット */
@@ -614,7 +689,8 @@ class UiManager {
     /* キャラクターのリアクション */
     charaContainer.classList.add(result.isCorrect ? 'react-correct' : 'react-wrong');
 
-    /* エフェクト演出 */
+    /* エフェクト演出（画像オーバーレイ＋パーティクル） */
+    this.showEffectOverlay(result.isCorrect ? 'effect-correct' : 'effect-wrong');
     if (result.isCorrect) {
       this.spawnHeartParticles();
       this.pulseAffinity('up');
@@ -672,7 +748,7 @@ class UiManager {
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const heart = document.createElement('span');
       heart.className = 'heart-particle';
-      heart.textContent = '♥';
+      heart.innerHTML = '<img src="assets/images/icon-heart.png" class="icon-img" alt="♥">';
       heart.style.left = `${30 + Math.random() * 40}%`;
       heart.style.bottom = `${20 + Math.random() * 20}%`;
       heart.style.animationDelay = `${i * 0.1}s`;
@@ -713,15 +789,53 @@ class UiManager {
     }
   }
 
+  /* 正解/不正解エフェクトオーバーレイを表示する */
+  showEffectOverlay(effectName) {
+    const overlay = document.getElementById('effect-overlay');
+    if (!overlay) return;
+    overlay.src = `assets/images/${effectName}.png`;
+    overlay.classList.add('visible');
+    setTimeout(() => overlay.classList.remove('visible'), 800);
+  }
+
+  /* 桜の花びら画面遷移を実行する */
+  transitionTo(screenName) {
+    const overlay = document.getElementById('transition-overlay');
+    if (!overlay) { this.showScreen(screenName); return; }
+    overlay.classList.add('active');
+    setTimeout(() => {
+      this.showScreen(screenName);
+      setTimeout(() => overlay.classList.remove('active'), 400);
+    }, 400);
+  }
+
   /* 結果画面を描画する（VN風エンディング） */
   renderResult(endingData, statsManager) {
     /* 背景をエンディング種類別に変更 */
     const resultBg = document.getElementById('result-bg');
     resultBg.className = `result-bg ${endingData.type}`;
 
-    /* バストアップ画像 */
+    /* エンディングオーバーレイ画像を設定 */
+    const endingOverlay = document.getElementById('result-ending-overlay');
+    if (endingOverlay) {
+      const stage = endingData.currentStage || 1;
+      let overlayPath;
+      if (endingData.type === 'happy' && ENDING_OVERLAY_MAP.happy[stage]) {
+        overlayPath = ENDING_OVERLAY_MAP.happy[stage];
+      } else if (ENDING_OVERLAY_MAP[endingData.type]) {
+        overlayPath = ENDING_OVERLAY_MAP[endingData.type];
+      }
+      if (overlayPath) {
+        endingOverlay.src = overlayPath;
+        setTimeout(() => endingOverlay.classList.add('visible'), 300);
+      } else {
+        endingOverlay.classList.remove('visible');
+      }
+    }
+
+    /* バストアップ画像（ステージ3以降はS3画像） */
     const charaImg = document.getElementById('result-chara-img');
-    charaImg.src = CHARA_IMAGES[endingData.heroine.id];
+    charaImg.src = getCharaImage(endingData.heroine.id, endingData.currentStage || 1);
     charaImg.alt = endingData.heroine.shortName;
 
     /* パーフェクト表示（全問正解時） */
@@ -1192,7 +1306,7 @@ class UiManager {
         const priceClass = canAfford ? '' : ' not-enough';
         actionHtml = `
           <span class="exchange-item-price${priceClass}">
-            <span class="price-icon">💎</span>${item.price}
+            <img src="assets/images/icon-point.png" class="icon-img price-icon" alt="">${item.price}
           </span>
           <button class="btn-exchange-buy" data-item-id="${item.id}" ${canAfford ? '' : 'disabled'}>交換する</button>
         `;
@@ -1301,7 +1415,7 @@ class UiManager {
       content.appendChild(el);
     }
     el.innerHTML = `
-      <span class="points-icon">💎</span>
+      <img src="assets/images/icon-point.png" class="icon-img points-icon" alt="">
       <span class="points-value">${points.toLocaleString()}</span>
     `;
   }

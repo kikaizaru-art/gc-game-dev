@@ -11,6 +11,9 @@
 </head>
 <body>
   <div id="game-container">
+    <!-- 画面遷移オーバーレイ -->
+    <div id="transition-overlay" class="transition-overlay"></div>
+
     <!-- スタミナゲージ（常時表示） -->
     <div id="stamina-bar" class="stamina-bar">
       <span class="stamina-label">スタミナ</span>
@@ -35,8 +38,11 @@
           <img src="assets/images/rin.png" class="title-chara title-chara-center" alt="凛">
         </div>
         <div class="title-text-area">
-          <h1 class="game-title">ときめきクイズ</h1>
-          <p class="game-subtitle">～素顔のアンサー～</p>
+          <img src="assets/images/title-logo.png" class="title-logo-img" alt="ときめきクイズ">
+          <div class="title-subtitle-container">
+            <img src="assets/images/title-subtitle-deco.png" class="title-subtitle-deco" alt="">
+            <p class="game-subtitle">～素顔のアンサー～</p>
+          </div>
           <button id="btn-start" class="btn btn-primary btn-glow">スタート</button>
         </div>
       </div>
@@ -56,7 +62,7 @@
           <div id="mypage-chara-speech" class="mypage-chara-speech hidden"></div>
         </div>
         <div class="mypage-cp-bar" id="mypage-cp-bar">
-          <span class="cp-icon">⭐</span>
+          <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP">
           <span class="cp-label">CP:</span>
           <span id="mypage-cp-value" class="cp-value">0</span>
         </div>
@@ -116,6 +122,7 @@
         <img id="story-chara-img" class="story-chara-img" src="" alt="">
       </div>
       <div class="story-dialog-area">
+        <img id="story-deco" class="dialog-deco" src="" alt="" style="display:none;">
         <div class="story-dialog-box">
           <div id="story-name-plate" class="story-name-plate"></div>
           <p id="story-text" class="story-text"></p>
@@ -146,6 +153,7 @@
     <!-- クイズ画面 -->
     <div id="screen-quiz" class="screen">
       <div class="quiz-bg" id="quiz-bg"></div>
+      <img id="effect-overlay" class="effect-overlay" src="" alt="">
       <!-- ヒロインバストアップ -->
       <div id="quiz-chara-container" class="quiz-chara-container">
         <img id="quiz-chara-img" class="quiz-chara-img" src="" alt="">
@@ -161,7 +169,7 @@
           <span id="quiz-heroine-name" class="heroine-name-label"></span>
           <span id="quiz-difficulty-badge" class="difficulty-badge"></span>
           <div class="affinity-hearts">
-            <span class="heart-icon">♥</span>
+            <img src="assets/images/icon-heart.png" class="icon-img heart-icon" alt="♥">
             <div class="affinity-bar-container">
               <div id="affinity-bar" class="affinity-bar"></div>
             </div>
@@ -208,6 +216,7 @@
     <!-- 結果画面 -->
     <div id="screen-result" class="screen">
       <div class="result-bg" id="result-bg"></div>
+      <img id="result-ending-overlay" class="result-ending-overlay" src="" alt="">
       <div class="result-content">
         <div class="result-chara-container">
           <img id="result-chara-img" class="result-chara-img" src="" alt="">
@@ -222,7 +231,7 @@
             <p id="result-message" class="result-message"></p>
           </div>
           <div class="result-stats">
-            <p>最終親密度: <span class="heart-icon">♥</span> <span id="result-affinity" class="result-affinity-value"></span></p>
+            <p>最終親密度: <img src="assets/images/icon-heart.png" class="icon-img heart-icon" alt="♥"> <span id="result-affinity" class="result-affinity-value"></span></p>
             <p>正解数: <span id="result-correct" class="result-correct-value"></span> / <span id="result-total-q"></span></p>
           </div>
           <div class="result-buttons">
@@ -333,7 +342,7 @@
       <h2 class="screen-heading">ショップ</h2>
       <div class="shop-content">
         <div class="shop-item" id="shop-item-ad-free">
-          <div class="shop-item-icon">💎</div>
+          <div class="shop-item-icon"><img src="assets/images/icon-point.png" class="icon-img" alt="💎"></div>
           <div class="shop-item-info">
             <h3 class="shop-item-name">広告なしプラン</h3>
             <p class="shop-item-desc">広告が非表示になり、ステージクリア時にスタミナが全回復します</p>
@@ -380,7 +389,7 @@
         </div>
         <div class="quiz-right-info">
           <div class="ta-timer-display">
-            <span class="ta-timer-icon">⏱</span>
+            <img src="assets/images/icon-timer.png" class="icon-img ta-timer-icon" alt="⏱">
             <span id="ta-elapsed-time" class="ta-elapsed-time">0.0s</span>
           </div>
           <div id="ta-score-dots" class="quiz-score-dots"></div>
@@ -450,7 +459,7 @@
         </div>
         <div class="quiz-right-info">
           <div class="endurance-streak-display">
-            <span class="endurance-streak-icon">🔥</span>
+            <img src="assets/images/icon-stamina.png" class="icon-img endurance-streak-icon" alt="🔥">
             <span id="endurance-streak" class="endurance-streak-value">0</span>
             <span class="endurance-streak-label">連続正解</span>
           </div>
@@ -496,7 +505,7 @@
       <h2 class="screen-heading">交換所</h2>
       <p class="exchange-subtitle">ポイントで服と交換しよう</p>
       <div class="exchange-points-bar">
-        <span class="exchange-points-icon">💎</span>
+        <img src="assets/images/icon-point.png" class="icon-img exchange-points-icon" alt="💎">
         <span class="exchange-points-label">ポイント:</span>
         <span id="exchange-points-value" class="exchange-points-value">0</span>
       </div>
@@ -533,7 +542,7 @@
         <p class="practice-info-text">CPを貯めてキャラステージに挑戦しよう！</p>
       </div>
       <div class="practice-cp-display">
-        <span class="cp-icon">⭐</span> 現在のCP: <span id="practice-start-cp" class="cp-value">0</span>
+        <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP"> 現在のCP: <span id="practice-start-cp" class="cp-value">0</span>
       </div>
       <div class="endurance-start-area">
         <button id="btn-practice-go" class="btn btn-primary btn-glow btn-large">スタート</button>
@@ -554,7 +563,7 @@
         </div>
         <div class="quiz-right-info">
           <div class="practice-cp-earned-display">
-            <span class="cp-icon">⭐</span>
+            <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP">
             <span id="practice-cp-counter" class="cp-value">0</span>
             <span class="cp-label">CP</span>
           </div>
@@ -583,11 +592,11 @@
             </div>
             <div class="ta-result-card cp-card">
               <span class="ta-result-label">獲得CP</span>
-              <span id="practice-result-cp" class="ta-result-value cp-earned">⭐ 0</span>
+              <span id="practice-result-cp" class="ta-result-value cp-earned">0</span>
             </div>
           </div>
           <div class="practice-total-cp">
-            所持CP: <span class="cp-icon">⭐</span> <span id="practice-result-total-cp" class="cp-value">0</span>
+            所持CP: <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP"> <span id="practice-result-total-cp" class="cp-value">0</span>
           </div>
           <div class="practice-cost-guide">
             <p class="practice-cost-title">ステージ挑戦に必要なCP</p>
