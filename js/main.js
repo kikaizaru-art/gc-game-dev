@@ -5,7 +5,7 @@ const SCREEN_WIDTH = 800;
 const SCREEN_HEIGHT = 600;
 
 window.addEventListener('DOMContentLoaded', async () => {
-  console.log('ハートクイズ ～3人の想い～ 初期化開始');
+  console.log('ときめきクイズ ～素顔のアンサー～ 初期化開始');
 
   const statsManager = new StatsManager();
   const staminaManager = new StaminaManager();
