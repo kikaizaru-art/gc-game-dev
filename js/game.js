@@ -631,7 +631,7 @@ class GameEngine {
 
   /* ストーリー終了後にクイズを開始する */
   startQuizFromStory() {
-    this.ui.transitionTo('quiz');
+    this.ui.showScreen('quiz');
     this.ui.renderScoreDots(QUIZ_COUNT);
     this.ui.highlightCurrentDot(0);
     this.showCurrentQuiz();
@@ -867,7 +867,7 @@ class GameEngine {
     this.audio.stopBgm();
     this.audio.playEnding(endingData.type);
     this.ui.renderResult(endingData, this.stats);
-    this.ui.transitionTo('result');
+    this.ui.showScreen('result');
 
     /* 広告無しプラン購入済みならスタミナ全回復 */
     if (this.shop && this.shop.isAdFree()) {

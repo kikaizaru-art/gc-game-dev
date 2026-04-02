@@ -146,13 +146,13 @@ body {
 }
 
 .btn-primary {
-  background: url('../assets/images/btn-primary.png') center/cover no-repeat, linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   color: var(--color-white);
   box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
 }
 
 .btn-accent {
-  background: url('../assets/images/btn-accent.png') center/cover no-repeat, linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
   color: #1a1a2e;
   font-weight: 700;
   box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
@@ -174,7 +174,7 @@ body {
 }
 
 .btn-secondary {
-  background: url('../assets/images/btn-secondary.png') center/cover no-repeat, rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: #FFD0E8;
   border: 2px solid rgba(255, 208, 232, 0.3);
   backdrop-filter: blur(4px);
@@ -191,6 +191,7 @@ body {
    ============================ */
 #screen-title {
   justify-content: flex-end;
+  background: linear-gradient(180deg, #2a1535 0%, #1a0f25 60%, #0f0a18 100%);
 }
 
 .title-bg {
@@ -199,7 +200,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('../assets/images/bg-title.png') center/cover no-repeat;
+  background: radial-gradient(ellipse at 50% 30%, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
   z-index: 0;
 }
 
@@ -283,40 +284,12 @@ body {
   filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.5));
 }
 
-/* タイトルロゴ画像 */
-.title-logo-img {
-  width: 80%;
-  max-width: 350px;
-  height: auto;
-  filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.5));
-  margin-bottom: 4px;
-}
-
-/* サブタイトル装飾コンテナ */
-.title-subtitle-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-
-.title-subtitle-deco {
-  position: absolute;
-  width: 100%;
-  max-width: 320px;
-  height: auto;
-  opacity: 0.6;
-}
-
 .game-subtitle {
   font-size: 20px;
-  color: #5a3a4a;
-  margin-bottom: 8px;
+  color: #FFD0E8;
+  margin-bottom: 32px;
   letter-spacing: 8px;
-  text-shadow: 0 0 15px rgba(255, 107, 157, 0.2);
-  position: relative;
-  z-index: 1;
+  text-shadow: 0 0 15px rgba(255, 107, 157, 0.3);
 }
 
 /* ============================
@@ -764,7 +737,7 @@ body {
 /* キャラクターバストアップ */
 .quiz-chara-container {
   position: absolute;
-  bottom: 120px;
+  bottom: 180px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
@@ -964,11 +937,12 @@ body {
 }
 
 .vn-dialog-box {
-  background: url('../assets/images/frame-textbox.png') center/100% 100% no-repeat;
-  border: none;
+  background: linear-gradient(180deg, rgba(10, 5, 20, 0.88) 0%, rgba(15, 8, 30, 0.92) 100%);
+  border: 1px solid rgba(255, 208, 232, 0.2);
   border-radius: 8px;
-  padding: 16px 22px;
+  padding: 12px 18px;
   margin-bottom: 8px;
+  backdrop-filter: blur(12px);
   box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -1218,14 +1192,22 @@ body {
   transition: opacity 0.3s, transform 0.3s;
   z-index: 20;
   border-radius: 16px;
-  background: url('../assets/images/frame-speech-bubble.png') center/100% 100% no-repeat;
+  backdrop-filter: blur(12px);
   transform: scale(1);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* 吹き出しの尻尾（画像フレームに含まれるため非表示） */
+/* 吹き出しの尻尾 */
 .quiz-feedback::after {
-  display: none;
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 40px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid rgba(16, 185, 129, 0.92);
 }
 
 .quiz-feedback.wrong::after {
@@ -1377,10 +1359,10 @@ body {
 }
 
 .result-dialog-box {
-  background: url('../assets/images/frame-panel.png') center/100% 100% no-repeat;
-  border: none;
+  background: rgba(10, 5, 20, 0.6);
+  border: 1px solid rgba(255, 208, 232, 0.2);
   border-radius: 8px;
-  padding: 14px 20px;
+  padding: 10px 16px;
   margin: 0 auto 12px;
   max-width: 500px;
 }
@@ -1820,7 +1802,7 @@ body {
   }
 
   .quiz-chara-container {
-    bottom: 100px;
+    bottom: 160px;
   }
 
   .quiz-chara-img {
@@ -1998,7 +1980,7 @@ body {
   }
 
   .quiz-chara-container {
-    bottom: 90px;
+    bottom: 140px;
   }
 
   .quiz-feedback {
@@ -2188,20 +2170,19 @@ body {
 
 /* ダイアログエリア（ストーリー画面） */
 .story-dialog-area {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  position: relative;
   z-index: 5;
   width: 100%;
   padding: 0 16px 16px;
 }
 
 .story-dialog-box {
-  background: url('../assets/images/frame-textbox.png') center/100% 100% no-repeat;
-  border: none;
+  background: linear-gradient(180deg, rgba(10, 5, 20, 0.88) 0%, rgba(15, 8, 30, 0.92) 100%);
+  border: 1px solid rgba(255, 208, 232, 0.2);
   border-radius: 8px;
-  padding: 18px 24px;
+  padding: 14px 20px;
   margin-bottom: 8px;
+  backdrop-filter: blur(12px);
   box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
   min-height: 100px;
 }
@@ -3947,77 +3928,6 @@ body {
 
 .quiz-bg.practice {
   background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
-}
-
-/* ============================
-   画像素材統合スタイル
-   ============================ */
-
-/* 正解/不正解エフェクトオーバーレイ */
-.effect-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 50;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.effect-overlay.visible {
-  opacity: 0.5;
-}
-
-/* 画面遷移オーバーレイ（桜の花びら） */
-.transition-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('../assets/images/transition-petals.png') center/cover no-repeat;
-  z-index: 100;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.transition-overlay.active {
-  opacity: 1;
-}
-
-/* エンディングオーバーレイ装飾 */
-.result-ending-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-.result-ending-overlay.visible {
-  opacity: 0.7;
-}
-
-/* ヒロイン装飾（ダイアログ角） */
-.dialog-deco {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  pointer-events: none;
-  top: -10px;
-  right: -6px;
-  z-index: 10;
-  opacity: 0.75;
 }
 
 /* アイコン画像共通 */

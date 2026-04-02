@@ -11,9 +11,6 @@
 </head>
 <body>
   <div id="game-container">
-    <!-- 画面遷移オーバーレイ -->
-    <div id="transition-overlay" class="transition-overlay"></div>
-
     <!-- スタミナゲージ（常時表示） -->
     <div id="stamina-bar" class="stamina-bar">
       <span class="stamina-label">スタミナ</span>
@@ -38,11 +35,8 @@
           <img src="assets/images/rin.png" class="title-chara title-chara-center" alt="凛">
         </div>
         <div class="title-text-area">
-          <img src="assets/images/title-logo.png" class="title-logo-img" alt="ときめきクイズ">
-          <div class="title-subtitle-container">
-            <img src="assets/images/title-subtitle-deco.png" class="title-subtitle-deco" alt="">
-            <p class="game-subtitle">～素顔のアンサー～</p>
-          </div>
+          <h1 class="game-title">ときめきクイズ</h1>
+          <p class="game-subtitle">～素顔のアンサー～</p>
           <button id="btn-start" class="btn btn-primary btn-glow">スタート</button>
         </div>
       </div>
@@ -122,7 +116,6 @@
         <img id="story-chara-img" class="story-chara-img" src="" alt="">
       </div>
       <div class="story-dialog-area">
-        <img id="story-deco" class="dialog-deco" src="" alt="" style="display:none;">
         <div class="story-dialog-box">
           <div id="story-name-plate" class="story-name-plate"></div>
           <p id="story-text" class="story-text"></p>
@@ -153,7 +146,6 @@
     <!-- クイズ画面 -->
     <div id="screen-quiz" class="screen">
       <div class="quiz-bg" id="quiz-bg"></div>
-      <img id="effect-overlay" class="effect-overlay" src="" alt="">
       <!-- ヒロインバストアップ -->
       <div id="quiz-chara-container" class="quiz-chara-container">
         <img id="quiz-chara-img" class="quiz-chara-img" src="" alt="">
@@ -216,7 +208,6 @@
     <!-- 結果画面 -->
     <div id="screen-result" class="screen">
       <div class="result-bg" id="result-bg"></div>
-      <img id="result-ending-overlay" class="result-ending-overlay" src="" alt="">
       <div class="result-content">
         <div class="result-chara-container">
           <img id="result-chara-img" class="result-chara-img" src="" alt="">
