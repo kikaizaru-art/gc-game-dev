@@ -354,6 +354,126 @@
 | カラーパレット | パステル系・キャラごとのテーマカラー |
 | 統一プロンプト指示 | anime style, soft pastel colors, dating sim character |
 
+### 🖼️ コンセプトアート（最優先で生成）
+
+> **方針**: 個別素材を生成する前に、まずコンセプトアートでゲーム全体のビジュアル方向性を確立する。
+> 以降のすべての素材生成は、このコンセプトアートのスタイル・色味・雰囲気を参照して統一感を保つ。
+
+#### ステップ1: メインビジュアル（コンセプトアート）
+
+ゲーム全体の世界観・キャラクターの関係性・色彩設計を1枚で表現する。
+
+**ファイル名**: `concept-art-main.png`
+
+**プロンプト**:
+```
+high quality anime illustration concept art for a romantic visual novel quiz game titled "ときめきクイズ ～素顔のアンサー～",
+
+three high school heroines standing together under a cherry blossom tree in a school courtyard:
+- left: cheerful energetic short-haired girl (pink-tinted light brown bob, amber eyes, bright smile, pink theme),
+- center: cool intellectual long-haired girl (dark blue-black straight hair, sharp sapphire eyes, composed expression, blue theme),
+- right: gentle shy girl with braids (honey-brown twin braids, round olive-green eyes, soft smile, green theme),
+
+Japanese high school setting, warm afternoon golden hour lighting,
+cherry blossom petals gently falling, soft bokeh light effects,
+pastel color palette with pink (#FF6B9D), blue (#4A90D9), green (#7BC67E) as character accent colors,
+warm cream and lavender base tones, soft watercolor-like shading,
+delicate line art, expressive anime eyes with detailed light reflections,
+romantic and inviting atmosphere with a hint of mystery,
+each girl wearing the same school blazer uniform but with personal touches showing their personality,
+visual novel game key visual style, promotional illustration quality
+```
+
+**目的**: この1枚でGemini APIに「このゲームの画風」を定義させる。色味・線のタッチ・光の入り方・キャラの頭身バランスがここで決まる。
+
+| ステータス |
+|---|
+| ⬜ 未生成 |
+
+---
+
+#### ステップ2: UIスタイルリファレンスシート
+
+ボタン・フレーム・アイコンなどUI要素のデザイン言語を1枚で統一する。
+
+**ファイル名**: `concept-art-ui-sheet.png`
+
+**プロンプト**:
+```
+anime style game UI design reference sheet for a romantic visual novel quiz game,
+organized layout showing multiple UI elements on one sheet:
+
+top row: title logo design with elegant Japanese typography, heart and cherry blossom decorations, pink and gold gradient,
+middle row: three button styles (pink primary, lavender secondary, coral accent) with rounded rectangle shape and soft inner glow,
+bottom left: text dialogue box frame with semi-transparent dark panel and ornamental pink-gold border,
+bottom right: set of small icons (heart, star, hourglass timer, lightning bolt stamina) in matching pastel pink style,
+
+consistent design language throughout: soft pastel color palette,
+cherry blossom motif as recurring decoration element,
+pink (#FF6B9D) as primary UI color, gold (#FFD700) as accent,
+cream and white base with soft shadows,
+cute but elegant romantic visual novel aesthetic,
+clean organized reference sheet layout with spacing between elements,
+transparent-ready designs with clear edges
+```
+
+**目的**: UI素材を個別生成する際、このシートを参照してスタイルの一貫性を保つ。ボタンの角丸み・影の付け方・装飾の密度が統一される。
+
+| ステータス |
+|---|
+| ⬜ 未生成 |
+
+---
+
+#### ステップ3: 背景ムードボード
+
+背景素材の色調・パース・雰囲気を統一するリファレンス。
+
+**ファイル名**: `concept-art-bg-mood.png`
+
+**プロンプト**:
+```
+anime background art mood board reference sheet for a romantic visual novel set in a Japanese high school,
+4-panel layout showing different locations with consistent art style:
+
+top-left: classroom with warm afternoon sunlight, cherry blossoms outside window,
+top-right: school rooftop with golden sunset sky and chain-link fence,
+bottom-left: quiet library with warm lamp light and tall bookshelves,
+bottom-right: courtyard garden with flower beds and gentle sunlight,
+
+all panels sharing the same visual style:
+soft pastel color palette with warm undertones,
+watercolor-like soft edges and atmospheric perspective,
+golden hour lighting as default mood,
+no characters, visual novel background style,
+consistent level of detail and rendering across all panels,
+gentle dreamy atmosphere connecting all scenes
+```
+
+**目的**: 背景の彩度・コントラスト・空気遠近法のレベルを統一する。
+
+| ステータス |
+|---|
+| ⬜ 未生成 |
+
+---
+
+#### 素材生成フロー（コンセプトアート活用手順）
+
+```
+1. コンセプトアート3枚を生成（メインビジュアル → UIシート → 背景ムード）
+2. 生成結果を確認し、方向性をユーザーと合意
+3. 各素材の個別プロンプトに「in the same art style as the concept art,」を追加
+4. コンセプトアートを参照画像としてGemini APIに渡しつつ個別素材を生成
+5. 生成した素材がコンセプトアートと乖離していないかチェック
+```
+
+> **注意**: Gemini API（gemini-2.5-flash-image）はテキストプロンプトのみで参照画像の入力は未対応の場合、
+> コンセプトアートのスタイルを言語化した「スタイルアンカー」をプレフィックスとして各プロンプトに付与する。
+> スタイルアンカーはコンセプトアート生成後に、その結果の特徴を記述して作成する。
+
+---
+
 ### キャラクターデザイン詳細設定
 
 #### 共通スタイル指示（全キャラ共通プレフィックス）
@@ -651,6 +771,13 @@ cherry blossom motif, transparent PNG with alpha channel
 | ひなた立ち絵 | hinata.png | 400×600 | （上記S1用プロンプト参照） | ✅ 生成・組込済（リニューアル予定） |
 | 背景 | bg-default.png | 800×600 | （上記背景プロンプト参照） | ✅ 生成・組込済 |
 
+### コンセプトアート（Gemini API生成）
+| 素材名 | ファイル名 | サイズ | 生成プロンプト | ステータス |
+|---|---|---|---|---|
+| メインビジュアル | concept-art-main.png | 1024×1024 | （上記ステップ1プロンプト参照） | ⬜ 未生成 |
+| UIスタイルシート | concept-art-ui-sheet.png | 1024×1024 | （上記ステップ2プロンプト参照） | ⬜ 未生成 |
+| 背景ムードボード | concept-art-bg-mood.png | 1024×1024 | （上記ステップ3プロンプト参照） | ⬜ 未生成 |
+
 ### UI・タイトル素材（Gemini API生成）
 | 素材名 | ファイル名 | サイズ | 生成プロンプト | ステータス |
 |---|---|---|---|---|
@@ -773,6 +900,7 @@ cherry blossom motif, transparent PNG with alpha channel
 | 2026-04-01 | 練習ステージ＆チャレンジポイント（CP）システム追加（キャラステージ挑戦にCP消費が必要） | Claude |
 | 2026-04-02 | キャラクターデザイン詳細設定追加（身体的特徴・服装・カラーパレット・ステージ別表情・Gemini APIプロンプト・背景素材プロンプト） | Claude |
 | 2026-04-02 | UI・タイトル素材用Gemini APIプロンプト追加（タイトルロゴ・ボタン・フレーム・アイコン・エンディング装飾・エフェクト・ヒロイン別装飾） | Claude |
+| 2026-04-02 | コンセプトアート先行アプローチ導入（メインビジュアル・UIスタイルシート・背景ムードボードの3枚を最優先生成し、統一感を確保する方針に変更） | Claude |
 
 ---
 
