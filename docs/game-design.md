@@ -566,6 +566,81 @@ soft pastel colors with suffocating yet liberating atmosphere, dating sim aesthe
 
 ---
 
+#### 🎨 UI・タイトル素材プロンプト設定
+
+##### 共通スタイル指示（UI素材共通プレフィックス）
+```
+high quality anime style game UI asset, soft pastel color palette,
+delicate ornamental design, romantic visual novel aesthetic,
+cherry blossom motif, transparent PNG with alpha channel
+```
+
+##### タイトルロゴ
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| タイトルロゴ | title-logo.png | `high quality anime style game title logo, "ときめきクイズ" text design, elegant cursive Japanese typography with heart and cherry blossom decorations, pink and gold gradient colors (#FF6B9D to #FFD700), glowing sparkle effects around letters, soft pastel romantic atmosphere, transparent background PNG, visual novel title screen aesthetic` |
+| サブタイトル装飾 | title-subtitle-deco.png | `high quality anime style decorative frame for subtitle text, thin elegant ornamental line with small hearts and cherry blossom petals at ends, pink and white color scheme, horizontal banner shape, transparent background PNG, visual novel title aesthetic` |
+
+##### タイトル画面背景
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| タイトル背景 | bg-title.png | `anime background art, dreamy cherry blossom scene, pink petals gently falling, soft bokeh light effects, pastel gradient sky from warm pink to lavender, school building silhouette in far background, romantic and inviting atmosphere, visual novel title screen background, no characters, 800x600` |
+
+##### ボタン素材
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| メインボタン | btn-primary.png | `anime style game UI button, rounded rectangle shape, pink gradient (#FF6B9D to #ec4899) with subtle inner glow, small heart icon embossed, soft shadow, cherry blossom petal accent on corner, elegant and cute design, transparent background PNG` |
+| サブボタン | btn-secondary.png | `anime style game UI button, rounded rectangle shape, soft lavender to light purple gradient with subtle shimmer, small star accent, gentle shadow, elegant understated design, transparent background PNG` |
+| アクセントボタン | btn-accent.png | `anime style game UI button, rounded rectangle shape, warm coral to orange gradient (#FFA040 to #FF6B9D), small sparkle effect, energetic but cute design, transparent background PNG` |
+| 戻るボタン | btn-back.png | `anime style game UI small circular back button, pastel pink circle with white left arrow, soft shadow, cute minimal design, transparent background PNG` |
+
+##### ダイアログ・フレーム素材
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| テキストボックス | frame-textbox.png | `anime style visual novel text box frame, semi-transparent dark gradient panel with ornamental pink and gold border, cherry blossom corner decorations, elegant rounded rectangle shape, romantic visual novel dialogue box, PNG with transparency` |
+| ステータスパネル | frame-panel.png | `anime style game UI panel frame, soft cream and pink gradient background with thin ornamental gold border, small heart decorations at corners, rounded rectangle, elegant romantic design, transparent background PNG` |
+| ポップアップフレーム | frame-popup.png | `anime style game UI popup window frame, white panel with pink and gold ornamental border, ribbon decoration at top center, cherry blossom accents, soft shadow, cute romantic design, transparent background PNG` |
+| セリフ吹き出し | frame-speech-bubble.png | `anime style speech bubble, soft white with thin pink outline, small heart-shaped tail, subtle gradient, cute romantic visual novel design, transparent background PNG` |
+
+##### アイコン素材
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| ハートアイコン（親密度） | icon-heart.png | `anime style cute heart icon, pink gradient with sparkle highlight, soft glow effect, romantic game UI element, transparent background PNG, 64x64` |
+| スターアイコン（CP） | icon-star.png | `anime style cute star icon, golden yellow gradient with sparkle highlight, soft glow effect, game UI element, transparent background PNG, 64x64` |
+| タイマーアイコン | icon-timer.png | `anime style cute hourglass icon, pink and gold colors with small heart sand particles, soft glow, romantic game UI element, transparent background PNG, 64x64` |
+| スタミナアイコン | icon-stamina.png | `anime style cute lightning bolt icon inside a pink circle, pastel pink and yellow gradient, soft sparkle effect, game UI element, transparent background PNG, 64x64` |
+| ロックアイコン | icon-lock.png | `anime style cute padlock icon with heart-shaped keyhole, pastel pink and gray colors, soft shadow, game UI element, transparent background PNG, 64x64` |
+| 設定アイコン | icon-settings.png | `anime style cute gear icon with small heart accent, pastel pink and silver colors, soft design, game UI element, transparent background PNG, 64x64` |
+| 音楽アイコン | icon-music.png | `anime style cute music note icon, pastel pink with sparkle effects, romantic design, game UI element, transparent background PNG, 64x64` |
+| ポイントアイコン | icon-point.png | `anime style cute diamond gem icon, pink and purple gradient with rainbow sparkle highlight, soft glow, game UI element, transparent background PNG, 64x64` |
+
+##### エンディング演出素材
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| ハッピーエンド装飾 | ending-happy.png | `anime style romantic ending screen decoration, shower of pink cherry blossom petals and golden sparkles, hearts floating upward, warm pink and gold atmosphere, dreamy bokeh light effects, transparent overlay PNG` |
+| ノーマルエンド装飾 | ending-normal.png | `anime style gentle ending screen decoration, soft floating cherry blossom petals, gentle warm sunlight rays, peaceful pastel orange and pink tones, transparent overlay PNG` |
+| バッドエンド装飾 | ending-bad.png | `anime style melancholic ending screen decoration, scattered fading cherry blossom petals falling downward, cool blue and purple tones, rain drops, sad but beautiful atmosphere, transparent overlay PNG` |
+| トゥルーエンド装飾 | ending-true.png | `anime style triumphant romantic ending decoration, brilliant golden light burst with cherry blossoms and hearts swirling, rainbow sparkle accents, warm and radiant atmosphere, transparent overlay PNG` |
+| パーフェクトエンド装飾 | ending-perfect.png | `anime style dazzling ending screen decoration, crystal diamond sparkles mixed with cherry blossoms, prismatic light reflections, ethereal pink and diamond white glow, luxurious romantic atmosphere, transparent overlay PNG` |
+| エターナルエンド装飾 | ending-eternal.png | `anime style ultimate romantic ending decoration, intertwined golden rings surrounded by cherry blossoms, constellation stars connecting like destiny, warm golden and pink aurora, heavenly radiant atmosphere, transparent overlay PNG` |
+
+##### 画面遷移・エフェクト素材
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| 画面遷移オーバーレイ | transition-petals.png | `anime style cherry blossom petal shower overlay, dense pink petals scattered across frame, various petal sizes and rotation angles, soft pink tones, transparent background PNG, for screen transition effect` |
+| キラキラエフェクト | effect-sparkle.png | `anime style sparkle effect sprite sheet, 4 frames of twinkling star animation, pink and gold sparkles, soft glow, transparent background PNG, game UI effect` |
+| 正解エフェクト | effect-correct.png | `anime style celebration effect, golden stars and pink hearts bursting outward, sparkle trail, joyful energy, transparent background PNG, game UI effect` |
+| 不正解エフェクト | effect-wrong.png | `anime style gentle crack effect, soft blue broken glass fragments fading outward, subtle and not scary, transparent background PNG, game UI effect` |
+
+##### ヒロイン別装飾素材
+| 素材 | ファイル名 | プロンプト |
+|---|---|---|
+| 美咲フレーム装飾 | deco-misaki.png | `anime style decorative corner ornament, pink cherry blossom branch with small sun motif, warm pink and orange colors (#FF6B9D, #FFA040), delicate design, transparent background PNG` |
+| 凛フレーム装飾 | deco-rin.png | `anime style decorative corner ornament, blue star constellation pattern with open book motif, cool blue and purple colors (#4A90D9, #8B6DBF), elegant design, transparent background PNG` |
+| ひなたフレーム装飾 | deco-hinata.png | `anime style decorative corner ornament, green vine with small flowers and cooking whisk motif, warm green and yellow colors (#7BC67E, #F0D060), gentle design, transparent background PNG` |
+
+---
+
 ## 🖼️ 素材管理表
 
 ### 画像素材（Gemini API生成）
@@ -575,6 +650,42 @@ soft pastel colors with suffocating yet liberating atmosphere, dating sim aesthe
 | 凛立ち絵 | rin.png | 400×600 | （上記S1用プロンプト参照） | ✅ 生成・組込済（リニューアル予定） |
 | ひなた立ち絵 | hinata.png | 400×600 | （上記S1用プロンプト参照） | ✅ 生成・組込済（リニューアル予定） |
 | 背景 | bg-default.png | 800×600 | （上記背景プロンプト参照） | ✅ 生成・組込済 |
+
+### UI・タイトル素材（Gemini API生成）
+| 素材名 | ファイル名 | サイズ | 生成プロンプト | ステータス |
+|---|---|---|---|---|
+| タイトルロゴ | title-logo.png | 600×200 | （上記タイトルロゴプロンプト参照） | ⬜ 未生成 |
+| サブタイトル装飾 | title-subtitle-deco.png | 400×60 | （上記サブタイトル装飾プロンプト参照） | ⬜ 未生成 |
+| タイトル背景 | bg-title.png | 800×600 | （上記タイトル背景プロンプト参照） | ⬜ 未生成 |
+| メインボタン | btn-primary.png | 240×60 | （上記ボタン素材プロンプト参照） | ⬜ 未生成 |
+| サブボタン | btn-secondary.png | 240×60 | （上記ボタン素材プロンプト参照） | ⬜ 未生成 |
+| アクセントボタン | btn-accent.png | 240×60 | （上記ボタン素材プロンプト参照） | ⬜ 未生成 |
+| 戻るボタン | btn-back.png | 48×48 | （上記ボタン素材プロンプト参照） | ⬜ 未生成 |
+| テキストボックス | frame-textbox.png | 760×180 | （上記ダイアログ素材プロンプト参照） | ⬜ 未生成 |
+| ステータスパネル | frame-panel.png | 700×400 | （上記ダイアログ素材プロンプト参照） | ⬜ 未生成 |
+| ポップアップフレーム | frame-popup.png | 500×350 | （上記ダイアログ素材プロンプト参照） | ⬜ 未生成 |
+| セリフ吹き出し | frame-speech-bubble.png | 300×120 | （上記ダイアログ素材プロンプト参照） | ⬜ 未生成 |
+| ハートアイコン | icon-heart.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| スターアイコン | icon-star.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| タイマーアイコン | icon-timer.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| スタミナアイコン | icon-stamina.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| ロックアイコン | icon-lock.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| 設定アイコン | icon-settings.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| 音楽アイコン | icon-music.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| ポイントアイコン | icon-point.png | 64×64 | （上記アイコン素材プロンプト参照） | ⬜ 未生成 |
+| ハッピーエンド装飾 | ending-happy.png | 800×600 | （上記エンディング素材プロンプト参照） | ⬜ 未生成 |
+| ノーマルエンド装飾 | ending-normal.png | 800×600 | （上記エンディング素材プロンプト参照） | ⬜ 未生成 |
+| バッドエンド装飾 | ending-bad.png | 800×600 | （上記エンディング素材プロンプト参照） | ⬜ 未生成 |
+| トゥルーエンド装飾 | ending-true.png | 800×600 | （上記エンディング素材プロンプト参照） | ⬜ 未生成 |
+| パーフェクトエンド装飾 | ending-perfect.png | 800×600 | （上記エンディング素材プロンプト参照） | ⬜ 未生成 |
+| エターナルエンド装飾 | ending-eternal.png | 800×600 | （上記エンディング素材プロンプト参照） | ⬜ 未生成 |
+| 画面遷移オーバーレイ | transition-petals.png | 800×600 | （上記エフェクト素材プロンプト参照） | ⬜ 未生成 |
+| キラキラエフェクト | effect-sparkle.png | 256×64 | （上記エフェクト素材プロンプト参照） | ⬜ 未生成 |
+| 正解エフェクト | effect-correct.png | 200×200 | （上記エフェクト素材プロンプト参照） | ⬜ 未生成 |
+| 不正解エフェクト | effect-wrong.png | 200×200 | （上記エフェクト素材プロンプト参照） | ⬜ 未生成 |
+| 美咲フレーム装飾 | deco-misaki.png | 120×120 | （上記ヒロイン別装飾プロンプト参照） | ⬜ 未生成 |
+| 凛フレーム装飾 | deco-rin.png | 120×120 | （上記ヒロイン別装飾プロンプト参照） | ⬜ 未生成 |
+| ひなたフレーム装飾 | deco-hinata.png | 120×120 | （上記ヒロイン別装飾プロンプト参照） | ⬜ 未生成 |
 
 ### 音声素材（Web Audio API生成）
 | 素材名 | 実装方式 | 用途 | ステータス |
@@ -661,6 +772,7 @@ soft pastel colors with suffocating yet liberating atmosphere, dating sim aesthe
 | 2026-03-31 | 「仮面の笑顔」ストーリーテーマ追加、プロローグシステム追加、キャラ解放シーン追加、全ストーリーテキスト刷新 | Claude |
 | 2026-04-01 | 練習ステージ＆チャレンジポイント（CP）システム追加（キャラステージ挑戦にCP消費が必要） | Claude |
 | 2026-04-02 | キャラクターデザイン詳細設定追加（身体的特徴・服装・カラーパレット・ステージ別表情・Gemini APIプロンプト・背景素材プロンプト） | Claude |
+| 2026-04-02 | UI・タイトル素材用Gemini APIプロンプト追加（タイトルロゴ・ボタン・フレーム・アイコン・エンディング装飾・エフェクト・ヒロイン別装飾） | Claude |
 
 ---
 
