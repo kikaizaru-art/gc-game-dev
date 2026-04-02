@@ -179,6 +179,42 @@ class GameEngine {
       this.showMyPage();
     });
 
+    /* マイページ → 練習ステージ */
+    document.getElementById('btn-mypage-practice').addEventListener('click', () => {
+      this.audio.playClick();
+      document.getElementById('practice-start-cp').textContent = this.stats.getCP();
+      this.ui.showScreen('practiceStart');
+    });
+
+    document.getElementById('btn-back-mypage-practice').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
+    document.getElementById('btn-practice-go').addEventListener('click', () => {
+      this.audio.playClick();
+      this.startPractice();
+    });
+
+    /* 練習ステージ：途中で戻る */
+    document.getElementById('btn-practice-quit').addEventListener('click', () => {
+      this.audio.playClick();
+      if (confirm('練習ステージを中断しますか？')) {
+        this.showPracticeResult();
+      }
+    });
+
+    /* 練習ステージ：結果画面ボタン */
+    document.getElementById('btn-practice-retry').addEventListener('click', () => {
+      this.audio.playClick();
+      this.startPractice();
+    });
+
+    document.getElementById('btn-practice-back').addEventListener('click', () => {
+      this.audio.playClick();
+      this.showMyPage();
+    });
+
     /* マイページ → オプション */
     document.getElementById('btn-mypage-options').addEventListener('click', () => {
       this.audio.playClick();
@@ -349,9 +385,22 @@ class GameEngine {
         this.ui.renderStageSelect(heroine, this.stats);
         this.ui.showScreen('stageSelect');
       } else if (this.stats.getTotalClears(heroineId) > 0) {
-        /* クリア済みだがハッピーエンド未達成 → やり直しストーリー */
+        /* クリア済みだがハッピーエンド未達成 → CP消費チェック（ステージ1） */
+        const cost = this.stats.getStageCPCost(1);
+        if (!this.stats.canChallengeStage(1)) {
+          alert(`CPが足りません！\nステージ1には ${cost} CP 必要です。\n現在のCP: ${this.stats.getCP()}\n練習ステージでCPを稼ごう！`);
+          return;
+        }
+        this.stats.spendCP(cost);
         this.startRetry(heroineId);
       } else {
+        /* 初回プレイもCP消費チェック */
+        const cost = this.stats.getStageCPCost(1);
+        if (!this.stats.canChallengeStage(1)) {
+          alert(`CPが足りません！\nステージ1には ${cost} CP 必要です。\n現在のCP: ${this.stats.getCP()}\n練習ステージでCPを稼ごう！`);
+          return;
+        }
+        this.stats.spendCP(cost);
         this.startStory(heroineId);
       }
     });
@@ -367,6 +416,13 @@ class GameEngine {
       if (!card || card.classList.contains('locked')) return;
       this.audio.playClick();
       const stage = parseInt(card.dataset.stage, 10);
+      /* CP消費チェック */
+      const cost = this.stats.getStageCPCost(stage);
+      if (!this.stats.canChallengeStage(stage)) {
+        alert(`CPが足りません！\nこのステージには ${cost} CP 必要です。\n現在のCP: ${this.stats.getCP()}\n練習ステージでCPを稼ごう！`);
+        return;
+      }
+      this.stats.spendCP(cost);
       this.startStoryWithStage(this.pendingHeroineId, stage);
     });
 
@@ -478,6 +534,11 @@ class GameEngine {
       /* 耐久クイズ */
       if (this.enduranceState && this.enduranceState.isAnswering) {
         this.handleEnduranceAnswer(idx);
+        return;
+      }
+      /* 練習ステージ */
+      if (this.practiceState && this.practiceState.isAnswering) {
+        this.handlePracticeAnswer(idx);
         return;
       }
     });
@@ -1067,6 +1128,8 @@ class GameEngine {
     const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)
       || this.heroineManager.heroines[0];
     this.ui.renderMyPage(heroine);
+    /* CP表示を更新する */
+    document.getElementById('mypage-cp-value').textContent = this.stats.getCP();
     /* ポイント表示と着せ替えオーバーレイを更新する（パートナー選択後のみ） */
     if (this.exchange && this.isPointsUnlocked()) {
       this.ui.updateMypagePoints(this.exchange.getPoints());
@@ -1458,6 +1521,166 @@ class GameEngine {
     const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)
       || this.heroineManager.heroines[0];
     this.ui.renderDressupScreen(this.exchange, heroine);
+  }
+
+  /* ===========================
+     練習ステージ
+     =========================== */
+
+  /* 練習ステージ用のクイズプールを取得する（全ヒロインのEASY問題からランダム） */
+  getPracticeQuizPool() {
+    const hm = this.heroineManager;
+    const all = [];
+    /* 全難易度からまんべんなく出題 */
+    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
+      Object.values(source).forEach(quizArray => {
+        quizArray.forEach(q => all.push(q));
+      });
+    });
+    /* シャッフル */
+    for (let i = all.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [all[i], all[j]] = [all[j], all[i]];
+    }
+    return all.slice(0, PRACTICE_QUIZ_COUNT);
+  }
+
+  /* 練習ステージを開始する */
+  startPractice() {
+    this.practiceState = {
+      quizzes: this.getPracticeQuizPool(),
+      currentIndex: 0,
+      correctCount: 0,
+      isAnswering: false,
+      currentCorrectIndex: null
+    };
+    this.ui.renderPracticeScoreDots(PRACTICE_QUIZ_COUNT);
+    this.ui.showScreen('practiceQuiz');
+    document.getElementById('practice-cp-counter').textContent = '0';
+    this.showPracticeCurrentQuiz();
+  }
+
+  /* 練習ステージ：現在のクイズを表示する */
+  showPracticeCurrentQuiz() {
+    const st = this.practiceState;
+    const quiz = st.quizzes[st.currentIndex];
+    const { shuffledChoices, correctIndex } = this.shuffleChoices(quiz);
+    st.currentCorrectIndex = correctIndex;
+    st.isAnswering = true;
+
+    this.ui.hidePracticeFeedback();
+    this.ui.renderPracticeQuiz(
+      { ...quiz, choices: shuffledChoices },
+      st.currentIndex + 1,
+      PRACTICE_QUIZ_COUNT
+    );
+
+    /* ドットのハイライト */
+    const dots = document.getElementById('practice-score-dots').querySelectorAll('.score-dot');
+    dots.forEach(d => d.classList.remove('current'));
+    if (dots[st.currentIndex]) dots[st.currentIndex].classList.add('current');
+
+    /* 選択肢のクリックイベント */
+    const choiceBtns = document.getElementById('practice-quiz-choices').querySelectorAll('.choice-btn');
+    choiceBtns.forEach((btn, index) => {
+      btn.addEventListener('click', () => this.handlePracticeAnswer(index));
+    });
+
+    /* タイマー開始 */
+    this.startPracticeTimer();
+  }
+
+  /* 練習ステージ：タイマー開始 */
+  startPracticeTimer() {
+    this.practiceTimeRemaining = QUIZ_TIME_LIMIT;
+    this.ui.updateTimer(this.practiceTimeRemaining, QUIZ_TIME_LIMIT);
+
+    this.practiceTimerId = setInterval(() => {
+      this.practiceTimeRemaining -= TIMER_STEP;
+      this.ui.updateTimer(this.practiceTimeRemaining, QUIZ_TIME_LIMIT);
+
+      if (this.practiceTimeRemaining <= 0) {
+        this.stopPracticeTimer();
+        this.handlePracticeTimeout();
+      }
+    }, TIMER_INTERVAL_MS);
+  }
+
+  /* 練習ステージ：タイマー停止 */
+  stopPracticeTimer() {
+    if (this.practiceTimerId) {
+      clearInterval(this.practiceTimerId);
+      this.practiceTimerId = null;
+    }
+  }
+
+  /* 練習ステージ：時間切れ処理 */
+  handlePracticeTimeout() {
+    const st = this.practiceState;
+    if (!st.isAnswering) return;
+    st.isAnswering = false;
+
+    this.audio.playTimeout();
+    this.ui.showPracticeAnswerResult(-1, st.currentCorrectIndex, false);
+    this.ui.updatePracticeScoreDot(st.currentIndex, false);
+
+    const PRACTICE_FEEDBACK_MS = 1200;
+    setTimeout(() => {
+      st.currentIndex++;
+      if (st.currentIndex >= st.quizzes.length) {
+        this.showPracticeResult();
+      } else {
+        this.showPracticeCurrentQuiz();
+      }
+    }, PRACTICE_FEEDBACK_MS);
+  }
+
+  /* 練習ステージ：回答を処理する */
+  handlePracticeAnswer(choiceIndex) {
+    const st = this.practiceState;
+    if (!st.isAnswering) return;
+    st.isAnswering = false;
+    this.stopPracticeTimer();
+
+    const isCorrect = choiceIndex === st.currentCorrectIndex;
+    if (isCorrect) st.correctCount++;
+
+    this.audio[isCorrect ? 'playCorrect' : 'playWrong']();
+    this.ui.showPracticeAnswerResult(choiceIndex, st.currentCorrectIndex, isCorrect);
+    this.ui.updatePracticeScoreDot(st.currentIndex, isCorrect);
+
+    /* CP獲得カウンターを更新 */
+    document.getElementById('practice-cp-counter').textContent = String(st.correctCount);
+
+    const PRACTICE_FEEDBACK_MS = 1200;
+    setTimeout(() => {
+      st.currentIndex++;
+      if (st.currentIndex >= st.quizzes.length) {
+        this.showPracticeResult();
+      } else {
+        this.showPracticeCurrentQuiz();
+      }
+    }, PRACTICE_FEEDBACK_MS);
+  }
+
+  /* 練習ステージ：結果画面を表示する */
+  showPracticeResult() {
+    this.stopPracticeTimer();
+    const st = this.practiceState;
+    const earnedCP = st.correctCount * CP_PER_CORRECT;
+
+    /* CPを加算する */
+    if (earnedCP > 0) {
+      this.stats.addCP(earnedCP);
+    }
+
+    /* 結果画面を更新する */
+    document.getElementById('practice-result-correct').textContent = `${st.correctCount} / ${PRACTICE_QUIZ_COUNT}`;
+    document.getElementById('practice-result-cp').textContent = `⭐ ${earnedCP}`;
+    document.getElementById('practice-result-total-cp').textContent = this.stats.getCP();
+
+    this.audio.playEnding(st.correctCount >= 4 ? 'happy' : 'normal');
+    this.ui.showScreen('practiceResult');
   }
 
   /* ステータス画面を表示する */

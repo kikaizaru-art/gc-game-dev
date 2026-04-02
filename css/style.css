@@ -3751,3 +3751,183 @@ body {
   0%, 100% { filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)); }
   50% { filter: drop-shadow(0 2px 12px rgba(251, 191, 36, 0.6)); }
 }
+
+/* ===========================
+   チャレンジポイント (CP) & 練習ステージ
+   =========================== */
+
+/* マイページのCP表示バー */
+.mypage-cp-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 20px;
+  padding: 6px 18px;
+  margin: 8px auto 4px;
+  width: fit-content;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cp-icon {
+  font-size: 16px;
+}
+
+.cp-label {
+  color: #92400e;
+  font-weight: 700;
+}
+
+.cp-value {
+  color: #d97706;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+/* マイページのメインボタン（練習する＋あそぶ） */
+.btn-mypage-main {
+  font-size: 15px;
+  padding: 10px 28px;
+  min-width: 120px;
+}
+
+/* 練習ステージ開始画面 */
+.practice-info-box {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin: 12px auto;
+  max-width: 380px;
+  text-align: center;
+}
+
+.practice-info-text {
+  font-size: 14px;
+  margin: 4px 0;
+  color: #78350f;
+}
+
+.cp-highlight {
+  color: #d97706;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.practice-cp-display {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 12px 0;
+  text-align: center;
+}
+
+/* 練習ステージ：クイズ画面のCP表示 */
+.practice-cp-earned-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(251, 191, 36, 0.2);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-weight: 700;
+}
+
+/* 練習ステージ：PRACTICEバッジ */
+.difficulty-badge.practice {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+}
+
+/* 練習ステージ：結果画面 */
+.practice-result-stats {
+  text-align: center;
+}
+
+.cp-card {
+  border-color: rgba(251, 191, 36, 0.5) !important;
+  background: rgba(251, 191, 36, 0.08) !important;
+}
+
+.ta-result-value.cp-earned {
+  color: #d97706;
+}
+
+.practice-total-cp {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 14px 0 8px;
+  color: #92400e;
+}
+
+.practice-cost-guide {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin: 10px auto;
+  max-width: 320px;
+}
+
+.practice-cost-title {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.practice-cost-list {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cost-item {
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(251, 191, 36, 0.15);
+  border-radius: 8px;
+  padding: 3px 10px;
+  color: #92400e;
+}
+
+/* ステージ選択画面のCP表示バー */
+.stage-select-cp-bar {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 10px;
+  background: rgba(251, 191, 36, 0.12);
+  border-radius: 16px;
+  padding: 6px 16px;
+}
+
+/* ステージカードのCP表示 */
+.stage-card-cp {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.stage-card-cp.affordable {
+  color: #065f46;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.stage-card-cp.insufficient {
+  color: #991b1b;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* 練習ステージ背景 */
+.subgame-bg.practice {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+}
+
+.quiz-bg.practice {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+}

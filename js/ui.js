@@ -63,7 +63,10 @@ class UiManager {
       enduranceQuiz: document.getElementById('screen-endurance-quiz'),
       enduranceResult: document.getElementById('screen-endurance-result'),
       exchange: document.getElementById('screen-exchange'),
-      dressup: document.getElementById('screen-dressup')
+      dressup: document.getElementById('screen-dressup'),
+      practiceStart: document.getElementById('screen-practice-start'),
+      practiceQuiz: document.getElementById('screen-practice-quiz'),
+      practiceResult: document.getElementById('screen-practice-result')
     };
   }
 
@@ -89,8 +92,8 @@ class UiManager {
       screen.classList.remove('active');
     });
     this.screens[screenName].classList.add('active');
-    /* 通常クイズ画面のみヘッダータイムゲージを表示（サブゲームでは非表示） */
-    this.showHeaderTimerGauge(screenName === 'quiz');
+    /* 通常クイズ画面・練習ステージでヘッダータイムゲージを表示 */
+    this.showHeaderTimerGauge(screenName === 'quiz' || screenName === 'practiceQuiz');
     /* プロローグ・ストーリー画面ではスタミナバーを非表示にする */
     const staminaBar = document.getElementById('stamina-bar');
     const hideStamina = screenName === 'prologue' || screenName === 'story';
@@ -225,6 +228,7 @@ class UiManager {
     const hasStage3Happy = statsManager.hasStage3HappyEnd(heroine.id);
     const isPartner = statsManager.isPartner(heroine.id);
     const hasAnyPartner = statsManager.hasPartner();
+    const currentCP = statsManager.getCP();
     const container = document.getElementById('stage-select-cards');
 
     /* ステージ4の解放条件：このヒロインがパートナーであること */
@@ -236,30 +240,39 @@ class UiManager {
         ? '🔒 他のキャラがパートナーです'
         : '🔒 パートナーになると解放';
 
+    /* CP表示を生成するヘルパー */
+    const cpLabel = (stage) => {
+      const cost = STAGE_CP_COST[stage];
+      const canAfford = currentCP >= cost;
+      return `<div class="stage-card-cp ${canAfford ? 'affordable' : 'insufficient'}">⭐ ${cost} CP ${canAfford ? '✔' : '（不足）'}</div>`;
+    };
+
     container.innerHTML = `
+      <div class="stage-select-cp-bar">⭐ 所持CP: <span class="cp-value">${currentCP}</span></div>
       <div class="stage-card" data-stage="1">
         <div class="stage-card-badge easy">STAGE 1</div>
         <div class="stage-card-difficulty">EASY</div>
         <div class="stage-card-desc">もう一度${heroine.shortName}と会話しよう</div>
+        ${cpLabel(1)}
         <div class="stage-card-note">※ クリア後限定ストーリー</div>
       </div>
       <div class="stage-card ${hasHappy ? '' : 'locked'}" data-stage="2">
         <div class="stage-card-badge normal">STAGE 2</div>
         <div class="stage-card-difficulty">NORMAL</div>
         <div class="stage-card-desc">${hasHappy ? `${heroine.shortName}との特別なデート` : '???'}</div>
-        ${hasHappy ? '' : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
+        ${hasHappy ? cpLabel(2) : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
       </div>
       <div class="stage-card ${hasStage2Happy ? '' : 'locked'}" data-stage="3">
         <div class="stage-card-badge hard">STAGE 3</div>
         <div class="stage-card-difficulty">HARD</div>
         <div class="stage-card-desc">${hasStage2Happy ? `${heroine.shortName}との最後の試練` : '???'}</div>
-        ${hasStage2Happy ? '' : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
+        ${hasStage2Happy ? cpLabel(3) : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
       </div>
       <div class="stage-card ${stage4Unlocked ? '' : 'locked'}" data-stage="4">
         <div class="stage-card-badge master">STAGE 4</div>
         <div class="stage-card-difficulty">MASTER</div>
         <div class="stage-card-desc">${stage4Unlocked ? `${heroine.shortName}との永遠の絆` : '???'}</div>
-        ${stage4Unlocked ? '<div class="stage-card-note">💍 パートナー限定ステージ</div>' : `<div class="stage-card-lock">${stage4LockReason}</div>`}
+        ${stage4Unlocked ? cpLabel(4) : `<div class="stage-card-lock">${stage4LockReason}</div>`}
       </div>
     `;
   }
@@ -1314,5 +1327,70 @@ class UiManager {
     container.style.position = 'relative';
     container.appendChild(popup);
     setTimeout(() => popup.remove(), 1600);
+  }
+
+  /* ===========================
+     練習ステージ描画
+     =========================== */
+
+  /* 練習ステージのスコアドットを描画する */
+  renderPracticeScoreDots(count) {
+    const container = document.getElementById('practice-score-dots');
+    container.innerHTML = Array.from({ length: count }, (_, i) =>
+      `<span class="score-dot" data-index="${i}"></span>`
+    ).join('');
+  }
+
+  /* 練習ステージのスコアドットを更新する */
+  updatePracticeScoreDot(index, isCorrect) {
+    const dots = document.getElementById('practice-score-dots').querySelectorAll('.score-dot');
+    if (dots[index]) {
+      dots[index].classList.add(isCorrect ? 'correct' : 'wrong');
+    }
+  }
+
+  /* 練習ステージのクイズを描画する */
+  renderPracticeQuiz(quiz, questionNumber, totalQuestions) {
+    document.getElementById('practice-quiz-question').textContent =
+      `Q${questionNumber}. ${quiz.question}`;
+
+    const choicesContainer = document.getElementById('practice-quiz-choices');
+    choicesContainer.innerHTML = quiz.choices.map((choice, i) =>
+      `<button class="choice-btn" data-index="${i}">${choice}</button>`
+    ).join('');
+  }
+
+  /* 練習ステージのフィードバックを非表示にする */
+  hidePracticeFeedback() {
+    const fb = document.getElementById('practice-quiz-feedback');
+    fb.classList.add('hidden');
+  }
+
+  /* 練習ステージの回答結果を表示する */
+  showPracticeAnswerResult(selectedIndex, correctIndex, isCorrect) {
+    const fb = document.getElementById('practice-quiz-feedback');
+    const text = document.getElementById('practice-feedback-text');
+    const comment = document.getElementById('practice-feedback-comment');
+
+    fb.classList.remove('hidden');
+    fb.className = `quiz-feedback ${isCorrect ? 'correct' : 'wrong'}`;
+
+    if (selectedIndex === -1) {
+      text.textContent = '⏰ 時間切れ！';
+    } else {
+      text.textContent = isCorrect ? '⭕ 正解！ +1 CP' : '❌ 不正解…';
+    }
+
+    /* コメントがあれば表示する */
+    const quiz = document.getElementById('practice-quiz-question');
+    comment.textContent = '';
+
+    /* 選択肢ボタンの色分け */
+    const buttons = document.getElementById('practice-quiz-choices').querySelectorAll('.choice-btn');
+    buttons.forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === correctIndex) btn.classList.add('correct');
+      if (i === selectedIndex && !isCorrect) btn.classList.add('wrong');
+    });
   }
 }

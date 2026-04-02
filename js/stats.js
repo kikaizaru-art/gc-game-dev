@@ -4,6 +4,12 @@
 /* localStorageのキー */
 const STATS_STORAGE_KEY = 'heartQuizStats';
 const PARTNER_STORAGE_KEY = 'heartQuizPartner';
+const CP_STORAGE_KEY = 'heartQuizCP';
+
+/* チャレンジポイント定数 */
+const PRACTICE_QUIZ_COUNT = 5;
+const CP_PER_CORRECT = 1;
+const STAGE_CP_COST = { 1: 3, 2: 5, 3: 8, 4: 10 };
 
 /**
  * プレイ統計を管理するクラス
@@ -381,9 +387,61 @@ class StatsManager {
     return s4 && s4.happy >= 1;
   }
 
+  /* チャレンジポイント（CP）を取得する */
+  getCP() {
+    try {
+      return parseInt(localStorage.getItem(CP_STORAGE_KEY), 10) || 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  /* CPを加算する */
+  addCP(amount) {
+    const current = this.getCP();
+    try {
+      localStorage.setItem(CP_STORAGE_KEY, String(current + amount));
+    } catch (e) {
+      console.warn('CP保存に失敗:', e);
+    }
+  }
+
+  /* CPを消費する（足りなければfalseを返す） */
+  spendCP(amount) {
+    const current = this.getCP();
+    if (current < amount) return false;
+    try {
+      localStorage.setItem(CP_STORAGE_KEY, String(current - amount));
+      return true;
+    } catch (e) {
+      console.warn('CP保存に失敗:', e);
+      return false;
+    }
+  }
+
+  /* 指定ステージに必要なCPを取得する */
+  getStageCPCost(stage) {
+    return STAGE_CP_COST[stage] || 0;
+  }
+
+  /* 指定ステージに挑戦できるか判定する */
+  canChallengeStage(stage) {
+    return this.getCP() >= this.getStageCPCost(stage);
+  }
+
+  /* CPをリセットする（デバッグ用） */
+  resetCP() {
+    try {
+      localStorage.removeItem(CP_STORAGE_KEY);
+    } catch (e) {
+      console.warn('CPリセットに失敗:', e);
+    }
+  }
+
   /* 統計データをリセットする */
   reset() {
     this.stats = this.createEmpty();
     this.save();
+    this.resetCP();
   }
 }
