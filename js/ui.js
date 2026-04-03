@@ -52,25 +52,6 @@ function getStageBg(heroineId, stage) {
   return 'assets/images/bg-default.png';
 }
 
-/* エンディングオーバーレイ画像マッピング */
-const ENDING_OVERLAY_MAP = {
-  happy: {
-    1: 'assets/images/ending-happy.png',
-    2: 'assets/images/ending-true.png',
-    3: 'assets/images/ending-perfect.png',
-    4: 'assets/images/ending-eternal.png'
-  },
-  normal: 'assets/images/ending-normal.png',
-  bad: 'assets/images/ending-bad.png'
-};
-
-/* ヒロイン別装飾画像マッピング */
-const CHARA_DECOS = {
-  misaki: 'assets/images/deco-misaki.png',
-  rin: 'assets/images/deco-rin.png',
-  hinata: 'assets/images/deco-hinata.png'
-};
-
 /* マイページ訪問時のキャラ別セリフ */
 const MYPAGE_GREETINGS = {
   misaki: [
@@ -354,13 +335,6 @@ class UiManager {
 
     const charaContainer = document.getElementById('story-chara-container');
     charaContainer.classList.remove('visible');
-
-    /* ヒロイン装飾を設定 */
-    const deco = document.getElementById('story-deco');
-    if (deco && CHARA_DECOS[heroine.id]) {
-      deco.src = CHARA_DECOS[heroine.id];
-      deco.style.display = 'block';
-    }
   }
 
   /* ストーリーのセリフを表示する */
@@ -689,8 +663,7 @@ class UiManager {
     /* キャラクターのリアクション */
     charaContainer.classList.add(result.isCorrect ? 'react-correct' : 'react-wrong');
 
-    /* エフェクト演出（画像オーバーレイ＋パーティクル） */
-    this.showEffectOverlay(result.isCorrect ? 'effect-correct' : 'effect-wrong');
+    /* エフェクト演出 */
     if (result.isCorrect) {
       this.spawnHeartParticles();
       this.pulseAffinity('up');
@@ -748,7 +721,7 @@ class UiManager {
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const heart = document.createElement('span');
       heart.className = 'heart-particle';
-      heart.innerHTML = '<img src="assets/images/icon-heart.png" class="icon-img" alt="♥">';
+      heart.textContent = '♥';
       heart.style.left = `${30 + Math.random() * 40}%`;
       heart.style.bottom = `${20 + Math.random() * 20}%`;
       heart.style.animationDelay = `${i * 0.1}s`;
@@ -787,26 +760,6 @@ class UiManager {
       sparkle.style.height = sparkle.style.width;
       container.appendChild(sparkle);
     }
-  }
-
-  /* 正解/不正解エフェクトオーバーレイを表示する */
-  showEffectOverlay(effectName) {
-    const overlay = document.getElementById('effect-overlay');
-    if (!overlay) return;
-    overlay.src = `assets/images/${effectName}.png`;
-    overlay.classList.add('visible');
-    setTimeout(() => overlay.classList.remove('visible'), 800);
-  }
-
-  /* 桜の花びら画面遷移を実行する */
-  transitionTo(screenName) {
-    const overlay = document.getElementById('transition-overlay');
-    if (!overlay) { this.showScreen(screenName); return; }
-    overlay.classList.add('active');
-    setTimeout(() => {
-      this.showScreen(screenName);
-      setTimeout(() => overlay.classList.remove('active'), 400);
-    }, 400);
   }
 
   /* 結果画面を描画する（VN風エンディング） */
