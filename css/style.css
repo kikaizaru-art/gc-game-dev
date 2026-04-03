@@ -2274,6 +2274,24 @@ body {
   position: relative;
 }
 
+/* 練習キャラ選択・ステージ選択画面のレイアウト */
+#screen-practice-select,
+#screen-practice-stage-select {
+  justify-content: flex-start;
+  padding-top: 28px;
+  padding-bottom: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 練習結果画面のレイアウト */
+#screen-practice-result {
+  justify-content: flex-start;
+  padding-top: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* ============================
    オプション画面
    ============================ */
