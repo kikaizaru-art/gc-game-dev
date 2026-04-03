@@ -55,11 +55,7 @@
           <div id="mypage-chara-name" class="mypage-chara-name" style="color: #FF6B9D;">美咲</div>
           <div id="mypage-chara-speech" class="mypage-chara-speech hidden"></div>
         </div>
-        <div class="mypage-cp-bar" id="mypage-cp-bar">
-          <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP">
-          <span class="cp-label">CP:</span>
-          <span id="mypage-cp-value" class="cp-value">0</span>
-        </div>
+        <div class="mypage-rank-bar" id="mypage-rank-bar"></div>
         <div class="mypage-buttons">
           <div class="mypage-btn-row">
             <button id="btn-mypage-practice" class="btn btn-accent btn-glow btn-mypage-main">練習する</button>
@@ -523,22 +519,26 @@
       <button id="btn-back-mypage-dressup" class="btn btn-secondary">戻る</button>
     </div>
 
-    <!-- 練習ステージ：開始画面 -->
-    <div id="screen-practice-start" class="screen">
+    <!-- 練習：キャラ選択画面 -->
+    <div id="screen-practice-select" class="screen">
       <div class="subgame-bg practice"></div>
-      <h2 class="screen-heading">練習ステージ</h2>
-      <p class="subgame-desc">5問のクイズに挑戦してチャレンジポイント(CP)を稼ごう！</p>
-      <div class="practice-info-box">
-        <p class="practice-info-text">正解1問につき <span class="cp-highlight">1 CP</span> 獲得</p>
-        <p class="practice-info-text">CPを貯めてキャラステージに挑戦しよう！</p>
-      </div>
-      <div class="practice-cp-display">
-        <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP"> 現在のCP: <span id="practice-start-cp" class="cp-value">0</span>
-      </div>
-      <div class="endurance-start-area">
-        <button id="btn-practice-go" class="btn btn-primary btn-glow btn-large">スタート</button>
+      <h2 class="screen-heading">練習するキャラを選ぼう</h2>
+      <p class="subgame-desc">キャラ別の練習問題に挑戦！ランクを上げて新しい段階を解放しよう</p>
+      <div id="practice-heroine-cards" class="practice-heroine-cards">
+        <!-- JSで動的生成 -->
       </div>
       <button id="btn-back-mypage-practice" class="btn btn-secondary">戻る</button>
+    </div>
+
+    <!-- 練習：ステージ選択画面 -->
+    <div id="screen-practice-stage-select" class="screen">
+      <div class="subgame-bg practice"></div>
+      <h2 class="screen-heading">練習ステージを選ぼう</h2>
+      <div id="practice-stage-info" class="practice-stage-info"></div>
+      <div id="practice-stage-cards" class="practice-stage-cards">
+        <!-- JSで動的生成 -->
+      </div>
+      <button id="btn-back-practice-select" class="btn btn-secondary">戻る</button>
     </div>
 
     <!-- 練習ステージ：クイズ画面 -->
@@ -550,13 +550,12 @@
       </div>
       <div class="quiz-status-bar">
         <div class="quiz-heroine-info">
-          <span class="difficulty-badge practice">PRACTICE</span>
+          <span id="practice-stage-badge" class="difficulty-badge practice">STAGE 1 EASY</span>
         </div>
         <div class="quiz-right-info">
-          <div class="practice-cp-earned-display">
-            <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP">
-            <span id="practice-cp-counter" class="cp-value">0</span>
-            <span class="cp-label">CP</span>
+          <div class="practice-correct-display">
+            <span class="correct-label">正解</span>
+            <span id="practice-correct-counter" class="correct-value">0</span>
           </div>
           <div id="practice-score-dots" class="quiz-score-dots"></div>
         </div>
@@ -574,28 +573,27 @@
     <div id="screen-practice-result" class="screen">
       <div class="result-bg happy"></div>
       <div class="subgame-result-content">
-        <h2 class="subgame-result-title">練習ステージ 結果</h2>
+        <h2 id="practice-result-title" class="subgame-result-title">練習ステージ 結果</h2>
         <div class="practice-result-stats">
           <div class="ta-result-main">
             <div class="ta-result-card">
               <span class="ta-result-label">正解数</span>
               <span id="practice-result-correct" class="ta-result-value correct">0 / 5</span>
             </div>
-            <div class="ta-result-card cp-card">
-              <span class="ta-result-label">獲得CP</span>
-              <span id="practice-result-cp" class="ta-result-value cp-earned">0</span>
+            <div class="ta-result-card">
+              <span class="ta-result-label">ベスト記録</span>
+              <span id="practice-result-best" class="ta-result-value">0 / 5</span>
             </div>
           </div>
-          <div class="practice-total-cp">
-            所持CP: <img src="assets/images/icon-star.png" class="icon-img cp-icon" alt="CP"> <span id="practice-result-total-cp" class="cp-value">0</span>
+          <div class="practice-rank-display">
+            現在のランク: <span id="practice-result-rank" class="rank-badge">Dランク</span>
           </div>
-          <div class="practice-cost-guide">
-            <p class="practice-cost-title">ステージ挑戦に必要なCP</p>
-            <div class="practice-cost-list">
-              <span class="cost-item">S1: 3CP</span>
-              <span class="cost-item">S2: 5CP</span>
-              <span class="cost-item">S3: 8CP</span>
-              <span class="cost-item">S4: 10CP</span>
+          <div class="practice-rank-guide">
+            <p class="practice-rank-guide-title">ランクアップ条件</p>
+            <div class="practice-rank-list">
+              <span class="rank-item">Cランク: S1クリア → 練習S2解放</span>
+              <span class="rank-item">Bランク: S2クリア → 練習S3解放</span>
+              <span class="rank-item">Aランク: S3クリア → 練習S4解放</span>
             </div>
           </div>
         </div>

@@ -108,7 +108,8 @@ class UiManager {
       enduranceResult: document.getElementById('screen-endurance-result'),
       exchange: document.getElementById('screen-exchange'),
       dressup: document.getElementById('screen-dressup'),
-      practiceStart: document.getElementById('screen-practice-start'),
+      practiceSelect: document.getElementById('screen-practice-select'),
+      practiceStageSelect: document.getElementById('screen-practice-stage-select'),
       practiceQuiz: document.getElementById('screen-practice-quiz'),
       practiceResult: document.getElementById('screen-practice-result')
     };
@@ -272,7 +273,7 @@ class UiManager {
     const hasStage3Happy = statsManager.hasStage3HappyEnd(heroine.id);
     const isPartner = statsManager.isPartner(heroine.id);
     const hasAnyPartner = statsManager.hasPartner();
-    const currentCP = statsManager.getCP();
+    const rank = statsManager.getHeroineRank(heroine.id);
     const container = document.getElementById('stage-select-cards');
 
     /* ステージ4の解放条件：このヒロインがパートナーであること */
@@ -284,39 +285,31 @@ class UiManager {
         ? '🔒 他のキャラがパートナーです'
         : '🔒 パートナーになると解放';
 
-    /* CP表示を生成するヘルパー */
-    const cpLabel = (stage) => {
-      const cost = STAGE_CP_COST[stage];
-      const canAfford = currentCP >= cost;
-      return `<div class="stage-card-cp ${canAfford ? 'affordable' : 'insufficient'}"><img src="assets/images/icon-star.png" class="icon-img" alt="CP"> ${cost} CP ${canAfford ? '✔' : '（不足）'}</div>`;
-    };
-
     container.innerHTML = `
-      <div class="stage-select-cp-bar"><img src="assets/images/icon-star.png" class="icon-img" alt="CP"> 所持CP: <span class="cp-value">${currentCP}</span></div>
+      <div class="stage-select-rank-bar">ランク: <span class="rank-badge" style="color:${rank.color}">${rank.label}</span></div>
       <div class="stage-card" data-stage="1">
         <div class="stage-card-badge easy">STAGE 1</div>
         <div class="stage-card-difficulty">EASY</div>
         <div class="stage-card-desc">もう一度${heroine.shortName}と会話しよう</div>
-        ${cpLabel(1)}
         <div class="stage-card-note">※ クリア後限定ストーリー</div>
       </div>
       <div class="stage-card ${hasHappy ? '' : 'locked'}" data-stage="2">
         <div class="stage-card-badge normal">STAGE 2</div>
         <div class="stage-card-difficulty">NORMAL</div>
         <div class="stage-card-desc">${hasHappy ? `${heroine.shortName}との特別なデート` : '???'}</div>
-        ${hasHappy ? cpLabel(2) : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
+        ${hasHappy ? '' : '<div class="stage-card-lock">🔒 ハッピーエンドで解放</div>'}
       </div>
       <div class="stage-card ${hasStage2Happy ? '' : 'locked'}" data-stage="3">
         <div class="stage-card-badge hard">STAGE 3</div>
         <div class="stage-card-difficulty">HARD</div>
         <div class="stage-card-desc">${hasStage2Happy ? `${heroine.shortName}との最後の試練` : '???'}</div>
-        ${hasStage2Happy ? cpLabel(3) : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
+        ${hasStage2Happy ? '' : '<div class="stage-card-lock">🔒 STAGE 2 ハッピーエンドで解放</div>'}
       </div>
       <div class="stage-card ${stage4Unlocked ? '' : 'locked'}" data-stage="4">
         <div class="stage-card-badge master">STAGE 4</div>
         <div class="stage-card-difficulty">MASTER</div>
         <div class="stage-card-desc">${stage4Unlocked ? `${heroine.shortName}との永遠の絆` : '???'}</div>
-        ${stage4Unlocked ? cpLabel(4) : `<div class="stage-card-lock">${stage4LockReason}</div>`}
+        ${stage4Unlocked ? '' : `<div class="stage-card-lock">${stage4LockReason}</div>`}
       </div>
     `;
   }
@@ -1400,6 +1393,65 @@ class UiManager {
      練習ステージ描画
      =========================== */
 
+  /* 練習キャラ選択画面を描画する */
+  renderPracticeHeroineSelect(heroines, statsManager) {
+    const container = document.getElementById('practice-heroine-cards');
+    container.innerHTML = heroines.map(h => {
+      const unlocked = statsManager.isHeroineUnlocked(h.id);
+      const rank = statsManager.getHeroineRank(h.id);
+      const maxStage = statsManager.getMaxPracticeStage(h.id);
+      return `
+        <div class="practice-heroine-card ${unlocked ? '' : 'locked'}" data-heroine-id="${h.id}">
+          <div class="practice-heroine-img-wrap">
+            <img class="practice-heroine-img" src="${CHARA_IMAGES[h.id]}" alt="${h.shortName}">
+            ${unlocked ? '' : '<div class="practice-heroine-lock">🔒</div>'}
+          </div>
+          <div class="practice-heroine-info">
+            <div class="practice-heroine-name" style="color:${h.color}">${h.shortName}</div>
+            ${unlocked ? `
+              <div class="practice-heroine-rank" style="color:${rank.color}">${rank.label}</div>
+              <div class="practice-heroine-stages">練習S1〜S${maxStage} 解放</div>
+            ` : '<div class="practice-heroine-lock-text">美咲S1ハッピーで解放</div>'}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* 練習ステージ選択画面を描画する */
+  renderPracticeStageSelect(heroine, statsManager) {
+    const rank = statsManager.getHeroineRank(heroine.id);
+    const infoEl = document.getElementById('practice-stage-info');
+    infoEl.innerHTML = `
+      <div class="practice-stage-heroine">
+        <img class="practice-stage-heroine-img" src="${CHARA_IMAGES[heroine.id]}" alt="${heroine.shortName}">
+        <div class="practice-stage-heroine-detail">
+          <span class="practice-stage-heroine-name" style="color:${heroine.color}">${heroine.shortName}</span>
+          <span class="practice-stage-rank" style="color:${rank.color}">${rank.label}</span>
+        </div>
+      </div>
+    `;
+
+    const stageNames = { 1: 'EASY', 2: 'NORMAL', 3: 'HARD', 4: 'MASTER' };
+    const stageBadgeClass = { 1: 'easy', 2: 'normal', 3: 'hard', 4: 'master' };
+    const container = document.getElementById('practice-stage-cards');
+    container.innerHTML = [1, 2, 3, 4].map(stage => {
+      const unlocked = statsManager.isPracticeStageUnlocked(heroine.id, stage);
+      const best = statsManager.getPracticeClear(heroine.id, stage);
+      const reqRank = statsManager.getRequiredRankForPracticeStage(stage);
+      return `
+        <div class="practice-stage-card ${unlocked ? '' : 'locked'}" data-stage="${stage}">
+          <div class="practice-stage-badge ${stageBadgeClass[stage]}">STAGE ${stage}</div>
+          <div class="practice-stage-difficulty">${stageNames[stage]}</div>
+          ${unlocked
+            ? `<div class="practice-stage-best">ベスト: ${best > 0 ? `${best}/${PRACTICE_QUIZ_COUNT}` : '未挑戦'}</div>`
+            : `<div class="practice-stage-lock">🔒 ${reqRank}で解放</div>`
+          }
+        </div>
+      `;
+    }).join('');
+  }
+
   /* 練習ステージのスコアドットを描画する */
   renderPracticeScoreDots(count) {
     const container = document.getElementById('practice-score-dots');
@@ -1445,7 +1497,7 @@ class UiManager {
     if (selectedIndex === -1) {
       text.textContent = '⏰ 時間切れ！';
     } else {
-      text.textContent = isCorrect ? '⭕ 正解！ +1 CP' : '❌ 不正解…';
+      text.textContent = isCorrect ? '⭕ 正解！' : '❌ 不正解…';
     }
 
     /* コメントがあれば表示する */

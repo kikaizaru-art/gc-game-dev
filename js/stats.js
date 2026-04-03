@@ -4,12 +4,27 @@
 /* localStorageのキー */
 const STATS_STORAGE_KEY = 'heartQuizStats';
 const PARTNER_STORAGE_KEY = 'heartQuizPartner';
-const CP_STORAGE_KEY = 'heartQuizCP';
 
-/* チャレンジポイント定数 */
+/* 練習ステージ定数 */
 const PRACTICE_QUIZ_COUNT = 5;
-const CP_PER_CORRECT = 1;
-const STAGE_CP_COST = { 1: 3, 2: 5, 3: 8, 4: 10 };
+
+/* ランク定義（ストーリーステージクリアで昇格） */
+const RANK_DEFINITIONS = [
+  { id: 'D', label: 'Dランク', color: '#999', practiceStage: 1 },
+  { id: 'C', label: 'Cランク', color: '#4A90D9', practiceStage: 2 },
+  { id: 'B', label: 'Bランク', color: '#7BC67E', practiceStage: 3 },
+  { id: 'A', label: 'Aランク', color: '#FF6B9D', practiceStage: 4 },
+  { id: 'S', label: 'Sランク', color: '#FFD700', practiceStage: 4 }
+];
+
+/* ランク昇格条件: ストーリーステージN をクリア（エンディング問わず）でランクアップ */
+const RANK_UPGRADE_CONDITIONS = {
+  D: () => true,
+  C: (stats, heroineId) => stats.hasStageAnyEnd(heroineId, 1),
+  B: (stats, heroineId) => stats.hasStageAnyEnd(heroineId, 2),
+  A: (stats, heroineId) => stats.hasStageAnyEnd(heroineId, 3),
+  S: (stats, heroineId) => stats.hasStageAnyEnd(heroineId, 4)
+};
 
 /**
  * プレイ統計を管理するクラス
@@ -387,61 +402,60 @@ class StatsManager {
     return s4 && s4.happy >= 1;
   }
 
-  /* チャレンジポイント（CP）を取得する */
-  getCP() {
-    try {
-      return parseInt(localStorage.getItem(CP_STORAGE_KEY), 10) || 0;
-    } catch (e) {
-      return 0;
+  /* ヒロインのランクを取得する */
+  getHeroineRank(heroineId) {
+    const ranks = ['S', 'A', 'B', 'C', 'D'];
+    for (const rankId of ranks) {
+      if (RANK_UPGRADE_CONDITIONS[rankId](this, heroineId)) {
+        return RANK_DEFINITIONS.find(r => r.id === rankId);
+      }
     }
+    return RANK_DEFINITIONS[0];
   }
 
-  /* CPを加算する */
-  addCP(amount) {
-    const current = this.getCP();
-    try {
-      localStorage.setItem(CP_STORAGE_KEY, String(current + amount));
-    } catch (e) {
-      console.warn('CP保存に失敗:', e);
+  /* ヒロインの練習ステージが解放済みかを判定する */
+  isPracticeStageUnlocked(heroineId, practiceStage) {
+    const rank = this.getHeroineRank(heroineId);
+    const rankIndex = RANK_DEFINITIONS.findIndex(r => r.id === rank.id);
+    /* 練習ステージ1はDランク（index 0）、2はCランク（index 1）… */
+    return rankIndex >= (practiceStage - 1);
+  }
+
+  /* ヒロインの解放済み練習ステージの最大値を取得する */
+  getMaxPracticeStage(heroineId) {
+    const rank = this.getHeroineRank(heroineId);
+    const def = RANK_DEFINITIONS.find(r => r.id === rank.id);
+    return def ? def.practiceStage : 1;
+  }
+
+  /* 練習ステージのクリア記録を取得する */
+  getPracticeClear(heroineId, practiceStage) {
+    const h = this.stats.heroines[heroineId];
+    if (!h || !h.practiceClears) return 0;
+    return h.practiceClears[practiceStage] || 0;
+  }
+
+  /* 練習ステージのクリアを記録する */
+  recordPracticeClear(heroineId, practiceStage, correctCount) {
+    const h = this.stats.heroines[heroineId];
+    if (!h) return;
+    if (!h.practiceClears) h.practiceClears = {};
+    const prev = h.practiceClears[practiceStage] || 0;
+    if (correctCount > prev) {
+      h.practiceClears[practiceStage] = correctCount;
     }
+    this.save();
   }
 
-  /* CPを消費する（足りなければfalseを返す） */
-  spendCP(amount) {
-    const current = this.getCP();
-    if (current < amount) return false;
-    try {
-      localStorage.setItem(CP_STORAGE_KEY, String(current - amount));
-      return true;
-    } catch (e) {
-      console.warn('CP保存に失敗:', e);
-      return false;
-    }
-  }
-
-  /* 指定ステージに必要なCPを取得する */
-  getStageCPCost(stage) {
-    return STAGE_CP_COST[stage] || 0;
-  }
-
-  /* 指定ステージに挑戦できるか判定する */
-  canChallengeStage(stage) {
-    return this.getCP() >= this.getStageCPCost(stage);
-  }
-
-  /* CPをリセットする（デバッグ用） */
-  resetCP() {
-    try {
-      localStorage.removeItem(CP_STORAGE_KEY);
-    } catch (e) {
-      console.warn('CPリセットに失敗:', e);
-    }
+  /* 練習ステージの解放に必要なランクラベルを取得する */
+  getRequiredRankForPracticeStage(practiceStage) {
+    const def = RANK_DEFINITIONS[practiceStage - 1];
+    return def ? def.label : 'Dランク';
   }
 
   /* 統計データをリセットする */
   reset() {
     this.stats = this.createEmpty();
     this.save();
-    this.resetCP();
   }
 }

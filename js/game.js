@@ -179,11 +179,11 @@ class GameEngine {
       this.showMyPage();
     });
 
-    /* マイページ → 練習ステージ */
+    /* マイページ → 練習キャラ選択 */
     document.getElementById('btn-mypage-practice').addEventListener('click', () => {
       this.audio.playClick();
-      document.getElementById('practice-start-cp').textContent = this.stats.getCP();
-      this.ui.showScreen('practiceStart');
+      this.ui.renderPracticeHeroineSelect(this.heroineManager.heroines, this.stats);
+      this.ui.showScreen('practiceSelect');
     });
 
     document.getElementById('btn-back-mypage-practice').addEventListener('click', () => {
@@ -191,9 +191,31 @@ class GameEngine {
       this.showMyPage();
     });
 
-    document.getElementById('btn-practice-go').addEventListener('click', () => {
+    /* 練習キャラ選択 → 練習ステージ選択 */
+    document.getElementById('practice-heroine-cards').addEventListener('click', (e) => {
+      const card = e.target.closest('.practice-heroine-card');
+      if (!card || card.classList.contains('locked')) return;
       this.audio.playClick();
-      this.startPractice();
+      const heroineId = card.dataset.heroineId;
+      this.practiceHeroineId = heroineId;
+      const heroine = this.heroineManager.heroines.find(h => h.id === heroineId);
+      this.ui.renderPracticeStageSelect(heroine, this.stats);
+      this.ui.showScreen('practiceStageSelect');
+    });
+
+    document.getElementById('btn-back-practice-select').addEventListener('click', () => {
+      this.audio.playClick();
+      this.ui.renderPracticeHeroineSelect(this.heroineManager.heroines, this.stats);
+      this.ui.showScreen('practiceSelect');
+    });
+
+    /* 練習ステージ選択 → クイズ開始 */
+    document.getElementById('practice-stage-cards').addEventListener('click', (e) => {
+      const card = e.target.closest('.practice-stage-card');
+      if (!card || card.classList.contains('locked')) return;
+      this.audio.playClick();
+      const practiceStage = parseInt(card.dataset.stage, 10);
+      this.startPractice(this.practiceHeroineId, practiceStage);
     });
 
     /* 練習ステージ：途中で戻る */
@@ -207,7 +229,7 @@ class GameEngine {
     /* 練習ステージ：結果画面ボタン */
     document.getElementById('btn-practice-retry').addEventListener('click', () => {
       this.audio.playClick();
-      this.startPractice();
+      this.startPractice(this.practiceHeroineId, this.practiceStageLevel);
     });
 
     document.getElementById('btn-practice-back').addEventListener('click', () => {
@@ -385,22 +407,10 @@ class GameEngine {
         this.ui.renderStageSelect(heroine, this.stats);
         this.ui.showScreen('stageSelect');
       } else if (this.stats.getTotalClears(heroineId) > 0) {
-        /* クリア済みだがハッピーエンド未達成 → CP消費チェック（ステージ1） */
-        const cost = this.stats.getStageCPCost(1);
-        if (!this.stats.canChallengeStage(1)) {
-          alert(`CPが足りません！\nステージ1には ${cost} CP 必要です。\n現在のCP: ${this.stats.getCP()}\n練習ステージでCPを稼ごう！`);
-          return;
-        }
-        this.stats.spendCP(cost);
+        /* クリア済みだがハッピーエンド未達成 → リトライ */
         this.startRetry(heroineId);
       } else {
-        /* 初回プレイもCP消費チェック */
-        const cost = this.stats.getStageCPCost(1);
-        if (!this.stats.canChallengeStage(1)) {
-          alert(`CPが足りません！\nステージ1には ${cost} CP 必要です。\n現在のCP: ${this.stats.getCP()}\n練習ステージでCPを稼ごう！`);
-          return;
-        }
-        this.stats.spendCP(cost);
+        /* 初回プレイ */
         this.startStory(heroineId);
       }
     });
@@ -416,13 +426,6 @@ class GameEngine {
       if (!card || card.classList.contains('locked')) return;
       this.audio.playClick();
       const stage = parseInt(card.dataset.stage, 10);
-      /* CP消費チェック */
-      const cost = this.stats.getStageCPCost(stage);
-      if (!this.stats.canChallengeStage(stage)) {
-        alert(`CPが足りません！\nこのステージには ${cost} CP 必要です。\n現在のCP: ${this.stats.getCP()}\n練習ステージでCPを稼ごう！`);
-        return;
-      }
-      this.stats.spendCP(cost);
       this.startStoryWithStage(this.pendingHeroineId, stage);
     });
 
@@ -1128,8 +1131,6 @@ class GameEngine {
     const heroine = this.heroineManager.heroines.find(h => h.id === heroineId)
       || this.heroineManager.heroines[0];
     this.ui.renderMyPage(heroine);
-    /* CP表示を更新する */
-    document.getElementById('mypage-cp-value').textContent = this.stats.getCP();
     /* ポイント表示と着せ替えオーバーレイを更新する（パートナー選択後のみ） */
     if (this.exchange && this.isPointsUnlocked()) {
       this.ui.updateMypagePoints(this.exchange.getPoints());
@@ -1527,16 +1528,14 @@ class GameEngine {
      練習ステージ
      =========================== */
 
-  /* 練習ステージ用のクイズプールを取得する（全ヒロインのEASY問題からランダム） */
-  getPracticeQuizPool() {
+  /* 練習ステージ用のクイズプールを取得する（キャラ別・ステージ別） */
+  getPracticeQuizPool(heroineId, practiceStage) {
     const hm = this.heroineManager;
-    const all = [];
-    /* 全難易度からまんべんなく出題 */
-    [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster].forEach(source => {
-      Object.values(source).forEach(quizArray => {
-        quizArray.forEach(q => all.push(q));
-      });
-    });
+    /* ステージに対応するクイズソースを選択する */
+    const sources = [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster];
+    const source = sources[practiceStage - 1] || sources[0];
+    const quizArray = source[heroineId] || [];
+    const all = [...quizArray];
     /* シャッフル */
     for (let i = all.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -1546,17 +1545,25 @@ class GameEngine {
   }
 
   /* 練習ステージを開始する */
-  startPractice() {
+  startPractice(heroineId, practiceStage) {
+    this.practiceHeroineId = heroineId;
+    this.practiceStageLevel = practiceStage;
     this.practiceState = {
-      quizzes: this.getPracticeQuizPool(),
+      quizzes: this.getPracticeQuizPool(heroineId, practiceStage),
       currentIndex: 0,
       correctCount: 0,
       isAnswering: false,
       currentCorrectIndex: null
     };
+    /* ステージ名バッジを更新する */
+    const stageNames = { 1: 'EASY', 2: 'NORMAL', 3: 'HARD', 4: 'MASTER' };
+    const badge = document.getElementById('practice-stage-badge');
+    if (badge) {
+      badge.textContent = `STAGE ${practiceStage} ${stageNames[practiceStage] || ''}`;
+    }
     this.ui.renderPracticeScoreDots(PRACTICE_QUIZ_COUNT);
     this.ui.showScreen('practiceQuiz');
-    document.getElementById('practice-cp-counter').textContent = '0';
+    document.getElementById('practice-correct-counter').textContent = '0';
     this.showPracticeCurrentQuiz();
   }
 
@@ -1649,8 +1656,8 @@ class GameEngine {
     this.ui.showPracticeAnswerResult(choiceIndex, st.currentCorrectIndex, isCorrect);
     this.ui.updatePracticeScoreDot(st.currentIndex, isCorrect);
 
-    /* CP獲得カウンターを更新 */
-    document.getElementById('practice-cp-counter').textContent = String(st.correctCount);
+    /* 正解カウンターを更新 */
+    document.getElementById('practice-correct-counter').textContent = String(st.correctCount);
 
     const PRACTICE_FEEDBACK_MS = 1200;
     setTimeout(() => {
@@ -1667,17 +1674,27 @@ class GameEngine {
   showPracticeResult() {
     this.stopPracticeTimer();
     const st = this.practiceState;
-    const earnedCP = st.correctCount * CP_PER_CORRECT;
+    const heroineId = this.practiceHeroineId;
+    const practiceStage = this.practiceStageLevel;
 
-    /* CPを加算する */
-    if (earnedCP > 0) {
-      this.stats.addCP(earnedCP);
-    }
+    /* クリア記録を保存する */
+    this.stats.recordPracticeClear(heroineId, practiceStage, st.correctCount);
 
     /* 結果画面を更新する */
+    const heroine = this.heroineManager.heroines.find(h => h.id === heroineId);
+    const stageNames = { 1: 'EASY', 2: 'NORMAL', 3: 'HARD', 4: 'MASTER' };
+    document.getElementById('practice-result-title').textContent =
+      `${heroine ? heroine.shortName : ''} STAGE ${practiceStage} ${stageNames[practiceStage] || ''} 結果`;
     document.getElementById('practice-result-correct').textContent = `${st.correctCount} / ${PRACTICE_QUIZ_COUNT}`;
-    document.getElementById('practice-result-cp').textContent = `${earnedCP}`;
-    document.getElementById('practice-result-total-cp').textContent = this.stats.getCP();
+
+    /* ランク表示を更新する */
+    const rank = this.stats.getHeroineRank(heroineId);
+    document.getElementById('practice-result-rank').textContent = rank.label;
+    document.getElementById('practice-result-rank').style.color = rank.color;
+
+    /* ベスト記録を表示する */
+    const best = this.stats.getPracticeClear(heroineId, practiceStage);
+    document.getElementById('practice-result-best').textContent = `${best} / ${PRACTICE_QUIZ_COUNT}`;
 
     this.audio.playEnding(st.correctCount >= 4 ? 'happy' : 'normal');
     this.ui.showScreen('practiceResult');
