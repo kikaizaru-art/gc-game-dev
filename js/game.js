@@ -1528,11 +1528,11 @@ class GameEngine {
      練習ステージ
      =========================== */
 
-  /* 練習ステージ用のクイズプールを取得する（キャラ別・ステージ別） */
+  /* 練習ステージ用のクイズプールを取得する（キャラ別・ステージ別、練習専用データ） */
   getPracticeQuizPool(heroineId, practiceStage) {
     const hm = this.heroineManager;
-    /* ステージに対応するクイズソースを選択する */
-    const sources = [hm.quizzes, hm.quizzesHard, hm.quizzesExpert, hm.quizzesMaster];
+    /* 練習専用データからステージに対応するソースを選択する */
+    const sources = [hm.practiceEasy, hm.practiceNormal, hm.practiceHard, hm.practiceMaster];
     const source = sources[practiceStage - 1] || sources[0];
     const quizArray = source[heroineId] || [];
     const all = [...quizArray];

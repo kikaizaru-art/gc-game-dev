@@ -31,6 +31,10 @@ class HeroineManager {
     this.quizzesHard = {};
     this.quizzesExpert = {};
     this.quizzesMaster = {};
+    this.practiceEasy = {};
+    this.practiceNormal = {};
+    this.practiceHard = {};
+    this.practiceMaster = {};
     this.selectedHeroine = null;
     this.affinity = INITIAL_AFFINITY;
     this.currentQuizIndex = 0;
@@ -46,7 +50,11 @@ class HeroineManager {
       'assets/data/quizzes.json',
       'assets/data/quizzes-hard.json',
       'assets/data/quizzes-expert.json',
-      'assets/data/quizzes-master.json'
+      'assets/data/quizzes-master.json',
+      'assets/data/practice-easy.json',
+      'assets/data/practice-normal.json',
+      'assets/data/practice-hard.json',
+      'assets/data/practice-master.json'
     ];
 
     let responses;
@@ -64,13 +72,19 @@ class HeroineManager {
     });
 
     try {
-      const [heroinesData, quizzesData, quizzesHardData, quizzesExpertData, quizzesMasterData] =
-        await Promise.all(responses.map(res => res.json()));
+      const [
+        heroinesData, quizzesData, quizzesHardData, quizzesExpertData, quizzesMasterData,
+        practiceEasyData, practiceNormalData, practiceHardData, practiceMasterData
+      ] = await Promise.all(responses.map(res => res.json()));
       this.heroines = heroinesData;
       this.quizzes = quizzesData;
       this.quizzesHard = quizzesHardData;
       this.quizzesExpert = quizzesExpertData;
       this.quizzesMaster = quizzesMasterData;
+      this.practiceEasy = practiceEasyData;
+      this.practiceNormal = practiceNormalData;
+      this.practiceHard = practiceHardData;
+      this.practiceMaster = practiceMasterData;
     } catch (err) {
       throw new Error(`データのJSON解析に失敗しました: ${err.message}`);
     }
